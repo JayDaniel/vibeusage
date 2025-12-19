@@ -505,3 +505,323 @@ test('vibescore-usage-heatmap rejects invalid parameters', async () => {
   const res = await fn(req);
   assert.equal(res.status, 400);
 });
+
+test('vibescore-leaderboard returns a week window and slices entries to limit', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard');
+
+  const userId = '66666666-6666-6666-6666-666666666666';
+  const userJwt = 'user_jwt_test';
+
+  const entriesRows = [
+    { rank: 1, is_me: false, display_name: 'Anonymous', avatar_url: null, total_tokens: '100' },
+    { rank: 2, is_me: true, display_name: 'Anonymous', avatar_url: null, total_tokens: '50' }
+  ];
+
+  const meRow = { rank: 2, total_tokens: '50' };
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            if (table === 'vibescore_leaderboard_week_current') {
+              return {
+                select: () => ({
+                  order: async (col, opts) => {
+                    assert.equal(col, 'rank');
+                    assert.equal(opts?.ascending, true);
+                    return { data: entriesRows, error: null };
+                  }
+                })
+              };
+            }
+
+            if (table === 'vibescore_leaderboard_me_week_current') {
+              return {
+                select: () => ({
+                  maybeSingle: async () => ({ data: meRow, error: null })
+                })
+              };
+            }
+
+            throw new Error(`Unexpected table: ${table}`);
+          }
+        }
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard?period=week&limit=1', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${userJwt}` }
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.period, 'week');
+  assert.ok(typeof body.generated_at === 'string' && body.generated_at.includes('T'));
+
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const from = new Date(today);
+  from.setUTCDate(from.getUTCDate() - today.getUTCDay()); // Sunday start
+  const to = new Date(from);
+  to.setUTCDate(to.getUTCDate() + 6);
+
+  assert.equal(body.from, from.toISOString().slice(0, 10));
+  assert.equal(body.to, to.toISOString().slice(0, 10));
+
+  assert.ok(Array.isArray(body.entries));
+  assert.equal(body.entries.length, 1);
+  assert.equal(body.entries[0].rank, 1);
+  assert.equal(body.entries[0].total_tokens, '100');
+
+  assert.deepEqual(body.me, { rank: 2, total_tokens: '50' });
+});
+
+test('vibescore-leaderboard uses system earliest day for total window', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard');
+
+  const userId = '77777777-7777-7777-7777-777777777777';
+  const userJwt = 'user_jwt_test';
+
+  const metaRow = { from_day: '2025-12-01', to_day: '2025-12-19' };
+  const entriesRows = [{ rank: 1, is_me: true, display_name: 'Anonymous', avatar_url: null, total_tokens: '42' }];
+  const meRow = { rank: 1, total_tokens: '42' };
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            if (table === 'vibescore_leaderboard_meta_total_current') {
+              return {
+                select: () => ({
+                  maybeSingle: async () => ({ data: metaRow, error: null })
+                })
+              };
+            }
+
+            if (table === 'vibescore_leaderboard_total_current') {
+              return {
+                select: () => ({
+                  order: async () => ({ data: entriesRows, error: null })
+                })
+              };
+            }
+
+            if (table === 'vibescore_leaderboard_me_total_current') {
+              return {
+                select: () => ({
+                  maybeSingle: async () => ({ data: meRow, error: null })
+                })
+              };
+            }
+
+            throw new Error(`Unexpected table: ${table}`);
+          }
+        }
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard?period=total', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${userJwt}` }
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.period, 'total');
+  assert.equal(body.from, metaRow.from_day);
+  assert.equal(body.to, metaRow.to_day);
+  assert.ok(Array.isArray(body.entries));
+  assert.equal(body.entries.length, 1);
+  assert.deepEqual(body.me, { rank: 1, total_tokens: '42' });
+});
+
+test('vibescore-leaderboard rejects invalid period', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard');
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === 'user_jwt_test') {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: '88888888-8888-8888-8888-888888888888' } }, error: null })
+        },
+        database: {
+          from: () => {
+            throw new Error('Unexpected database access');
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard?period=year', {
+    method: 'GET',
+    headers: { Authorization: 'Bearer user_jwt_test' }
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 400);
+});
+
+test('vibescore-leaderboard-settings inserts user setting row', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard-settings');
+
+  const userId = '99999999-9999-9999-9999-999999999999';
+  const userJwt = 'user_jwt_test';
+
+  const inserts = [];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_user_settings');
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: null, error: null })
+                })
+              }),
+              insert: async (rows) => {
+                inserts.push({ table, rows });
+                return { error: null };
+              }
+            };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userJwt}` },
+    body: JSON.stringify({ leaderboard_public: true })
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.leaderboard_public, true);
+  assert.equal(typeof body.updated_at, 'string');
+  assert.ok(body.updated_at.includes('T'));
+
+  assert.equal(inserts.length, 1);
+  const row = inserts[0].rows?.[0];
+  assert.equal(row.user_id, userId);
+  assert.equal(row.leaderboard_public, true);
+  assert.equal(typeof row.updated_at, 'string');
+});
+
+test('vibescore-leaderboard-settings updates existing row', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard-settings');
+
+  const userId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  const userJwt = 'user_jwt_test';
+
+  const updates = [];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_user_settings');
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { user_id: userId }, error: null })
+                })
+              }),
+              update: (values) => ({
+                eq: async (col, value) => {
+                  updates.push({ table, values, where: { col, value } });
+                  return { error: null };
+                }
+              })
+            };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userJwt}` },
+    body: JSON.stringify({ leaderboard_public: false })
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.leaderboard_public, false);
+  assert.equal(typeof body.updated_at, 'string');
+
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0].where.col, 'user_id');
+  assert.equal(updates[0].where.value, userId);
+  assert.equal(updates[0].values.leaderboard_public, false);
+  assert.equal(typeof updates[0].values.updated_at, 'string');
+});
+
+test('vibescore-leaderboard-settings rejects invalid body', async () => {
+  const fn = require('../insforge-functions/vibescore-leaderboard-settings');
+
+  const userJwt = 'user_jwt_test';
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' } }, error: null })
+        },
+        database: {
+          from: () => {
+            throw new Error('Unexpected database access');
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-leaderboard-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userJwt}` },
+    body: JSON.stringify({ leaderboard_public: 'yes' })
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 400);
+});

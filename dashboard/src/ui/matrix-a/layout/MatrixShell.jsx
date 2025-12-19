@@ -2,7 +2,13 @@ import React, { useMemo } from "react";
 
 import { MatrixRain } from "../../../components/MatrixRain.jsx";
 
-export function MatrixShell({ headerRight, children, footerLeft, footerRight }) {
+export function MatrixShell({
+  headerRight,
+  headerStatus,
+  children,
+  footerLeft,
+  footerRight,
+}) {
   const reduceMotion = useMemo(() => {
     return Boolean(
       window.matchMedia &&
@@ -21,11 +27,13 @@ export function MatrixShell({ headerRight, children, footerLeft, footerRight }) 
             <div className="bg-[#00FF41] text-black px-3 py-1 font-black text-xs">
               VIBE_SYSTEM_A
             </div>
-            <div className="hidden sm:flex items-center space-x-4 opacity-50 text-[9px] tracking-widest font-black uppercase">
-              <span className="flex items-center">
-                <span className="w-1.5 h-1.5 bg-[#00FF41] rounded-full mr-2 animate-pulse"></span>
-                Link_Active
-              </span>
+            <div className="flex items-center space-x-4 opacity-50 text-[9px] tracking-widest font-black uppercase">
+              {headerStatus || (
+                <span className="flex items-center">
+                  <span className="w-1.5 h-1.5 bg-[#00FF41] rounded-full mr-2 animate-pulse"></span>
+                  Link_Active
+                </span>
+              )}
             </div>
           </div>
 
@@ -46,4 +54,3 @@ export function MatrixShell({ headerRight, children, footerLeft, footerRight }) 
     </div>
   );
 }
-

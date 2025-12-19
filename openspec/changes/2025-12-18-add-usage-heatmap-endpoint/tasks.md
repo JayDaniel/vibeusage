@@ -36,6 +36,7 @@ Contract freeze（已确认）：
 - [x] 用 `auth.getCurrentUser()` 获取 `userId`，从 `vibescore_tracker_daily` 读取 `day,total_tokens`
 - [x] 派生：range 对齐、缺失补零、阈值分位数、level 映射、streak_days
 - [x] 参数限制：`weeks` 上限、非法 `to` 返回 400
+- [x] 部署：创建并启用 `vibescore-usage-heatmap`（InsForge2 edge function）
 
 ## 3) Frontend（平滑切换）
 
@@ -46,7 +47,7 @@ Contract freeze（已确认）：
 ## 4) Tests / Verification
 
 - [x] 单测：派生算法与参数归一化（确定性输入输出）
-- [ ] smoke：用现有 `scripts/smoke/insforge-smoke.cjs` 扩展验证 heatmap endpoint（可选项）
+- [x] smoke：用现有 `scripts/smoke/insforge-smoke.cjs` 扩展验证 heatmap endpoint（可选项）
 - [ ] 手工回归步骤：Dashboard 首页 heatmap 显示、无数据提示、范围显示正确
 
 ## 5) OpenSpec

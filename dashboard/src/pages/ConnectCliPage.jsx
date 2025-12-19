@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 import { buildAuthUrl } from "../lib/auth-url.js";
+import { BackendStatus } from "../components/BackendStatus.jsx";
 import { AsciiBox } from "../ui/matrix-a/components/AsciiBox.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
 import { MatrixShell } from "../ui/matrix-a/layout/MatrixShell.jsx";
@@ -44,6 +45,7 @@ export function ConnectCliPage({ defaultInsforgeBaseUrl }) {
 
   return (
     <MatrixShell
+      headerStatus={<BackendStatus baseUrl={insforgeBaseUrl} />}
       headerRight={<span className="text-[10px] opacity-60">Connect_CLI</span>}
       footerLeft={
         <span>

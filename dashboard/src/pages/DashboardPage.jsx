@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import { buildAuthUrl } from "../lib/auth-url.js";
 import { computeActiveStreakDays } from "../lib/activity-heatmap.js";
-import { getDefaultRange } from "../lib/date-range.js";
+import { getRangeForPeriod } from "../lib/date-range.js";
 import { DAILY_SORT_COLUMNS, sortDailyRows } from "../lib/daily.js";
 import { toDisplayNumber } from "../lib/format.js";
 import { useActivityHeatmap } from "../hooks/use-activity-heatmap.js";
 import { useUsageData } from "../hooks/use-usage-data.js";
+import { BackendStatus } from "../components/BackendStatus.jsx";
 import { Sparkline } from "../components/Sparkline.jsx";
 import { AsciiBox } from "../ui/matrix-a/components/AsciiBox.jsx";
 import { ActivityHeatmap } from "../ui/matrix-a/components/ActivityHeatmap.jsx";
@@ -14,8 +15,9 @@ import { BootScreen } from "../ui/matrix-a/components/BootScreen.jsx";
 import { DataRow } from "../ui/matrix-a/components/DataRow.jsx";
 import { IdentityPanel } from "../ui/matrix-a/components/IdentityPanel.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
-import { MatrixInput } from "../ui/matrix-a/components/MatrixInput.jsx";
 import { MatrixShell } from "../ui/matrix-a/layout/MatrixShell.jsx";
+
+const PERIODS = ["day", "week", "month", "total"];
 
 export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   const [booted, setBooted] = useState(false);
@@ -33,15 +35,17 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     return () => window.clearInterval(t);
   }, []);
 
-  const defaultRange = useMemo(() => getDefaultRange(), []);
-  const [from, setFrom] = useState(defaultRange.from);
-  const [to, setTo] = useState(defaultRange.to);
+  const [period, setPeriod] = useState("week");
+  const range = useMemo(() => getRangeForPeriod(period), [period]);
+  const from = range.from;
+  const to = range.to;
 
   const { daily, summary, loading, error, refresh } = useUsageData({
     baseUrl,
     accessToken: auth?.accessToken || null,
     from,
     to,
+    includeDaily: period !== "total",
   });
 
   const {
@@ -87,6 +91,11 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
   const heatmapFrom = heatmap?.from || heatmapRange.from;
   const heatmapTo = heatmap?.to || heatmapRange.to;
+
+  const rangeLabel = useMemo(() => {
+    if (period === "total") return `all-time..${to}`;
+    return `${from}..${to}`;
+  }, [from, period, to]);
 
   const isLocalhost = useMemo(() => {
     const h = window.location.hostname;
@@ -137,6 +146,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
   return (
     <MatrixShell
+      headerStatus={<BackendStatus baseUrl={baseUrl} />}
       headerRight={headerRight}
       footerLeft={
         signedIn ? <span>UTC aggregates • click Refresh to reload</span> : <span>Sign in to view usage</span>
@@ -190,25 +200,28 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
             <AsciiBox title="Query" subtitle="UTC">
               <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <MatrixInput
-                    label="From"
-                    type="date"
-                    value={from}
-                    onChange={(e) => setFrom(e.target.value)}
-                  />
-                  <MatrixInput
-                    label="To"
-                    type="date"
-                    value={to}
-                    onChange={(e) => setTo(e.target.value)}
-                  />
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[8px] opacity-40 font-normal uppercase tracking-widest">
+                    Period:
+                  </span>
+                  {PERIODS.map((p) => (
+                    <MatrixButton
+                      key={p}
+                      primary={period === p}
+                      onClick={() => setPeriod(p)}
+                    >
+                      {p.toUpperCase()}
+                    </MatrixButton>
+                  ))}
                 </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
                   <MatrixButton primary disabled={loading} onClick={refresh}>
                     {loading ? "Loading…" : "Refresh"}
                   </MatrixButton>
+                  <span className="text-[9px] opacity-40 font-mono">
+                    Range: {rangeLabel} (UTC)
+                  </span>
                   <span className="text-[9px] opacity-40 font-mono">
                     {baseUrl.replace(/^https?:\/\//, "")}
                   </span>
@@ -254,83 +267,87 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               </div>
             </AsciiBox>
 
-            <AsciiBox title="Sparkline" subtitle={`${from}..${to}`}>
-              <Sparkline rows={sparklineRows} />
-            </AsciiBox>
+            {period !== "total" ? (
+              <AsciiBox title="Sparkline" subtitle={`${period.toUpperCase()} ${from}..${to}`}>
+                <Sparkline rows={sparklineRows} />
+              </AsciiBox>
+            ) : null}
 
-            <AsciiBox title="Daily_Totals" subtitle="Sortable">
-              {daily.length === 0 ? (
-                <div className="text-[10px] opacity-40">
-                  No data yet. Use Codex CLI then run{" "}
-                  <code className="px-1 py-0.5 bg-black/40 border border-[#00FF41]/20">
-                    {installSyncCmd}
-                  </code>
-                  .
-                </div>
-              ) : (
-                <div
-                  className="overflow-auto max-h-[520px] border border-[#00FF41]/10"
-                  role="region"
-                  aria-label="Daily totals table"
-                  tabIndex={0}
-                >
-                  <table className="w-full border-collapse">
-                    <thead className="sticky top-0 bg-black/90 backdrop-blur">
-                      <tr className="border-b border-[#00FF41]/10">
-                        {DAILY_SORT_COLUMNS.map((c) => (
-                          <th
-                            key={c.key}
-                            aria-sort={ariaSortFor(c.key)}
-                            className="text-left p-0"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => toggleSort(c.key)}
-                              title={c.title}
-                              className="w-full px-3 py-2 text-[9px] uppercase tracking-widest font-black opacity-70 hover:opacity-100 hover:bg-[#00FF41]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF41]/30"
+            {period !== "total" ? (
+              <AsciiBox title="Daily_Totals" subtitle="Sortable">
+                {daily.length === 0 ? (
+                  <div className="text-[10px] opacity-40">
+                    No data yet. Use Codex CLI then run{" "}
+                    <code className="px-1 py-0.5 bg-black/40 border border-[#00FF41]/20">
+                      {installSyncCmd}
+                    </code>
+                    .
+                  </div>
+                ) : (
+                  <div
+                    className="overflow-auto max-h-[520px] border border-[#00FF41]/10"
+                    role="region"
+                    aria-label="Daily totals table"
+                    tabIndex={0}
+                  >
+                    <table className="w-full border-collapse">
+                      <thead className="sticky top-0 bg-black/90 backdrop-blur">
+                        <tr className="border-b border-[#00FF41]/10">
+                          {DAILY_SORT_COLUMNS.map((c) => (
+                            <th
+                              key={c.key}
+                              aria-sort={ariaSortFor(c.key)}
+                              className="text-left p-0"
                             >
-                              <span className="inline-flex items-center gap-2">
-                                <span>{c.label}</span>
-                                <span className="opacity-40">
-                                  {sortIconFor(c.key)}
+                              <button
+                                type="button"
+                                onClick={() => toggleSort(c.key)}
+                                title={c.title}
+                                className="w-full px-3 py-2 text-[9px] uppercase tracking-widest font-black opacity-70 hover:opacity-100 hover:bg-[#00FF41]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF41]/30"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <span>{c.label}</span>
+                                  <span className="opacity-40">
+                                    {sortIconFor(c.key)}
+                                  </span>
                                 </span>
-                              </span>
-                            </button>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedDaily.map((r) => (
-                        <tr
-                          key={String(r.day)}
-                          className="border-b border-[#00FF41]/5 hover:bg-[#00FF41]/5"
-                        >
-                          <td className="px-3 py-2 text-[10px] opacity-80 font-mono">
-                            {String(r.day)}
-                          </td>
-                          <td className="px-3 py-2 text-[10px] font-mono">
-                            {toDisplayNumber(r.total_tokens)}
-                          </td>
-                          <td className="px-3 py-2 text-[10px] font-mono">
-                            {toDisplayNumber(r.input_tokens)}
-                          </td>
-                          <td className="px-3 py-2 text-[10px] font-mono">
-                            {toDisplayNumber(r.output_tokens)}
-                          </td>
-                          <td className="px-3 py-2 text-[10px] font-mono">
-                            {toDisplayNumber(r.cached_input_tokens)}
-                          </td>
-                          <td className="px-3 py-2 text-[10px] font-mono">
-                            {toDisplayNumber(r.reasoning_output_tokens)}
-                          </td>
+                              </button>
+                            </th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </AsciiBox>
+                      </thead>
+                      <tbody>
+                        {sortedDaily.map((r) => (
+                          <tr
+                            key={String(r.day)}
+                            className="border-b border-[#00FF41]/5 hover:bg-[#00FF41]/5"
+                          >
+                            <td className="px-3 py-2 text-[10px] opacity-80 font-mono">
+                              {String(r.day)}
+                            </td>
+                            <td className="px-3 py-2 text-[10px] font-mono">
+                              {toDisplayNumber(r.total_tokens)}
+                            </td>
+                            <td className="px-3 py-2 text-[10px] font-mono">
+                              {toDisplayNumber(r.input_tokens)}
+                            </td>
+                            <td className="px-3 py-2 text-[10px] font-mono">
+                              {toDisplayNumber(r.output_tokens)}
+                            </td>
+                            <td className="px-3 py-2 text-[10px] font-mono">
+                              {toDisplayNumber(r.cached_input_tokens)}
+                            </td>
+                            <td className="px-3 py-2 text-[10px] font-mono">
+                              {toDisplayNumber(r.reasoning_output_tokens)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </AsciiBox>
+            ) : null}
           </div>
         </div>
       )}

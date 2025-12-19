@@ -5,7 +5,7 @@ import {
   computeActiveStreakDays,
   getHeatmapRangeUtc,
 } from "../lib/activity-heatmap.js";
-import { fetchJson } from "../lib/http.js";
+import { getUsageDaily, getUsageHeatmap } from "../lib/vibescore-api.js";
 
 export function useActivityHeatmap({
   baseUrl,
@@ -27,13 +27,14 @@ export function useActivityHeatmap({
     setLoading(true);
     setError(null);
     try {
-      const headers = { Authorization: `Bearer ${accessToken}` };
       try {
-        const heatmapUrl = new URL("/functions/vibescore-usage-heatmap", baseUrl);
-        heatmapUrl.searchParams.set("weeks", String(weeks));
-        heatmapUrl.searchParams.set("to", range.to);
-        heatmapUrl.searchParams.set("week_starts_on", weekStartsOn);
-        const res = await fetchJson(heatmapUrl.toString(), { headers });
+        const res = await getUsageHeatmap({
+          baseUrl,
+          accessToken,
+          weeks,
+          to: range.to,
+          weekStartsOn,
+        });
         setHeatmap(res || null);
         setDaily([]);
         setSource("edge");
@@ -43,10 +44,12 @@ export function useActivityHeatmap({
         if (status === 401 || status === 403) throw e;
       }
 
-      const dailyUrl = new URL("/functions/vibescore-usage-daily", baseUrl);
-      dailyUrl.searchParams.set("from", range.from);
-      dailyUrl.searchParams.set("to", range.to);
-      const dailyRes = await fetchJson(dailyUrl.toString(), { headers });
+      const dailyRes = await getUsageDaily({
+        baseUrl,
+        accessToken,
+        from: range.from,
+        to: range.to,
+      });
       const rows = Array.isArray(dailyRes?.data) ? dailyRes.data : [];
       setDaily(rows);
       const localHeatmap = buildActivityHeatmap({

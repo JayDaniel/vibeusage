@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchJson } from "../lib/http.js";
+import { getUsageDaily, getUsageSummary } from "../lib/vibescore-api.js";
 
-export function useUsageData({ baseUrl, accessToken, from, to }) {
+export function useUsageData({
+  baseUrl,
+  accessToken,
+  from,
+  to,
+  includeDaily = true,
+} = {}) {
   const [daily, setDaily] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,21 +19,16 @@ export function useUsageData({ baseUrl, accessToken, from, to }) {
     setLoading(true);
     setError(null);
     try {
-      const headers = { Authorization: `Bearer ${accessToken}` };
-      const dailyUrl = new URL("/functions/vibescore-usage-daily", baseUrl);
-      dailyUrl.searchParams.set("from", from);
-      dailyUrl.searchParams.set("to", to);
+      const promises = [getUsageSummary({ baseUrl, accessToken, from, to })];
+      if (includeDaily) {
+        promises.unshift(getUsageDaily({ baseUrl, accessToken, from, to }));
+      }
 
-      const summaryUrl = new URL("/functions/vibescore-usage-summary", baseUrl);
-      summaryUrl.searchParams.set("from", from);
-      summaryUrl.searchParams.set("to", to);
+      const results = await Promise.all(promises);
+      const summaryRes = includeDaily ? results[1] : results[0];
+      const dailyRes = includeDaily ? results[0] : null;
 
-      const [dailyRes, summaryRes] = await Promise.all([
-        fetchJson(dailyUrl.toString(), { headers }),
-        fetchJson(summaryUrl.toString(), { headers }),
-      ]);
-
-      setDaily(Array.isArray(dailyRes?.data) ? dailyRes.data : []);
+      setDaily(includeDaily && Array.isArray(dailyRes?.data) ? dailyRes.data : []);
       setSummary(summaryRes?.totals || null);
     } catch (e) {
       setError(e?.message || String(e));
@@ -36,7 +37,7 @@ export function useUsageData({ baseUrl, accessToken, from, to }) {
     } finally {
       setLoading(false);
     }
-  }, [accessToken, baseUrl, from, to]);
+  }, [accessToken, baseUrl, from, includeDaily, to]);
 
   useEffect(() => {
     if (!accessToken) {
@@ -51,4 +52,3 @@ export function useUsageData({ baseUrl, accessToken, from, to }) {
 
   return { daily, summary, loading, error, refresh };
 }
-
