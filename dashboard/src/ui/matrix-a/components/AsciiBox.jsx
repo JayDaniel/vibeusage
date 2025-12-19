@@ -50,4 +50,3 @@ export function AsciiBox({ title, subtitle, children, className = "" }) {
     </div>
   );
 }
-

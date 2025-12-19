@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { buildAuthUrl } from "../lib/auth-url.js";
 import { computeActiveStreakDays } from "../lib/activity-heatmap.js";
@@ -12,9 +12,10 @@ import { Sparkline } from "../components/Sparkline.jsx";
 import { AsciiBox } from "../ui/matrix-a/components/AsciiBox.jsx";
 import { ActivityHeatmap } from "../ui/matrix-a/components/ActivityHeatmap.jsx";
 import { BootScreen } from "../ui/matrix-a/components/BootScreen.jsx";
-import { DataRow } from "../ui/matrix-a/components/DataRow.jsx";
-import { IdentityPanel } from "../ui/matrix-a/components/IdentityPanel.jsx";
+import { IdentityCard } from "../ui/matrix-a/components/IdentityCard.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
+import { NeuralFluxMonitor } from "../ui/matrix-a/components/NeuralFluxMonitor.jsx";
+import { UsagePanel } from "../ui/matrix-a/components/UsagePanel.jsx";
 import { MatrixShell } from "../ui/matrix-a/layout/MatrixShell.jsx";
 
 const PERIODS = ["day", "week", "month", "total"];
@@ -40,7 +41,13 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   const from = range.from;
   const to = range.to;
 
-  const { daily, summary, loading, error, refresh } = useUsageData({
+  const {
+    daily,
+    summary,
+    loading: usageLoading,
+    error: usageError,
+    refresh: refreshUsage,
+  } = useUsageData({
     baseUrl,
     accessToken: auth?.accessToken || null,
     from,
@@ -52,10 +59,13 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     range: heatmapRange,
     daily: heatmapDaily,
     heatmap,
+    loading: heatmapLoading,
+    refresh: refreshHeatmap,
   } = useActivityHeatmap({
     baseUrl,
     accessToken: auth?.accessToken || null,
     weeks: 52,
+    cacheKey: auth?.userId || auth?.email || "default",
   });
 
   const [sort, setSort] = useState(() => ({ key: "day", dir: "desc" }));
@@ -64,6 +74,14 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     () => sortDailyRows(daily, { key: "day", dir: "asc" }),
     [daily]
   );
+
+  const fluxData = useMemo(() => {
+    const values = (sparklineRows || []).map((row) =>
+      Number(row?.total_tokens || 0)
+    );
+    if (!values.length) return [];
+    return values.slice(-30);
+  }, [sparklineRows]);
 
   function toggleSort(key) {
     setSort((prev) => {
@@ -89,6 +107,19 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     return computeActiveStreakDays({ dailyRows: heatmapDaily, to: heatmapRange.to });
   }, [signedIn, heatmap?.streak_days, heatmapDaily, heatmapRange.to]);
 
+  const refreshAll = useCallback(() => {
+    refreshUsage();
+    refreshHeatmap();
+  }, [refreshHeatmap, refreshUsage]);
+
+  const usageLoadingState = usageLoading || heatmapLoading;
+
+  const identityHandle = useMemo(() => {
+    const raw = (auth?.name || auth?.email || "Anonymous").trim();
+    const base = raw.includes("@") ? raw.split("@")[0] : raw;
+    return base.replace(/[^a-zA-Z0-9._-]/g, "_");
+  }, [auth?.email, auth?.name]);
+
   const heatmapFrom = heatmap?.from || heatmapRange.from;
   const heatmapTo = heatmap?.to || heatmapRange.to;
 
@@ -96,6 +127,35 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     if (period === "total") return `all-time..${to}`;
     return `${from}..${to}`;
   }, [from, period, to]);
+
+  const summaryLabel = period === "total" ? "TOTAL_SYSTEM_OUTPUT" : "TOTAL";
+
+  const metricsRows = useMemo(
+    () => [
+      {
+        label: "TOTAL",
+        value: toDisplayNumber(summary?.total_tokens),
+        valueClassName: "text-white",
+      },
+      { label: "INPUT", value: toDisplayNumber(summary?.input_tokens) },
+      { label: "OUTPUT", value: toDisplayNumber(summary?.output_tokens) },
+      {
+        label: "CACHED_INPUT",
+        value: toDisplayNumber(summary?.cached_input_tokens),
+      },
+      {
+        label: "REASONING_OUTPUT",
+        value: toDisplayNumber(summary?.reasoning_output_tokens),
+      },
+    ],
+    [
+      summary?.cached_input_tokens,
+      summary?.input_tokens,
+      summary?.output_tokens,
+      summary?.reasoning_output_tokens,
+      summary?.total_tokens,
+    ]
+  );
 
   const isLocalhost = useMemo(() => {
     const h = window.location.hostname;
@@ -176,10 +236,17 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <AsciiBox title="Architect_Identity" subtitle="Authorized">
-              <IdentityPanel auth={auth} streakDays={streakDays} rankLabel="—" />
-            </AsciiBox>
+          <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
+            <IdentityCard
+              title="Architect_Identity"
+              subtitle="Authorized"
+              name={identityHandle}
+              isPublic
+              email={auth?.email || null}
+              userId={auth?.userId || null}
+              rankLabel="—"
+              streakDays={streakDays}
+            />
 
             <AsciiBox title="Install" subtitle="CLI">
               <p className="text-[10px] opacity-50 mt-0">
@@ -198,74 +265,38 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               </p>
             </AsciiBox>
 
-            <AsciiBox title="Query" subtitle="UTC">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[8px] opacity-40 font-normal uppercase tracking-widest">
-                    Period:
-                  </span>
-                  {PERIODS.map((p) => (
-                    <MatrixButton
-                      key={p}
-                      primary={period === p}
-                      onClick={() => setPeriod(p)}
-                    >
-                      {p.toUpperCase()}
-                    </MatrixButton>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-3 flex-wrap">
-                  <MatrixButton primary disabled={loading} onClick={refresh}>
-                    {loading ? "Loading…" : "Refresh"}
-                  </MatrixButton>
-                  <span className="text-[9px] opacity-40 font-mono">
-                    Range: {rangeLabel} (UTC)
-                  </span>
-                  <span className="text-[9px] opacity-40 font-mono">
-                    {baseUrl.replace(/^https?:\/\//, "")}
-                  </span>
-                </div>
-
-                {error ? (
-                  <div className="text-[10px] text-red-400/90">
-                    Error: {error}
-                  </div>
-                ) : null}
-              </div>
-            </AsciiBox>
-
-            <AsciiBox title="Metrics" subtitle="Totals">
-              <div className="space-y-0.5">
-                <DataRow
-                  label="TOTAL"
-                  value={toDisplayNumber(summary?.total_tokens)}
-                  valueClassName="text-white"
-                />
-                <DataRow label="INPUT" value={toDisplayNumber(summary?.input_tokens)} />
-                <DataRow label="OUTPUT" value={toDisplayNumber(summary?.output_tokens)} />
-                <DataRow
-                  label="CACHED_INPUT"
-                  value={toDisplayNumber(summary?.cached_input_tokens)}
-                />
-                <DataRow
-                  label="REASONING_OUTPUT"
-                  value={toDisplayNumber(summary?.reasoning_output_tokens)}
-                />
-              </div>
-            </AsciiBox>
-          </div>
-
-          <div className="lg:col-span-8 flex flex-col gap-6">
             <AsciiBox
               title="Activity_Matrix"
               subtitle={signedIn ? "52W_UTC" : "—"}
+              className="min-w-0 overflow-hidden"
             >
               <ActivityHeatmap heatmap={heatmap} />
               <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black">
                 Range: {heatmapFrom}..{heatmapTo}
               </div>
             </AsciiBox>
+
+          </div>
+
+          <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
+            <UsagePanel
+              title="Zion_Index"
+              period={period}
+              periods={PERIODS}
+              onPeriodChange={setPeriod}
+              metrics={metricsRows}
+              showSummary={period === "total"}
+              useSummaryLayout
+              summaryLabel={summaryLabel}
+              summaryValue={toDisplayNumber(summary?.total_tokens)}
+              summarySubLabel={`SINCE ${rangeLabel}`}
+              onRefresh={refreshAll}
+              loading={usageLoadingState}
+              error={usageError}
+              rangeLabel={rangeLabel}
+            />
+
+            <NeuralFluxMonitor data={fluxData} />
 
             {period !== "total" ? (
               <AsciiBox title="Sparkline" subtitle={`${period.toUpperCase()} ${from}..${to}`}>

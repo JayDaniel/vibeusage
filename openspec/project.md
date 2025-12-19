@@ -122,6 +122,7 @@
 ### 6.2 Dashboard（Vite）
 
 - `VITE_VIBESCORE_INSFORGE_BASE_URL`
+- UI 组件库统一使用：`dashboard/src/ui/matrix-a/components`
 
 ### 6.3 InsForge Edge Functions（Deno）
 

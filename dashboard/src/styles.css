@@ -34,6 +34,64 @@ body {
   .shadow-glow {
     filter: drop-shadow(0 0 2px rgba(0, 255, 65, 0.3));
   }
+
+  .matrix-scanlines {
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 255, 65, 0.12) 1px,
+      rgba(0, 0, 0, 0) 1px
+    );
+    background-size: 100% 4px;
+    animation: matrix-scan 6s linear infinite;
+  }
+
+  .matrix-scan-sweep {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 255, 65, 0),
+      rgba(0, 255, 65, 0.08),
+      rgba(0, 255, 65, 0)
+    );
+    animation: matrix-sweep 4s ease-in-out infinite;
+  }
+}
+
+@keyframes matrix-scan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 40px;
+  }
+}
+
+@keyframes matrix-sweep {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.35;
+  }
+  80% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes scan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
