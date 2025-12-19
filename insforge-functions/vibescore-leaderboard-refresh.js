@@ -275,7 +275,7 @@ async function computeWindow({ period, serviceClient }) {
     const to2 = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
     return { ok: true, from: formatDateUTC(from2), to: formatDateUTC(to2) };
   }
-  const { data: meta, error } = await serviceClient.database.from("vibescore_leaderboard_meta_total_current").select("from_day,to_day").maybeSingle();
+  const { data: meta, error } = await serviceClient.database.from("vibescore_leaderboard_source_total").select("from_day,to_day").limit(1).maybeSingle();
   if (error) return { ok: false, error: error.message };
   const from = isDate(meta?.from_day) ? meta.from_day : formatDateUTC(today);
   const to = isDate(meta?.to_day) ? meta.to_day : formatDateUTC(today);

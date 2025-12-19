@@ -94,8 +94,9 @@ async function computeWindow({ period, serviceClient }) {
   }
 
   const { data: meta, error } = await serviceClient.database
-    .from('vibescore_leaderboard_meta_total_current')
+    .from('vibescore_leaderboard_source_total')
     .select('from_day,to_day')
+    .limit(1)
     .maybeSingle();
 
   if (error) return { ok: false, error: error.message };
