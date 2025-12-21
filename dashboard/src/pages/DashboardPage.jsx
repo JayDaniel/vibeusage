@@ -14,7 +14,7 @@ import { ActivityHeatmap } from "../ui/matrix-a/components/ActivityHeatmap.jsx";
 import { BootScreen } from "../ui/matrix-a/components/BootScreen.jsx";
 import { IdentityCard } from "../ui/matrix-a/components/IdentityCard.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
-import { NeuralFluxMonitor } from "../ui/matrix-a/components/NeuralFluxMonitor.jsx";
+import { TrendMonitor } from "../ui/matrix-a/components/TrendMonitor.jsx";
 import { UsagePanel } from "../ui/matrix-a/components/UsagePanel.jsx";
 import { MatrixShell } from "../ui/matrix-a/layout/MatrixShell.jsx";
 import { isMockEnabled } from "../lib/mock-data.js";
@@ -80,14 +80,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     () => sortDailyRows(daily, { key: "day", dir: "asc" }),
     [daily]
   );
-
-  const fluxData = useMemo(() => {
-    const values = (sparklineRows || []).map((row) =>
-      Number(row?.total_tokens || 0)
-    );
-    if (!values.length) return [];
-    return values.slice(-30);
-  }, [sparklineRows]);
 
   function toggleSort(key) {
     setSort((prev) => {
@@ -336,7 +328,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               statusLabel={usageSourceLabel}
             />
 
-            <NeuralFluxMonitor data={fluxData} />
+            <TrendMonitor rows={sparklineRows} from={from} to={to} period={period} />
 
             {period !== "total" ? (
               <AsciiBox title="Sparkline" subtitle={`${period.toUpperCase()} ${from}..${to}`}>
