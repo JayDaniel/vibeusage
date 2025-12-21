@@ -1,5 +1,6 @@
 import React from "react";
 
+import { copy } from "../lib/copy.js";
 import { toFiniteNumber } from "../lib/format.js";
 
 export function Sparkline({ rows }) {
@@ -34,7 +35,7 @@ export function Sparkline({ rows }) {
       viewBox={`0 0 ${w} ${h}`}
       width="100%"
       height="120"
-      aria-label="Daily token usage sparkline"
+      aria-label={copy("sparkline.aria_label")}
     >
       <path
         className="drop-shadow-[0_0_10px_rgba(0,255,65,0.22)]"

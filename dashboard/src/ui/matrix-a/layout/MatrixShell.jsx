@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 import { MatrixRain } from "../components/MatrixRain.jsx";
+import { copy } from "../../../lib/copy.js";
 
 export function MatrixShell({
   headerRight,
@@ -25,13 +26,13 @@ export function MatrixShell({
         <header className="flex justify-between border-b border-[#00FF41]/20 pb-3 mb-6 items-center shrink-0">
           <div className="flex items-center space-x-6">
             <div className="bg-[#00FF41] text-black px-3 py-1 font-black text-xs">
-              VIBE SCORE
+              {copy("shell.header.title")}
             </div>
             <div className="flex items-center space-x-4 opacity-50 text-[9px] tracking-widest font-black uppercase">
               {headerStatus || (
                 <span className="flex items-center">
                   <span className="w-1.5 h-1.5 bg-[#00FF41] rounded-full mr-2 animate-pulse"></span>
-                  Link_Active
+                  {copy("shell.header.link_active")}
                 </span>
               )}
             </div>
@@ -44,10 +45,12 @@ export function MatrixShell({
 
         <footer className="mt-6 pt-3 border-t border-[#00FF41]/10 flex justify-between opacity-30 text-[8px] uppercase font-black tracking-[0.3em] shrink-0">
           <div className="flex space-x-10 items-center">
-            {footerLeft || <span>[F1] Help</span>}
+            {footerLeft || <span>{copy("shell.footer.help")}</span>}
           </div>
           <div className="flex items-center space-x-3">
-            {footerRight || <span className="font-bold">Neural_Index: 0.942.A1</span>}
+            {footerRight || (
+              <span className="font-bold">{copy("shell.footer.neural_index")}</span>
+            )}
           </div>
         </footer>
       </div>

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 import { useBackendStatus } from "../hooks/use-backend-status.js";
+import { copy } from "../lib/copy.js";
 import { ConnectionStatus } from "../ui/matrix-a/components/ConnectionStatus.jsx";
 
 export function BackendStatus({
@@ -24,13 +25,13 @@ export function BackendStatus({
   const title = useMemo(() => {
     if (titleOverride) return titleOverride;
     const meta = [
-      `status=${status}`,
-      host ? `host=${host}` : null,
-      lastCheckedAt ? `checked=${lastCheckedAt}` : null,
-      lastOkAt ? `ok=${lastOkAt}` : null,
-      httpStatus != null ? `http=${httpStatus}` : null,
-      error ? `error=${error}` : null,
-      "click=refresh",
+      `${copy("backend.meta.status_label")}=${status}`,
+      host ? `${copy("backend.meta.host_label")}=${host}` : null,
+      lastCheckedAt ? `${copy("backend.meta.checked_label")}=${lastCheckedAt}` : null,
+      lastOkAt ? `${copy("backend.meta.ok_label")}=${lastOkAt}` : null,
+      httpStatus != null ? `${copy("backend.meta.http_label")}=${httpStatus}` : null,
+      error ? `${copy("backend.meta.error_label")}=${error}` : null,
+      copy("backend.meta.click_refresh"),
     ]
       .filter(Boolean)
       .join(" • ");

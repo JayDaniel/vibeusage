@@ -1,14 +1,15 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
 import { AsciiBox } from "./AsciiBox.jsx";
 import { MatrixAvatar } from "./MatrixAvatar.jsx";
 import { ScrambleText } from "./ScrambleText.jsx";
 
 export function IdentityCard({
-  name = "NEO.SYST_3M",
+  name = copy("identity_card.name_default"),
   isPublic = false,
   onDecrypt,
-  title = "Identity_Matrix",
+  title = copy("identity_card.title_default"),
   subtitle,
   email,
   userId,
@@ -26,12 +27,13 @@ export function IdentityCard({
   avatarSize = 80,
   animate = true,
 }) {
-  const displayName = isPublic ? name : "UNKNOWN_GHOST";
-  const avatarName = isPublic ? name : "unknown";
-  const rankValue = rankLabel ?? "—";
+  const unknownLabel = copy("identity_card.unknown");
+  const displayName = isPublic ? name : unknownLabel;
+  const avatarName = isPublic ? name : unknownLabel;
+  const rankValue = rankLabel ?? copy("identity_card.rank_placeholder");
   const streakValue = Number.isFinite(Number(streakDays))
-    ? `${Number(streakDays)}_DAYS`
-    : "—";
+    ? copy("identity_card.streak_value", { days: Number(streakDays) })
+    : copy("identity_card.rank_placeholder");
   const shouldShowStats =
     showStats && (rankLabel !== undefined || streakDays !== undefined);
 
@@ -69,7 +71,7 @@ export function IdentityCard({
           <div className="flex-1 space-y-2">
             <div>
               <div className="text-[8px] opacity-50 uppercase tracking-widest">
-                Operator_Handle
+                {copy("identity_card.operator_label")}
               </div>
               <div className="text-white font-black text-xl tracking-tighter">
                 {animate ? (
@@ -101,7 +103,7 @@ export function IdentityCard({
                 onClick={onDecrypt}
                 className="text-[9px] text-black bg-[#00FF41] px-2 py-1 font-bold uppercase hover:bg-white transition-colors"
               >
-                [ ! ] DECRYPT_IDENTITY
+                {copy("identity_card.decrypt")}
               </button>
             ) : null}
 
@@ -109,7 +111,7 @@ export function IdentityCard({
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <div className="bg-[#00FF41]/5 p-1 border border-[#00FF41]/10 text-center">
                   <div className="text-[7px] opacity-40 uppercase font-black">
-                    Rank
+                    {copy("identity_card.rank_label")}
                   </div>
                   <div className="text-[#00FF41] font-black underline underline-offset-2">
                     {rankValue}
@@ -117,7 +119,7 @@ export function IdentityCard({
                 </div>
                 <div className="bg-[#00FF41]/5 p-1 border border-[#00FF41]/10 text-center">
                   <div className="text-[7px] opacity-40 uppercase font-black">
-                    Streak
+                    {copy("identity_card.streak_label")}
                   </div>
                   <div className="text-yellow-400 font-black tracking-tighter">
                     {streakValue}

@@ -1,13 +1,14 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
 import { ActivityHeatmap } from "./ActivityHeatmap.jsx";
 import { AsciiBox } from "./AsciiBox.jsx";
 
 export function ArchiveHeatmap({
   heatmap,
-  title = "Archive_Sector",
+  title = copy("archive.title"),
   rangeLabel,
-  footerLeft = "Yearly_Map",
+  footerLeft = copy("archive.footer.left"),
   footerRight,
   className = "",
 }) {
@@ -19,7 +20,7 @@ export function ArchiveHeatmap({
         <ActivityHeatmap heatmap={heatmap} />
         {rangeLabel ? (
           <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black">
-            Range: {rangeLabel}
+            {copy("shared.range.simple", { range: rangeLabel })}
           </div>
         ) : null}
         {showFooter ? (

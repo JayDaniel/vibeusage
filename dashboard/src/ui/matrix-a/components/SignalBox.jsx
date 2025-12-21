@@ -1,11 +1,12 @@
 import React from "react";
 import { DecodingText } from "./DecodingText.jsx";
+import { copy } from "../../../lib/copy.js";
 
 /**
  * Landing Page 专用的 AsciiBox 变体
  * (原 Landing.jsx 中的 AsciiBox，为了不与 dashboard 的 AsciiBox 冲突，命名为 SignalBox)
  */
-export const SignalBox = ({ title = "SIGNAL", children, className = "" }) => (
+export const SignalBox = ({ title = copy("signalbox.title_default"), children, className = "" }) => (
   <div
     className={`relative flex flex-col bg-black/90 border border-[#00FF41]/30 shadow-2xl ${className}`}
   >

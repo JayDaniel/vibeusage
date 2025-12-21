@@ -1,12 +1,14 @@
 import React, { useMemo, useRef, useState } from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 // --- Trend Monitor (NeuralFluxMonitor v2.0) ---
 // Industrial TUI style: independent axes, precise grid, physical partitions.
 export function TrendMonitor({
   rows,
   data = [],
   color = "#00FF41",
-  label = "TREND",
+  label = copy("trend.monitor.label"),
   from,
   to,
   period,
@@ -199,18 +201,18 @@ export function TrendMonitor({
   }
 
   const MONTH_LABELS = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
+    copy("trend.monitor.month.jan"),
+    copy("trend.monitor.month.feb"),
+    copy("trend.monitor.month.mar"),
+    copy("trend.monitor.month.apr"),
+    copy("trend.monitor.month.may"),
+    copy("trend.monitor.month.jun"),
+    copy("trend.monitor.month.jul"),
+    copy("trend.monitor.month.aug"),
+    copy("trend.monitor.month.sep"),
+    copy("trend.monitor.month.oct"),
+    copy("trend.monitor.month.nov"),
+    copy("trend.monitor.month.dec"),
   ];
 
   function formatMonth(dt) {
@@ -247,7 +249,13 @@ export function TrendMonitor({
 
   function buildXAxisLabels() {
     if (period === "day") {
-      return ["00:00", "06:00", "12:00", "18:00", "23:00"];
+      return [
+        copy("trend.monitor.fallback.hour_00"),
+        copy("trend.monitor.fallback.hour_06"),
+        copy("trend.monitor.fallback.hour_12"),
+        copy("trend.monitor.fallback.hour_18"),
+        copy("trend.monitor.fallback.hour_23"),
+      ];
     }
     if (timeline.labels.length > 0) {
       const indices = pickLabelIndices(timeline.labels.length);
@@ -257,7 +265,13 @@ export function TrendMonitor({
     const start = parseDate(from);
     const end = parseDate(to);
     if (!start || !end || end < start) {
-      return ["-24H", "-18H", "-12H", "-6H", "NOW"];
+      return [
+        copy("trend.monitor.fallback.tminus_24"),
+        copy("trend.monitor.fallback.tminus_18"),
+        copy("trend.monitor.fallback.tminus_12"),
+        copy("trend.monitor.fallback.tminus_6"),
+        copy("trend.monitor.now_label"),
+      ];
     }
     const totalMs = end.getTime() - start.getTime();
     const steps = [0, 0.25, 0.5, 0.75, 1];
@@ -294,20 +308,21 @@ export function TrendMonitor({
     return n.toLocaleString();
   }
 
-  function formatTooltipLabel(label) {
-    if (!label) return "UTC";
-    const isoHour = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/;
-    const isoDay = /^\\d{4}-\\d{2}-\\d{2}$/;
-    const isoMonth = /^\\d{4}-\\d{2}$/;
+  function formatTooltipLabel(labelText) {
+    if (!labelText) return copy("trend.monitor.tooltip.utc");
+    const isoHour = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+    const isoDay = /^\d{4}-\d{2}-\d{2}$/;
+    const isoMonth = /^\d{4}-\d{2}$/;
+    const tz = copy("trend.monitor.tooltip.utc");
 
-    if (isoHour.test(label)) {
-      const [date, time] = label.split("T");
+    if (isoHour.test(labelText)) {
+      const [date, time] = labelText.split("T");
       const hh = time.slice(0, 2);
-      return `${date} ${hh}:00 UTC`;
+      return copy("trend.monitor.tooltip.hour", { date, hour: hh, tz });
     }
-    if (isoDay.test(label)) return `${label} UTC`;
-    if (isoMonth.test(label)) return `${label} UTC`;
-    return label;
+    if (isoDay.test(labelText)) return copy("trend.monitor.tooltip.day", { date: labelText, tz });
+    if (isoMonth.test(labelText)) return copy("trend.monitor.tooltip.month", { date: labelText, tz });
+    return labelText;
   }
 
   const points = useMemo(() => {
@@ -374,6 +389,16 @@ export function TrendMonitor({
     setHover(null);
   }
 
+  const gradientId = useMemo(() => {
+    const safe = String(label || "trend").replace(/[^a-zA-Z0-9_-]/g, "-");
+    return `grad-${safe}`;
+  }, [label]);
+
+  const maxLabel = copy("trend.monitor.max_label", { value: Math.round(max) });
+  const avgLabel = copy("trend.monitor.avg_label", { value: Math.round(avg) });
+  const nowLabel = copy("trend.monitor.now_label");
+  const tooltipUnit = copy("trend.monitor.tooltip.tokens");
+
   return (
     <div className="w-full h-full min-h-[160px] flex flex-col relative group select-none bg-[#050505] border border-white/10 p-1">
       <div className="flex justify-between items-center px-1 mb-1 border-b border-white/5 pb-1">
@@ -381,8 +406,8 @@ export function TrendMonitor({
           {label}
         </span>
         <div className="flex gap-3 text-[8px] font-mono text-[#00FF41]/50">
-          <span>MAX: {Math.round(max)}</span>
-          <span>AVG: {Math.round(avg)}</span>
+          <span>{maxLabel}</span>
+          <span>{avgLabel}</span>
         </div>
       </div>
 
@@ -406,16 +431,13 @@ export function TrendMonitor({
           preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id={`grad-${label}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity="0.5" />
               <stop offset="100%" stopColor={color} stopOpacity="0" />
             </linearGradient>
           </defs>
 
-          <path
-            d={`M${fillPath} Z`}
-            fill={`url(#grad-${label})`}
-          />
+          <path d={`M${fillPath} Z`} fill={`url(#${gradientId})`} />
           <polyline
             points={points}
             fill="none"
@@ -469,7 +491,12 @@ export function TrendMonitor({
               <div className="opacity-70">
                 {formatTooltipLabel(hover.label)}
               </div>
-              <div className="font-bold">{formatFull(hover.value)} tokens</div>
+              <div className="font-bold">
+                {copy("trend.monitor.tooltip.value", {
+                  value: formatFull(hover.value),
+                  unit: tooltipUnit,
+                })}
+              </div>
             </div>
           </>
         ) : null}
@@ -479,9 +506,7 @@ export function TrendMonitor({
         {xLabels.map((labelText, idx) => (
           <span
             key={`${labelText}-${idx}`}
-            className={
-              labelText === "NOW" ? "text-[#00FF41] font-bold animate-pulse" : ""
-            }
+            className={labelText === nowLabel ? "text-[#00FF41] font-bold animate-pulse" : ""}
           >
             {labelText}
           </span>

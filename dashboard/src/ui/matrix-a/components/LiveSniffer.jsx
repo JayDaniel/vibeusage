@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 /**
  * 实时演示组件 - 日志流
  */
 export const LiveSniffer = () => {
   const [logs, setLogs] = useState([
-    "[SYSTEM] KERNEL_UPLINK_ESTABLISHED",
-    "[SOCKET] LISTENING_ON_LOCAL_CLI_PIPE...",
+    copy("live_sniffer.log.system"),
+    copy("live_sniffer.log.socket"),
   ]);
 
   useEffect(() => {
     const events = [
-      "> INTERCEPTED: CODEX_COMPLETION_EVENT",
-      "> QUANTIFYING: +64 NEURAL_TOKENS",
-      "> ANALYSIS: HIGH_VIBE_FLOW_DETECTED",
-      "> SYNC: UPLOADING_TO_ZION_MAINFRAME",
-      "[STATUS] BATCH_TRANSMISSION_COMPLETE",
-      "> HOOKING: CODEX_CLI_PIPE_SIGNAL",
-      "> CAPTURE: +128 NEURAL_TOKENS",
+      copy("live_sniffer.event.intercepted"),
+      copy("live_sniffer.event.quantifying"),
+      copy("live_sniffer.event.analysis"),
+      copy("live_sniffer.event.sync"),
+      copy("live_sniffer.event.batch"),
+      copy("live_sniffer.event.hooking"),
+      copy("live_sniffer.event.capture"),
     ];
     let i = 0;
     const interval = setInterval(() => {

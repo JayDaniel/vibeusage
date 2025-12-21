@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 
+import { copy } from "../../../lib/copy.js";
 import { AsciiBox } from "./AsciiBox.jsx";
 import { MatrixButton } from "./MatrixButton.jsx";
 
@@ -14,13 +15,13 @@ function normalizePeriods(periods) {
 }
 
 export function UsagePanel({
-  title = "Zion_Index",
+  title = copy("usage.panel.title"),
   period,
   periods,
   onPeriodChange,
   metrics = [],
   showSummary = false,
-  summaryLabel = "TOTAL_SYSTEM_OUTPUT",
+  summaryLabel = copy("usage.summary.total_system_output"),
   summaryValue = "—",
   summarySubLabel,
   breakdown,
@@ -33,21 +34,29 @@ export function UsagePanel({
   className = "",
 }) {
   const tabs = normalizePeriods(periods);
-  const breakdownRows =
-    breakdown && breakdown.length
-      ? breakdown
-      : [
-          { key: "INPUT", label: "INPUT" },
-          { key: "OUTPUT", label: "OUTPUT" },
-          { key: "CACHED_INPUT", label: "CACHED" },
-          { key: "REASONING_OUTPUT", label: "REASONING" },
-        ]
-          .map((item) => {
-            const match = metrics.find((row) => row.label === item.key);
-            if (!match) return null;
-            return { label: item.label, value: match.value };
-          })
-          .filter(Boolean);
+
+  const defaultBreakdown = useMemo(
+    () => [
+      { key: "INPUT", label: copy("usage.metric.input") },
+      { key: "OUTPUT", label: copy("usage.metric.output") },
+      { key: "CACHED_INPUT", label: copy("usage.metric.cached_short") },
+      { key: "REASONING_OUTPUT", label: copy("usage.metric.reasoning_short") },
+    ],
+    []
+  );
+
+  const breakdownRows = (breakdown && breakdown.length ? breakdown : defaultBreakdown)
+    .map((item) => {
+      const key = item.key || item.label;
+      const match = metrics.find((row) => (row.key || row.label) === key);
+      if (!match) return null;
+      return { label: item.label || match.label, value: match.value };
+    })
+    .filter(Boolean);
+
+  const refreshLabel = loading
+    ? copy("usage.button.loading")
+    : copy("usage.button.refresh");
 
   return (
     <AsciiBox title={title} className={className}>
@@ -77,7 +86,7 @@ export function UsagePanel({
             ) : null}
             {onRefresh ? (
               <MatrixButton primary disabled={loading} onClick={onRefresh}>
-                {loading ? "Loading…" : "Refresh"}
+                {refreshLabel}
               </MatrixButton>
             ) : null}
           </div>
@@ -85,7 +94,9 @@ export function UsagePanel({
       </div>
 
       {error ? (
-        <div className="text-[10px] text-red-400/90 px-2 py-1">Error: {error}</div>
+        <div className="text-[10px] text-red-400/90 px-2 py-1">
+          {copy("shared.error.prefix", { error })}
+        </div>
       ) : null}
 
       {showSummary || useSummaryLayout ? (
@@ -156,7 +167,7 @@ export function UsagePanel({
 
       {rangeLabel ? (
         <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black px-2">
-          Range: {rangeLabel} (UTC)
+          {copy("usage.range_label", { range: rangeLabel })}
         </div>
       ) : null}
     </AsciiBox>

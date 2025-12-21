@@ -1,19 +1,36 @@
+import { copy } from "./copy.js";
 import { toFiniteNumber } from "./format.js";
 
 export const DAILY_SORT_COLUMNS = [
-  { key: "day", label: "Date", title: "Sort by Date" },
-  { key: "total_tokens", label: "Total", title: "Sort by Total" },
-  { key: "input_tokens", label: "Input", title: "Sort by Input" },
-  { key: "output_tokens", label: "Output", title: "Sort by Output" },
+  {
+    key: "day",
+    label: copy("daily.sort.date.label"),
+    title: copy("daily.sort.date.title"),
+  },
+  {
+    key: "total_tokens",
+    label: copy("daily.sort.total.label"),
+    title: copy("daily.sort.total.title"),
+  },
+  {
+    key: "input_tokens",
+    label: copy("daily.sort.input.label"),
+    title: copy("daily.sort.input.title"),
+  },
+  {
+    key: "output_tokens",
+    label: copy("daily.sort.output.label"),
+    title: copy("daily.sort.output.title"),
+  },
   {
     key: "cached_input_tokens",
-    label: "Cached",
-    title: "Sort by Cached input",
+    label: copy("daily.sort.cached.label"),
+    title: copy("daily.sort.cached.title"),
   },
   {
     key: "reasoning_output_tokens",
-    label: "Reasoning",
-    title: "Sort by Reasoning output",
+    label: copy("daily.sort.reasoning.label"),
+    title: copy("daily.sort.reasoning.title"),
   },
 ];
 
@@ -74,4 +91,3 @@ export function sortDailyRows(rows, { key, dir }) {
     })
     .map((x) => x.row);
 }
-

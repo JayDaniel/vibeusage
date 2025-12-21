@@ -1,5 +1,7 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 export function BootScreen({ onSkip }) {
   const canSkip = Boolean(onSkip);
 
@@ -18,27 +20,20 @@ export function BootScreen({ onSkip }) {
             }
           : undefined
       }
-      aria-label={canSkip ? "Skip boot screen" : undefined}
+      aria-label={canSkip ? copy("boot.skip_aria") : undefined}
     >
       <pre className="text-[8px] leading-[1.2] mb-6 opacity-80 select-none">
-        {`
-██╗   ██╗██╗██████╗ ███████╗███████╗ ██████╗  ██████╗ ██████╗ ███████╗
-██║   ██║██║██╔══██╗██╔════╝██╔════╝██╔════╝ ██╔═══██╗██╔══██╗██╔════╝
-██║   ██║██║██████╔╝█████╗  ███████╗██║      ██║   ██║██████╔╝█████╗
-╚██╗ ██╔╝██║██╔══██╗██╔══╝  ╚════██║██║      ██║   ██║██╔══██╗██╔══╝
- ╚████╔╝ ██║██████╔╝███████╗███████║╚██████╗ ╚██████╔╝██║  ██║███████╗
-  ╚═══╝  ╚═╝╚═════╝ ╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝
-`}
+        {copy("boot.ascii_art")}
       </pre>
       <div className="animate-pulse tracking-[0.5em] text-xs font-bold mb-4">
-        WAKE UP, OPERATOR...
+        {copy("boot.prompt")}
       </div>
       <div className="w-64 h-1 bg-[#003300] relative overflow-hidden">
         <div className="absolute inset-0 bg-[#00FF41] animate-[loader_2s_linear_infinite]"></div>
       </div>
       {canSkip ? (
         <p className="mt-6 text-[9px] opacity-30 tracking-widest uppercase">
-          Click to skip
+          {copy("boot.skip_hint")}
         </p>
       ) : null}
       <style>{`@keyframes loader { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }`}</style>

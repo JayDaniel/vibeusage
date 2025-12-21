@@ -1,7 +1,9 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 export function SystemHeader({
-  title = "VIBE_OS_v9.0",
+  title = copy("system.header.title_default"),
   signalLabel,
   time,
   className = "",

@@ -1,17 +1,24 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 export function TrendChart({
   data,
-  unitLabel = "TKNS",
-  leftLabel = "T-24H",
-  rightLabel = "Realtime_Flow",
+  unitLabel = copy("trend.chart.unit_label"),
+  leftLabel = copy("trend.chart.left_label"),
+  rightLabel = copy("trend.chart.right_label"),
 }) {
   const values = Array.isArray(data) ? data.map((n) => Number(n) || 0) : [];
   const max = Math.max(...values, 1);
 
   if (!values.length) {
-    return <div className="text-[10px] opacity-40">No trend data.</div>;
+    return <div className="text-[10px] opacity-40">{copy("trend.chart.empty")}</div>;
   }
+
+  const peakLabel = copy("trend.chart.peak", {
+    value: max.toLocaleString(),
+    unit: unitLabel,
+  });
 
   return (
     <div className="flex flex-col space-y-2">
@@ -32,12 +39,9 @@ export function TrendChart({
       </div>
       <div className="flex justify-between text-[7px] opacity-30 font-black uppercase tracking-[0.2em]">
         <span>{leftLabel}</span>
-        <span>
-          Peak: {max.toLocaleString()} {unitLabel}
-        </span>
+        <span>{peakLabel}</span>
         <span>{rightLabel}</span>
       </div>
     </div>
   );
 }
-

@@ -1,22 +1,23 @@
 import React from "react";
 
+import { copy } from "../../../lib/copy.js";
 import { AsciiBox } from "./AsciiBox.jsx";
 import { LeaderboardRow } from "./LeaderboardRow.jsx";
 
 const DEFAULT_PERIODS = [
-  { key: "24H", label: "Cycle_24h" },
-  { key: "ALL", label: "Legacy_All" },
+  { key: "24H", label: copy("leaderboard.period.cycle_24h") },
+  { key: "ALL", label: copy("leaderboard.period.legacy_all") },
 ];
 
 export function LeaderboardPanel({
-  title = "Zion_Index",
+  title = copy("leaderboard.panel.title"),
   period = "ALL",
   periods = DEFAULT_PERIODS,
   onPeriodChange,
   rows = [],
   summary,
   summaryPeriod = "ALL",
-  loadMoreLabel = "-- LOAD_NEXT_BATCH --",
+  loadMoreLabel = copy("leaderboard.load_more"),
   onLoadMore,
   className = "",
 }) {
@@ -95,7 +96,7 @@ export function LeaderboardPanel({
             ))
           ) : (
             <div className="text-center text-[9px] opacity-40 py-2">
-              No leaderboard data.
+              {copy("leaderboard.empty")}
             </div>
           )}
           {rows.length && loadMoreLabel ? (

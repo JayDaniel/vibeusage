@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { copy } from "../../../lib/copy.js";
+
 export function ConnectionStatus({
   status = "STABLE",
   title,
@@ -20,7 +22,7 @@ export function ConnectionStatus({
 
   const configs = {
     STABLE: {
-      text: "LINK: STABLE",
+      text: copy("status.link.stable"),
       color: "text-[#00FF41]",
       bg: "bg-[#00FF41]",
       glow: "shadow-[0_0_10px_#00FF41]",
@@ -28,7 +30,7 @@ export function ConnectionStatus({
       anim: "animate-pulse",
     },
     UNSTABLE: {
-      text: "LINK: WEAK",
+      text: copy("status.link.unstable"),
       color: "text-yellow-400",
       bg: "bg-yellow-400",
       glow: "shadow-[0_0_10px_#FACC15]",
@@ -36,7 +38,7 @@ export function ConnectionStatus({
       anim: "animate-pulse",
     },
     LOST: {
-      text: "SIGNAL: LOST",
+      text: copy("status.link.lost"),
       color: "text-red-500/90",
       bg: "bg-red-900/60",
       glow: "shadow-[0_0_5px_rgba(255,0,0,0.2)]",

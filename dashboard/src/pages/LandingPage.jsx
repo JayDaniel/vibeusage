@@ -1,18 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MatrixRain } from "../ui/matrix-a/components/MatrixRain.jsx";
 import { DecodingText } from "../ui/matrix-a/components/DecodingText.jsx";
 import { MatrixAvatar } from "../ui/matrix-a/components/MatrixAvatar.jsx";
 import { LiveSniffer } from "../ui/matrix-a/components/LiveSniffer.jsx";
 import { SignalBox } from "../ui/matrix-a/components/SignalBox.jsx";
+import { copy } from "../lib/copy.js";
 
 export function LandingPage({ signInUrl }) {
-  const [handle, setHandle] = useState("VIBE_USER");
+  const specialHandle = copy("landing.handle.special");
+  const defaultHandle = copy("landing.handle.default");
+  const [handle, setHandle] = useState(defaultHandle);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 200);
     return () => clearTimeout(timer);
   }, []);
+
+  const handlePlaceholder = useMemo(
+    () => copy("landing.handle.placeholder", { handle: specialHandle }),
+    [specialHandle]
+  );
+
+  const rankLabel = useMemo(() => {
+    const rank =
+      handle === specialHandle
+        ? copy("landing.rank.singularity")
+        : copy("landing.rank.unranked");
+    return copy("landing.rank.expectation", { rank });
+  }, [handle, specialHandle]);
 
   if (!isLoaded) return <div className="min-h-screen bg-black" />;
 
@@ -27,9 +43,9 @@ export function LandingPage({ signInUrl }) {
         {/* Slogan 区域 */}
         <div className="text-center space-y-6">
           <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none glow-text select-none">
-            <DecodingText text="MORE_TOKENS." /> <br />
+            <DecodingText text={copy("landing.hero.title_primary")} /> <br />
             <span className="text-[#00FF41]">
-              <DecodingText text="MORE_VIBE." />
+              <DecodingText text={copy("landing.hero.title_secondary")} />
             </span>
           </h1>
 
@@ -38,12 +54,12 @@ export function LandingPage({ signInUrl }) {
               <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#00FF41]"></div>
               <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#00FF41]"></div>
               <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold">
-                QUANTIFY YOUR NEURAL OUTPUT
+                {copy("landing.hero.tagline")}
               </p>
             </div>
             {/* 包含 Codex CLI Token 的精准描述 */}
             <p className="text-[9px] text-[#00FF41]/60 uppercase tracking-[0.2em]">
-              for codex cli token // Real-time Neural Analytics
+              {copy("landing.hero.subtagline")}
             </p>
           </div>
         </div>
@@ -51,17 +67,17 @@ export function LandingPage({ signInUrl }) {
         {/* 演示区域 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
           {/* 身份探测 */}
-          <SignalBox title="IDENTITY_PROBE" className="h-44">
+          <SignalBox title={copy("landing.signal.identity_probe")} className="h-44">
             <div className="flex items-center space-x-6 h-full">
               <MatrixAvatar
                 name={handle}
                 size={80}
-                isTheOne={handle === "NEO"}
+                isTheOne={handle === specialHandle}
               />
               <div className="flex-1 text-left space-y-3">
                 <div className="flex flex-col">
                   <label className="text-[8px] opacity-40 uppercase tracking-widest mb-1 font-bold">
-                    Set_Handle
+                    {copy("landing.handle.label")}
                   </label>
                   <input
                     type="text"
@@ -69,19 +85,16 @@ export function LandingPage({ signInUrl }) {
                     onChange={(e) => setHandle(e.target.value.toUpperCase())}
                     className="w-full bg-transparent border-b border-[#00FF41]/50 text-white font-black text-xl p-1 focus:outline-none focus:border-[#00FF41] transition-colors"
                     maxLength={10}
-                    placeholder="TRY 'NEO'"
+                    placeholder={handlePlaceholder}
                   />
                 </div>
-                <div className="text-[8px] opacity-60">
-                  RANK_EXPECTATION:{" "}
-                  {handle === "NEO" ? "SINGULARITY" : "UNRANKED"}
-                </div>
+                <div className="text-[8px] opacity-60">{rankLabel}</div>
               </div>
             </div>
           </SignalBox>
 
           {/* 实时抓包 */}
-          <SignalBox title="LIVE_SNIFFER" className="h-44">
+          <SignalBox title={copy("landing.signal.live_sniffer")} className="h-44">
             <LiveSniffer />
           </SignalBox>
         </div>
@@ -93,7 +106,7 @@ export function LandingPage({ signInUrl }) {
             className="block w-full group relative border-2 border-[#00FF41] bg-[#00FF41]/10 py-5 overflow-hidden transition-all hover:bg-[#00FF41] hover:text-black active:scale-95 shadow-[0_0_20px_rgba(0,255,65,0.2)] text-center no-underline text-[#00FF41] hover:text-black"
           >
             <span className="font-black uppercase tracking-[0.4em] text-sm relative z-10 animate-pulse group-hover:animate-none">
-              {">>"} INITIALIZE_UPLINK {"<<"}
+              {copy("landing.cta.initialize")}
             </span>
             <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
           </a>
@@ -101,26 +114,26 @@ export function LandingPage({ signInUrl }) {
           {/* 核心补充 */}
           <div className="text-center">
             <p className="text-[9px] text-[#00FF41]/60 uppercase tracking-widest font-bold">
-              Connect with GitHub // Enter the System
+              {copy("landing.cta.subtext")}
             </p>
           </div>
 
           <div className="flex space-x-8 opacity-20 text-[9px] uppercase tracking-widest pt-4">
             <span className="hover:text-white cursor-pointer transition-colors">
-              Manifesto
+              {copy("landing.footer.link.manifesto")}
             </span>
             <span className="hover:text-white cursor-pointer transition-colors">
-              Docs
+              {copy("landing.footer.link.docs")}
             </span>
             <span className="hover:text-white cursor-pointer transition-colors">
-              Security
+              {copy("landing.footer.link.security")}
             </span>
           </div>
         </div>
       </main>
 
       <footer className="absolute bottom-8 opacity-20 text-[9px] tracking-[0.6em] uppercase select-none">
-        System_Ready // 2024 VibeScore OS
+        {copy("landing.footer.system_ready")}
       </footer>
 
       <style>

@@ -1,0 +1,241 @@
+key,module,page,component,slot,text,notes,status
+shared.placeholder,shared,*,*,placeholder,"—",,active
+shared.button.sign_in,shared,*,MatrixButton,label,"$ sign-in",,active
+shared.button.sign_up,shared,*,MatrixButton,label,"$ sign-up",,active
+shared.range.utc,shared,*,*,label,"Range: {{range}} (UTC)",,active
+shared.range.simple,shared,*,*,label,"Range: {{range}}",,active
+shared.data_source,shared,*,*,label,"DATA_SOURCE: {{source}}",,active
+shared.error.prefix,shared,*,*,label,"Error: {{error}}",,active
+
+landing.handle.default,landing,LandingPage,LandingPage,handle_default,"VIBE_USER",,active
+landing.handle.special,landing,LandingPage,LandingPage,handle_special,"NEO",,active
+landing.hero.title_primary,landing,LandingPage,LandingPage,hero_title_primary,"MORE_TOKENS.",,active
+landing.hero.title_secondary,landing,LandingPage,LandingPage,hero_title_secondary,"MORE_VIBE.",,active
+landing.hero.tagline,landing,LandingPage,LandingPage,hero_tagline,"QUANTIFY YOUR NEURAL OUTPUT",,active
+landing.hero.subtagline,landing,LandingPage,LandingPage,hero_subtagline,"for codex cli token // Real-time Neural Analytics",,active
+landing.signal.identity_probe,landing,LandingPage,SignalBox,title,"IDENTITY_PROBE",,active
+landing.signal.live_sniffer,landing,LandingPage,SignalBox,title,"LIVE_SNIFFER",,active
+landing.handle.label,landing,LandingPage,LandingPage,handle_label,"Set_Handle",,active
+landing.handle.placeholder,landing,LandingPage,LandingPage,handle_placeholder,"TRY '{{handle}}'",,active
+landing.rank.expectation,landing,LandingPage,LandingPage,rank_expectation,"RANK_EXPECTATION: {{rank}}",,active
+landing.rank.singularity,landing,LandingPage,LandingPage,rank_singularity,"SINGULARITY",,active
+landing.rank.unranked,landing,LandingPage,LandingPage,rank_unranked,"UNRANKED",,active
+landing.cta.initialize,landing,LandingPage,LandingPage,cta_primary,">> INITIALIZE_UPLINK <<",,active
+landing.cta.subtext,landing,LandingPage,LandingPage,cta_subtext,"Connect with GitHub // Enter the System",,active
+landing.footer.link.manifesto,landing,LandingPage,LandingPage,footer_link_manifesto,"Manifesto",,active
+landing.footer.link.docs,landing,LandingPage,LandingPage,footer_link_docs,"Docs",,active
+landing.footer.link.security,landing,LandingPage,LandingPage,footer_link_security,"Security",,active
+landing.footer.system_ready,landing,LandingPage,LandingPage,footer_system_ready,"System_Ready // 2024 VibeScore OS",,active
+
+connect.header.right,connect,ConnectCliPage,MatrixShell,header_right,"Connect_CLI",,active
+connect.footer.left,connect,ConnectCliPage,MatrixShell,footer_left,"Click sign-in/sign-up • browser returns to local CLI callback",,active
+connect.footer.right,connect,ConnectCliPage,MatrixShell,footer_right,"/connect",,active
+connect.box.title,connect,ConnectCliPage,AsciiBox,title,"Link_Your_CLI",,active
+connect.box.subtitle,connect,ConnectCliPage,AsciiBox,subtitle,"Local_Callback",,active
+connect.box.body,connect,ConnectCliPage,AsciiBox,body,"Sign in or sign up. When finished, the browser will return to your local CLI to complete setup.",,active
+connect.error.prefix,connect,ConnectCliPage,AsciiBox,error_prefix,"Invalid or missing",,active
+connect.error.redirect_label,connect,ConnectCliPage,AsciiBox,error_label,"redirect",,active
+connect.error.suffix,connect,ConnectCliPage,AsciiBox,error_suffix,"URL. This page must be opened from the CLI.",,active
+connect.button.sign_in,connect,ConnectCliPage,MatrixButton,label,"$ sign-in",,active
+connect.button.sign_up,connect,ConnectCliPage,MatrixButton,label,"$ sign-up",,active
+
+shell.header.title,ui,MatrixShell,MatrixShell,header_title,"VIBE SCORE",,active
+shell.header.link_active,ui,MatrixShell,MatrixShell,header_link_active,"Link_Active",,active
+shell.footer.help,ui,MatrixShell,MatrixShell,footer_help,"[F1] Help",,active
+shell.footer.neural_index,ui,MatrixShell,MatrixShell,footer_neural_index,"Neural_Index: 0.942.A1",,active
+
+backend.meta.status_label,components,BackendStatus,BackendStatus,meta_status,"status",,active
+backend.meta.host_label,components,BackendStatus,BackendStatus,meta_host,"host",,active
+backend.meta.checked_label,components,BackendStatus,BackendStatus,meta_checked,"checked",,active
+backend.meta.ok_label,components,BackendStatus,BackendStatus,meta_ok,"ok",,active
+backend.meta.http_label,components,BackendStatus,BackendStatus,meta_http,"http",,active
+backend.meta.error_label,components,BackendStatus,BackendStatus,meta_error,"error",,active
+backend.meta.click_refresh,components,BackendStatus,BackendStatus,meta_click,"click=refresh",,active
+
+status.link.stable,ui,ConnectionStatus,ConnectionStatus,label,"LINK: STABLE",,active
+status.link.unstable,ui,ConnectionStatus,ConnectionStatus,label,"LINK: WEAK",,active
+status.link.lost,ui,ConnectionStatus,ConnectionStatus,label,"SIGNAL: LOST",,active
+
+boot.ascii_art,ui,BootScreen,BootScreen,ascii,"██╗   ██╗██╗██████╗ ███████╗███████╗ ██████╗  ██████╗ ██████╗ ███████╗\\n██║   ██║██║██╔══██╗██╔════╝██╔════╝██╔════╝ ██╔═══██╗██╔══██╗██╔════╝\\n██║   ██║██║██████╔╝█████╗  ███████╗██║      ██║   ██║██████╔╝█████╗\\n╚██╗ ██╔╝██║██╔══██╗██╔══╝  ╚════██║██║      ██║   ██║██╔══██╗██╔══╝\\n ╚████╔╝ ██║██████╔╝███████╗███████║╚██████╗ ╚██████╔╝██║  ██║███████╗\\n  ╚═══╝  ╚═╝╚═════╝ ╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝",,active
+boot.prompt,ui,BootScreen,BootScreen,prompt,"WAKE UP, OPERATOR...",,active
+boot.skip_hint,ui,BootScreen,BootScreen,skip_hint,"Click to skip",,active
+boot.skip_aria,ui,BootScreen,BootScreen,aria_label,"Skip boot screen",,active
+
+system.header.title_default,ui,SystemHeader,SystemHeader,title_default,"VIBE_OS_v9.0",,active
+
+signalbox.title_default,ui,SignalBox,SignalBox,title_default,"SIGNAL",,active
+
+sparkline.aria_label,components,Sparkline,Sparkline,aria_label,"Daily token usage sparkline",,active
+
+identity_card.title_default,ui,IdentityCard,IdentityCard,title_default,"Identity_Matrix",,active
+identity_card.name_default,ui,IdentityCard,IdentityCard,name_default,"NEO.SYST_3M",,active
+identity_card.unknown,ui,IdentityCard,IdentityCard,unknown_label,"UNKNOWN_GHOST",,active
+identity_card.operator_label,ui,IdentityCard,IdentityCard,operator_label,"Operator_Handle",,active
+identity_card.decrypt,ui,IdentityCard,IdentityCard,decrypt_label,"[ ! ] DECRYPT_IDENTITY",,active
+identity_card.rank_label,ui,IdentityCard,IdentityCard,rank_label,"Rank",,active
+identity_card.streak_label,ui,IdentityCard,IdentityCard,streak_label,"Streak",,active
+identity_card.rank_placeholder,ui,IdentityCard,IdentityCard,rank_placeholder,"—",,active
+identity_card.streak_value,ui,IdentityCard,IdentityCard,streak_value,"{{days}}_DAYS",,active
+
+identity_panel.badge,ui,IdentityPanel,IdentityPanel,badge,"VS",,active
+identity_panel.level,ui,IdentityPanel,IdentityPanel,level,"Lvl_05",,active
+identity_panel.access_label,ui,IdentityPanel,IdentityPanel,access_label,"Access_Handle",,active
+identity_panel.rank_label,ui,IdentityPanel,IdentityPanel,rank_label,"Rank",,active
+identity_panel.streak_label,ui,IdentityPanel,IdentityPanel,streak_label,"Streak",,active
+identity_panel.rank_placeholder,ui,IdentityPanel,IdentityPanel,rank_placeholder,"—",,active
+identity_panel.streak_value,ui,IdentityPanel,IdentityPanel,streak_value,"{{days}}_DAYS",,active
+
+usage.panel.title,ui,UsagePanel,UsagePanel,title,"Zion_Index",,active
+usage.summary.total_system_output,ui,UsagePanel,UsagePanel,summary_label_total_system,"TOTAL_SYSTEM_OUTPUT",,active
+usage.summary.total,ui,UsagePanel,UsagePanel,summary_label_total,"TOTAL",,active
+usage.metric.total,ui,UsagePanel,UsagePanel,metric_total,"TOTAL",,active
+usage.metric.input,ui,UsagePanel,UsagePanel,metric_input,"INPUT",,active
+usage.metric.output,ui,UsagePanel,UsagePanel,metric_output,"OUTPUT",,active
+usage.metric.cached_input,ui,UsagePanel,UsagePanel,metric_cached_input,"CACHED_INPUT",,active
+usage.metric.reasoning_output,ui,UsagePanel,UsagePanel,metric_reasoning_output,"REASONING_OUTPUT",,active
+usage.metric.cached_short,ui,UsagePanel,UsagePanel,metric_cached_short,"CACHED",,active
+usage.metric.reasoning_short,ui,UsagePanel,UsagePanel,metric_reasoning_short,"REASONING",,active
+usage.button.loading,ui,UsagePanel,UsagePanel,button_loading,"Loading…",,active
+usage.button.refresh,ui,UsagePanel,UsagePanel,button_refresh,"Refresh",,active
+usage.range_label,ui,UsagePanel,UsagePanel,range_label,"Range: {{range}} (UTC)",,active
+
+leaderboard.panel.title,ui,LeaderboardPanel,LeaderboardPanel,title,"Zion_Index",,active
+leaderboard.period.cycle_24h,ui,LeaderboardPanel,LeaderboardPanel,period_label,"Cycle_24h",,active
+leaderboard.period.legacy_all,ui,LeaderboardPanel,LeaderboardPanel,period_label,"Legacy_All",,active
+leaderboard.load_more,ui,LeaderboardPanel,LeaderboardPanel,load_more,"-- LOAD_NEXT_BATCH --",,active
+leaderboard.empty,ui,LeaderboardPanel,LeaderboardPanel,empty_state,"No leaderboard data.",,active
+
+trend.chart.unit_label,ui,TrendChart,TrendChart,unit_label,"TKNS",,active
+trend.chart.left_label,ui,TrendChart,TrendChart,left_label,"T-24H",,active
+trend.chart.right_label,ui,TrendChart,TrendChart,right_label,"Realtime_Flow",,active
+trend.chart.empty,ui,TrendChart,TrendChart,empty_state,"No trend data.",,active
+trend.chart.peak,ui,TrendChart,TrendChart,peak_label,"Peak: {{value}} {{unit}}",,active
+
+trend.monitor.label,ui,TrendMonitor,TrendMonitor,label,"TREND",,active
+trend.monitor.max_label,ui,TrendMonitor,TrendMonitor,max_label,"MAX: {{value}}",,active
+trend.monitor.avg_label,ui,TrendMonitor,TrendMonitor,avg_label,"AVG: {{value}}",,active
+trend.monitor.now_label,ui,TrendMonitor,TrendMonitor,now_label,"NOW",,active
+trend.monitor.fallback.hour_00,ui,TrendMonitor,TrendMonitor,x_label,"00:00",,active
+trend.monitor.fallback.hour_06,ui,TrendMonitor,TrendMonitor,x_label,"06:00",,active
+trend.monitor.fallback.hour_12,ui,TrendMonitor,TrendMonitor,x_label,"12:00",,active
+trend.monitor.fallback.hour_18,ui,TrendMonitor,TrendMonitor,x_label,"18:00",,active
+trend.monitor.fallback.hour_23,ui,TrendMonitor,TrendMonitor,x_label,"23:00",,active
+trend.monitor.fallback.tminus_24,ui,TrendMonitor,TrendMonitor,x_label,"-24H",,active
+trend.monitor.fallback.tminus_18,ui,TrendMonitor,TrendMonitor,x_label,"-18H",,active
+trend.monitor.fallback.tminus_12,ui,TrendMonitor,TrendMonitor,x_label,"-12H",,active
+trend.monitor.fallback.tminus_6,ui,TrendMonitor,TrendMonitor,x_label,"-6H",,active
+trend.monitor.tooltip.utc,ui,TrendMonitor,TrendMonitor,tooltip_utc,"UTC",,active
+trend.monitor.tooltip.tokens,ui,TrendMonitor,TrendMonitor,tooltip_tokens,"tokens",,active
+trend.monitor.tooltip.hour,ui,TrendMonitor,TrendMonitor,tooltip_hour,"{{date}} {{hour}}:00 {{tz}}",,active
+trend.monitor.tooltip.day,ui,TrendMonitor,TrendMonitor,tooltip_day,"{{date}} {{tz}}",,active
+trend.monitor.tooltip.month,ui,TrendMonitor,TrendMonitor,tooltip_month,"{{date}} {{tz}}",,active
+trend.monitor.tooltip.value,ui,TrendMonitor,TrendMonitor,tooltip_value,"{{value}} {{unit}}",,active
+trend.monitor.month.jan,ui,TrendMonitor,TrendMonitor,month_label,"JAN",,active
+trend.monitor.month.feb,ui,TrendMonitor,TrendMonitor,month_label,"FEB",,active
+trend.monitor.month.mar,ui,TrendMonitor,TrendMonitor,month_label,"MAR",,active
+trend.monitor.month.apr,ui,TrendMonitor,TrendMonitor,month_label,"APR",,active
+trend.monitor.month.may,ui,TrendMonitor,TrendMonitor,month_label,"MAY",,active
+trend.monitor.month.jun,ui,TrendMonitor,TrendMonitor,month_label,"JUN",,active
+trend.monitor.month.jul,ui,TrendMonitor,TrendMonitor,month_label,"JUL",,active
+trend.monitor.month.aug,ui,TrendMonitor,TrendMonitor,month_label,"AUG",,active
+trend.monitor.month.sep,ui,TrendMonitor,TrendMonitor,month_label,"SEP",,active
+trend.monitor.month.oct,ui,TrendMonitor,TrendMonitor,month_label,"OCT",,active
+trend.monitor.month.nov,ui,TrendMonitor,TrendMonitor,month_label,"NOV",,active
+trend.monitor.month.dec,ui,TrendMonitor,TrendMonitor,month_label,"DEC",,active
+
+heatmap.aria_label,ui,ActivityHeatmap,ActivityHeatmap,aria_label,"Activity heatmap",,active
+heatmap.empty,ui,ActivityHeatmap,ActivityHeatmap,empty_state,"No activity data yet.",,active
+heatmap.legend.less,ui,ActivityHeatmap,ActivityHeatmap,legend_less,"Less",,active
+heatmap.legend.more,ui,ActivityHeatmap,ActivityHeatmap,legend_more,"More",,active
+heatmap.legend.utc,ui,ActivityHeatmap,ActivityHeatmap,legend_utc,"UTC",,active
+heatmap.tooltip,ui,ActivityHeatmap,ActivityHeatmap,tooltip,"{{day}} • {{value}} {{unit}}",,active
+heatmap.unit.tokens,ui,ActivityHeatmap,ActivityHeatmap,unit_tokens,"tokens",,active
+heatmap.month.jan,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Jan",,active
+heatmap.month.feb,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Feb",,active
+heatmap.month.mar,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Mar",,active
+heatmap.month.apr,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Apr",,active
+heatmap.month.may,ui,ActivityHeatmap,ActivityHeatmap,month_label,"May",,active
+heatmap.month.jun,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Jun",,active
+heatmap.month.jul,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Jul",,active
+heatmap.month.aug,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Aug",,active
+heatmap.month.sep,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Sep",,active
+heatmap.month.oct,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Oct",,active
+heatmap.month.nov,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Nov",,active
+heatmap.month.dec,ui,ActivityHeatmap,ActivityHeatmap,month_label,"Dec",,active
+heatmap.day.sun,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Sun",,active
+heatmap.day.mon,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Mon",,active
+heatmap.day.tue,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Tue",,active
+heatmap.day.wed,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Wed",,active
+heatmap.day.thu,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Thu",,active
+heatmap.day.fri,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Fri",,active
+heatmap.day.sat,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Sat",,active
+
+archive.title,ui,ArchiveHeatmap,ArchiveHeatmap,title,"Archive_Sector",,active
+archive.footer.left,ui,ArchiveHeatmap,ArchiveHeatmap,footer_left,"Yearly_Map",,active
+
+trend.monitor.range.utc,ui,TrendMonitor,TrendMonitor,range_utc,"UTC",,active
+
+daily.table.aria_label,dashboard,DashboardPage,DashboardPage,aria_label,"Daily totals table",,active
+
+daily.sort.date.label,dashboard,DashboardPage,DailyTable,sort_label,"Date",,active
+daily.sort.date.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Date",,active
+daily.sort.total.label,dashboard,DashboardPage,DailyTable,sort_label,"Total",,active
+daily.sort.total.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Total",,active
+daily.sort.input.label,dashboard,DashboardPage,DailyTable,sort_label,"Input",,active
+daily.sort.input.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Input",,active
+daily.sort.output.label,dashboard,DashboardPage,DailyTable,sort_label,"Output",,active
+daily.sort.output.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Output",,active
+daily.sort.cached.label,dashboard,DashboardPage,DailyTable,sort_label,"Cached",,active
+daily.sort.cached.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Cached input",,active
+daily.sort.reasoning.label,dashboard,DashboardPage,DailyTable,sort_label,"Reasoning",,active
+daily.sort.reasoning.title,dashboard,DashboardPage,DailyTable,sort_title,"Sort by Reasoning output",,active
+
+dashboard.period.day,dashboard,DashboardPage,UsagePanel,period_label,"DAY",,active
+dashboard.period.week,dashboard,DashboardPage,UsagePanel,period_label,"WEEK",,active
+dashboard.period.month,dashboard,DashboardPage,UsagePanel,period_label,"MONTH",,active
+dashboard.period.total,dashboard,DashboardPage,UsagePanel,period_label,"TOTAL",,active
+
+dashboard.session.label,dashboard,DashboardPage,Header,session_label,"Session_Time:",,active
+dashboard.signed_in.fallback,dashboard,DashboardPage,Header,signed_in_fallback,"Signed in",,active
+dashboard.sign_out,dashboard,DashboardPage,Header,sign_out,"Sign out",,active
+dashboard.not_signed_in,dashboard,DashboardPage,Header,not_signed_in,"Not signed in",,active
+
+dashboard.footer.active,dashboard,DashboardPage,Footer,footer_active,"UTC aggregates • click Refresh to reload",,active
+dashboard.footer.auth,dashboard,DashboardPage,Footer,footer_auth,"Sign in to view usage",,active
+dashboard.footer.right,dashboard,DashboardPage,Footer,footer_right,"VibeScore_Dashboard",,active
+
+dashboard.auth_required.title,dashboard,DashboardPage,AsciiBox,title,"Auth_Required",,active
+dashboard.auth_required.subtitle,dashboard,DashboardPage,AsciiBox,subtitle,"Matrix_UI_A",,active
+dashboard.auth_required.body,dashboard,DashboardPage,AsciiBox,body,"Sign in / sign up to view your daily token usage (UTC).",,active
+
+dashboard.auth_optional.title,dashboard,DashboardPage,AsciiBox,title,"Auth_Optional",,active
+dashboard.auth_optional.subtitle,dashboard,DashboardPage,AsciiBox,subtitle,"Connect",,active
+dashboard.auth_optional.body,dashboard,DashboardPage,AsciiBox,body,"Sign in / sign up to sync real usage.",,active
+
+dashboard.install.title,dashboard,DashboardPage,AsciiBox,title,"Install",,active
+dashboard.install.subtitle,dashboard,DashboardPage,AsciiBox,subtitle,"CLI",,active
+dashboard.install.step1,dashboard,DashboardPage,AsciiBox,install_step,"1) run",,active
+dashboard.install.step2,dashboard,DashboardPage,AsciiBox,install_step,"2) use Codex CLI normally",,active
+dashboard.install.step3,dashboard,DashboardPage,AsciiBox,install_step,"3) run",,active
+dashboard.install.step3_suffix,dashboard,DashboardPage,AsciiBox,install_step_suffix,"(or wait for auto sync)",,active
+
+dashboard.activity.title,dashboard,DashboardPage,AsciiBox,title,"Activity_Matrix",,active
+dashboard.activity.subtitle,dashboard,DashboardPage,AsciiBox,subtitle,"52W_UTC",,active
+dashboard.activity.range,dashboard,DashboardPage,AsciiBox,range_label,"Range: {{from}}..{{to}}",,active
+
+dashboard.daily.title,dashboard,DashboardPage,AsciiBox,title,"Daily_Totals",,active
+dashboard.daily.subtitle,dashboard,DashboardPage,AsciiBox,subtitle,"Sortable",,active
+dashboard.daily.empty,dashboard,DashboardPage,AsciiBox,empty_state,"No data yet. Use Codex CLI then run {{cmd}}.",,active
+
+dashboard.identity.title,dashboard,DashboardPage,IdentityCard,title,"Architect_Identity",,active
+dashboard.identity.subtitle,dashboard,DashboardPage,IdentityCard,subtitle,"Authorized",,active
+
+live_sniffer.log.system,ui,LiveSniffer,LiveSniffer,log,"[SYSTEM] KERNEL_UPLINK_ESTABLISHED",,active
+live_sniffer.log.socket,ui,LiveSniffer,LiveSniffer,log,"[SOCKET] LISTENING_ON_LOCAL_CLI_PIPE...",,active
+live_sniffer.event.intercepted,ui,LiveSniffer,LiveSniffer,event,"> INTERCEPTED: CODEX_COMPLETION_EVENT",,active
+live_sniffer.event.quantifying,ui,LiveSniffer,LiveSniffer,event,"> QUANTIFYING: +64 NEURAL_TOKENS",,active
+live_sniffer.event.analysis,ui,LiveSniffer,LiveSniffer,event,"> ANALYSIS: HIGH_VIBE_FLOW_DETECTED",,active
+live_sniffer.event.sync,ui,LiveSniffer,LiveSniffer,event,"> SYNC: UPLOADING_TO_ZION_MAINFRAME",,active
+live_sniffer.event.batch,ui,LiveSniffer,LiveSniffer,event,"[STATUS] BATCH_TRANSMISSION_COMPLETE",,active
+live_sniffer.event.hooking,ui,LiveSniffer,LiveSniffer,event,"> HOOKING: CODEX_CLI_PIPE_SIGNAL",,active
+live_sniffer.event.capture,ui,LiveSniffer,LiveSniffer,event,"> CAPTURE: +128 NEURAL_TOKENS",,active

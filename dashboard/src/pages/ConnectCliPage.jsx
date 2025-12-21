@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 import { buildAuthUrl } from "../lib/auth-url.js";
+import { copy } from "../lib/copy.js";
 import { BackendStatus } from "../components/BackendStatus.jsx";
 import { AsciiBox } from "../ui/matrix-a/components/AsciiBox.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
@@ -46,36 +47,39 @@ export function ConnectCliPage({ defaultInsforgeBaseUrl }) {
   return (
     <MatrixShell
       headerStatus={<BackendStatus baseUrl={insforgeBaseUrl} />}
-      headerRight={<span className="text-[10px] opacity-60">Connect_CLI</span>}
-      footerLeft={
-        <span>
-          Click sign-in/sign-up • browser returns to local CLI callback
+      headerRight={
+        <span className="text-[10px] opacity-60">
+          {copy("connect.header.right")}
         </span>
       }
-      footerRight={<span className="font-bold">/connect</span>}
+      footerLeft={<span>{copy("connect.footer.left")}</span>}
+      footerRight={<span className="font-bold">{copy("connect.footer.right")}</span>}
     >
       <div className="flex items-center justify-center">
-        <AsciiBox title="Link_Your_CLI" subtitle="Local_Callback" className="w-full max-w-2xl">
+        <AsciiBox
+          title={copy("connect.box.title")}
+          subtitle={copy("connect.box.subtitle")}
+          className="w-full max-w-2xl"
+        >
           <p className="text-[10px] opacity-50 mt-0">
-            Sign in or sign up. When finished, the browser will return to your local
-            CLI to complete setup.
+            {copy("connect.box.body")}
           </p>
 
           {!safeRedirect ? (
             <div className="mt-4 text-[10px] text-red-400/90">
-              Invalid or missing{" "}
+              {copy("connect.error.prefix")} {" "}
               <code className="px-1 py-0.5 bg-black/40 border border-[#00FF41]/20">
-                redirect
+                {copy("connect.error.redirect_label")}
               </code>{" "}
-              URL. This page must be opened from the CLI.
+              {copy("connect.error.suffix")}
             </div>
           ) : (
             <div className="flex flex-wrap gap-3 mt-4">
               <MatrixButton as="a" primary href={signInUrl}>
-                $ sign-in
+                {copy("connect.button.sign_in")}
               </MatrixButton>
               <MatrixButton as="a" href={signUpUrl}>
-                $ sign-up
+                {copy("connect.button.sign_up")}
               </MatrixButton>
             </div>
           )}
