@@ -60,7 +60,7 @@ var require_http = __commonJS({
 var require_env = __commonJS({
   "insforge-src/shared/env.js"(exports2, module2) {
     "use strict";
-    function getBaseUrl() {
+    function getBaseUrl2() {
       return Deno.env.get("INSFORGE_INTERNAL_URL") || "http://insforge:7130";
     }
     function getServiceRoleKey() {
@@ -70,25 +70,101 @@ var require_env = __commonJS({
       return Deno.env.get("ANON_KEY") || Deno.env.get("INSFORGE_ANON_KEY") || null;
     }
     module2.exports = {
-      getBaseUrl,
+      getBaseUrl: getBaseUrl2,
       getServiceRoleKey,
       getAnonKey: getAnonKey2
     };
   }
 });
 
+// insforge-src/shared/auth.js
+var require_auth = __commonJS({
+  "insforge-src/shared/auth.js"(exports2, module2) {
+    "use strict";
+    var { getAnonKey: getAnonKey2 } = require_env();
+    function getBearerToken2(headerValue) {
+      if (!headerValue) return null;
+      const prefix = "Bearer ";
+      if (!headerValue.startsWith(prefix)) return null;
+      const token = headerValue.slice(prefix.length).trim();
+      return token.length > 0 ? token : null;
+    }
+    async function getEdgeClientAndUserId({ baseUrl, bearer }) {
+      const anonKey = getAnonKey2();
+      const edgeClient = createClient({ baseUrl, anonKey: anonKey || void 0, edgeFunctionToken: bearer });
+      const { data: userData, error: userErr } = await edgeClient.auth.getCurrentUser();
+      const userId = userData?.user?.id;
+      if (userErr || !userId) return { ok: false, edgeClient: null, userId: null };
+      return { ok: true, edgeClient, userId };
+    }
+    module2.exports = {
+      getBearerToken: getBearerToken2,
+      getEdgeClientAndUserId
+    };
+  }
+});
+
 // insforge-src/functions/vibescore-debug-auth.js
 var { handleOptions, json, requireMethod } = require_http();
-var { getAnonKey } = require_env();
+var { getBearerToken } = require_auth();
+var { getAnonKey, getBaseUrl } = require_env();
 module.exports = async function(request) {
   const opt = handleOptions(request);
   if (opt) return opt;
   const methodErr = requireMethod(request, "GET");
   if (methodErr) return methodErr;
   const anonKey = getAnonKey();
+  const bearer = getBearerToken(request.headers.get("Authorization"));
+  if (!anonKey) {
+    return json(
+      {
+        hasAnonKey: false,
+        hasBearer: Boolean(bearer),
+        authOk: false,
+        userId: null,
+        error: "Missing anon key"
+      },
+      200
+    );
+  }
+  if (!bearer) {
+    return json(
+      {
+        hasAnonKey: true,
+        hasBearer: false,
+        authOk: false,
+        userId: null,
+        error: "Missing bearer token"
+      },
+      200
+    );
+  }
+  const baseUrl = getBaseUrl();
+  let authOk = false;
+  let userId = null;
+  let error = null;
+  try {
+    const edgeClient = createClient({
+      baseUrl,
+      anonKey,
+      edgeFunctionToken: bearer
+    });
+    const { data, error: authError } = await edgeClient.auth.getCurrentUser();
+    userId = data?.user?.id || null;
+    authOk = Boolean(userId) && !authError;
+    if (!authOk) {
+      error = authError?.message || "Unauthorized";
+    }
+  } catch (e) {
+    error = e?.message || String(e);
+  }
   return json(
     {
-      hasAnonKey: Boolean(anonKey)
+      hasAnonKey: true,
+      hasBearer: true,
+      authOk,
+      userId,
+      error
     },
     200
   );

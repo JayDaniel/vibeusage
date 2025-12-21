@@ -265,13 +265,20 @@ Response:
 ### GET /functions/vibescore-debug-auth
 
 Diagnostic endpoint that reports whether the function runtime has the anon key
-configured. This does **not** expose any secrets.
+configured and whether the supplied bearer token validates. This does **not**
+expose any secrets.
 
 Auth:
-- None (public, returns booleans only)
+- Optional `Authorization: Bearer <user_jwt>` to validate the token.
 
 Response:
 
 ```json
-{ "hasAnonKey": true }
+{
+  "hasAnonKey": true,
+  "hasBearer": true,
+  "authOk": true,
+  "userId": "uuid",
+  "error": null
+}
 ```
