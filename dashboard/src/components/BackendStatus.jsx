@@ -3,14 +3,15 @@ import React, { useMemo } from "react";
 import { useBackendStatus } from "../hooks/use-backend-status.js";
 import { ConnectionStatus } from "../ui/matrix-a/components/ConnectionStatus.jsx";
 
-export function BackendStatus({ baseUrl }) {
+export function BackendStatus({ baseUrl, accessToken }) {
   const { status, checking, httpStatus, lastCheckedAt, lastOkAt, error, refresh } =
-    useBackendStatus({ baseUrl });
+    useBackendStatus({ baseUrl, accessToken });
 
   const host = useMemo(() => safeHost(baseUrl), [baseUrl]);
   const uiStatus = useMemo(() => {
     if (status === "active") return "STABLE";
-    return "LOST";
+    if (status === "down") return "LOST";
+    return "UNSTABLE";
   }, [status]);
 
   const title = useMemo(() => {

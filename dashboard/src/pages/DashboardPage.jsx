@@ -214,7 +214,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
   return (
     <MatrixShell
-      headerStatus={<BackendStatus baseUrl={baseUrl} />}
+      headerStatus={<BackendStatus baseUrl={baseUrl} accessToken={auth?.accessToken || null} />}
       headerRight={headerRight}
       footerLeft={
         accessEnabled ? (

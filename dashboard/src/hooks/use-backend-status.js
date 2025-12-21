@@ -4,6 +4,7 @@ import { getBackendProbeUrl } from "../lib/vibescore-api.js";
 
 export function useBackendStatus({
   baseUrl,
+  accessToken,
   intervalMs = 60_000,
   timeoutMs = 1500,
 } = {}) {
@@ -50,16 +51,22 @@ export function useBackendStatus({
       const res = await fetch(url.toString(), {
         method: "GET",
         cache: "no-store",
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
         signal: controller.signal,
       });
 
       setHttpStatus(res.status);
       setLastCheckedAt(new Date().toISOString());
 
-      if (res.status === 404 || res.status >= 500) {
+      if (res.status === 401 || res.status === 403) {
         setStatus("error");
+        setError("Unauthorized");
+      } else if (res.status === 404 || res.status >= 500) {
+        setStatus("error");
+        setError(`HTTP ${res.status}`);
       } else {
         setStatus("active");
+        setError(null);
         setLastOkAt(new Date().toISOString());
       }
     } catch (e) {
