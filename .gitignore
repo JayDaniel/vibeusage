@@ -17,4 +17,3 @@ pnpm-debug.log*
 
 # Local-only docs
 /AGENTS.md
-/BACKEND_API.md
