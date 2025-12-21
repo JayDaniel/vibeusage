@@ -37,9 +37,9 @@
 - [x] `npm --prefix dashboard run build`
 - [x] 补充开发者文档：`BACKEND_API.md`（endpoints + build/deploy）
 - [x] 在 `openspec/project.md` 增加 `BACKEND_API.md` 入口与 build 说明
-- [ ] （可选）跑一次 `node scripts/smoke/insforge-smoke.cjs`（需要真实环境变量/JWT）
+- [x] （可选）跑一次 `node scripts/smoke/insforge-smoke.cjs`（需要真实环境变量/JWT）
 
 ## 5) Deploy（InsForge2）
 
 - [x] 用 `insforge2 update-function` 逐个更新 edge functions（只更新代码，不改 slug）
-- [ ] 手测：Dashboard 基本功能（summary/daily/heatmap/leaderboard）均可正常工作
+- [x] 手测：Dashboard 基本功能（summary/daily/heatmap/leaderboard）均可正常工作

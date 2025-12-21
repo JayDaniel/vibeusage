@@ -30,5 +30,5 @@
 
 ## 验收证据（完成时补齐）
 
-- [ ] 录屏/截图：初始化后使用 Codex CLI 产生数据 → 云端曲线更新
+- [x] 录屏/截图：初始化后使用 Codex CLI 产生数据 → 云端曲线更新
 - [x] 冷回归步骤：`uninstall` 后 Codex 行为不受影响（自动化：`node --test test/init-uninstall.test.js`）

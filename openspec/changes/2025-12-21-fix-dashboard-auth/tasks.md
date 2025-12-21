@@ -4,4 +4,4 @@
 
 ## 2. Verification
 - [x] 2.1 Run `node --test test/edge-functions.test.js`
-- [ ] 2.2 Manual smoke: `vibescore-usage-summary` returns 200 with valid token
+- [x] 2.2 Manual smoke: `vibescore-usage-summary` returns 200 with valid token

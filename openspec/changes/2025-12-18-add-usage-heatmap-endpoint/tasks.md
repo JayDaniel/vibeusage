@@ -48,7 +48,7 @@ Contract freeze（已确认）：
 
 - [x] 单测：派生算法与参数归一化（确定性输入输出）
 - [x] smoke：用现有 `scripts/smoke/insforge-smoke.cjs` 扩展验证 heatmap endpoint（可选项）
-- [ ] 手工回归步骤：Dashboard 首页 heatmap 显示、无数据提示、范围显示正确
+- [x] 手工回归步骤：Dashboard 首页 heatmap 显示、无数据提示、范围显示正确
 
 ## 5) OpenSpec
 

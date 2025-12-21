@@ -27,7 +27,7 @@
 ## 3) Tests / Verification
 
 - [x] `npm --prefix dashboard run build`
-- [ ] 手工回归步骤（你确认）：Dashboard 不再可选任意日期；切换 period 后 totals/sparkline/daily table 更新
+- [x] 手工回归步骤（你确认）：Dashboard 不再可选任意日期；切换 period 后 totals/sparkline/daily table 更新
 
 ## 4) OpenSpec
 
