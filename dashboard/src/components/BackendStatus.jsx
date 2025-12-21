@@ -5,18 +5,20 @@ import { ConnectionStatus } from "../ui/matrix-a/components/ConnectionStatus.jsx
 
 export function BackendStatus({
   baseUrl,
+  accessToken,
   statusOverride,
   titleOverride,
   onRefresh,
 }) {
   const { status, checking, httpStatus, lastCheckedAt, lastOkAt, error, refresh } =
-    useBackendStatus({ baseUrl });
+    useBackendStatus({ baseUrl, accessToken });
 
   const host = useMemo(() => safeHost(baseUrl), [baseUrl]);
   const uiStatus = useMemo(() => {
     if (statusOverride) return statusOverride;
     if (status === "active") return "STABLE";
-    return "LOST";
+    if (status === "down") return "LOST";
+    return "UNSTABLE";
   }, [status, statusOverride]);
 
   const title = useMemo(() => {
