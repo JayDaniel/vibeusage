@@ -134,7 +134,17 @@ export function useUsageData({
     refresh();
   }, [accessToken, mockEnabled, readCache, refresh]);
 
-  return { daily, summary, source, fetchedAt, loading, error, refresh };
+  const normalizedSource = mockEnabled ? "mock" : source;
+
+  return {
+    daily,
+    summary,
+    source: normalizedSource,
+    fetchedAt,
+    loading,
+    error,
+    refresh,
+  };
 }
 
 function safeHost(baseUrl) {

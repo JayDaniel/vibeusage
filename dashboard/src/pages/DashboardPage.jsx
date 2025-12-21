@@ -8,12 +8,13 @@ import { toDisplayNumber } from "../lib/format.js";
 import { useActivityHeatmap } from "../hooks/use-activity-heatmap.js";
 import { useUsageData } from "../hooks/use-usage-data.js";
 import { BackendStatus } from "../components/BackendStatus.jsx";
+import { Sparkline } from "../components/Sparkline.jsx";
 import { AsciiBox } from "../ui/matrix-a/components/AsciiBox.jsx";
 import { ActivityHeatmap } from "../ui/matrix-a/components/ActivityHeatmap.jsx";
 import { BootScreen } from "../ui/matrix-a/components/BootScreen.jsx";
 import { IdentityCard } from "../ui/matrix-a/components/IdentityCard.jsx";
 import { MatrixButton } from "../ui/matrix-a/components/MatrixButton.jsx";
-import { TrendMonitor } from "../ui/matrix-a/components/TrendMonitor.jsx";
+import { NeuralFluxMonitor } from "../ui/matrix-a/components/NeuralFluxMonitor.jsx";
 import { UsagePanel } from "../ui/matrix-a/components/UsagePanel.jsx";
 import { MatrixShell } from "../ui/matrix-a/layout/MatrixShell.jsx";
 import { isMockEnabled } from "../lib/mock-data.js";
@@ -47,7 +48,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     daily,
     summary,
     source: usageSource,
-    fetchedAt: usageFetchedAt,
     loading: usageLoading,
     error: usageError,
     refresh: refreshUsage,
@@ -57,7 +57,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     from,
     to,
     includeDaily: period !== "total",
-    cacheKey: auth?.userId || auth?.email || null,
+    cacheKey: auth?.userId || auth?.email || "default",
   });
 
   const {
@@ -66,7 +66,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     heatmap,
     source: heatmapSource,
     loading: heatmapLoading,
-    error: heatmapError,
     refresh: refreshHeatmap,
   } = useActivityHeatmap({
     baseUrl,
@@ -77,10 +76,18 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
   const [sort, setSort] = useState(() => ({ key: "day", dir: "desc" }));
   const sortedDaily = useMemo(() => sortDailyRows(daily, sort), [daily, sort]);
-  const trendRows = useMemo(
+  const sparklineRows = useMemo(
     () => sortDailyRows(daily, { key: "day", dir: "asc" }),
     [daily]
   );
+
+  const fluxData = useMemo(() => {
+    const values = (sparklineRows || []).map((row) =>
+      Number(row?.total_tokens || 0)
+    );
+    if (!values.length) return [];
+    return values.slice(-30);
+  }, [sparklineRows]);
 
   function toggleSort(key) {
     setSort((prev) => {
@@ -112,34 +119,14 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   }, [refreshHeatmap, refreshUsage]);
 
   const usageLoadingState = usageLoading || heatmapLoading;
-
-  const dataStatus = useMemo(() => {
-    if (!accessEnabled) return "LOST";
-    const hasCache = usageSource === "cache" || heatmapSource === "cache";
-    const hasError = Boolean(usageError || heatmapError);
-    if (hasCache) return "UNSTABLE";
-    if (hasError) return "LOST";
-    return "STABLE";
-  }, [accessEnabled, heatmapError, heatmapSource, usageError, usageSource]);
-
-  const dataStatusTitle = useMemo(() => {
-    const parts = [`data=${dataStatus.toLowerCase()}`, "click=refresh"];
-    if (usageSource === "cache" || heatmapSource === "cache") {
-      parts.push("source=cache");
-    }
-    if (usageError) parts.push(`usage_error=${usageError}`);
-    if (heatmapError) parts.push(`heatmap_error=${heatmapError}`);
-    return parts.join(" • ");
-  }, [dataStatus, heatmapError, heatmapSource, usageError, usageSource]);
-
-  const usageStatusLabel = useMemo(() => {
-    if (usageSource !== "cache") return null;
-    if (!usageFetchedAt) return "CACHE";
-    const dt = new Date(usageFetchedAt);
-    if (Number.isNaN(dt.getTime())) return "CACHE";
-    const stamp = dt.toISOString().replace("T", " ").slice(0, 16);
-    return `CACHE ${stamp} UTC`;
-  }, [usageFetchedAt, usageSource]);
+  const usageSourceLabel = useMemo(
+    () => `DATA_SOURCE: ${String(usageSource || "edge").toUpperCase()}`,
+    [usageSource]
+  );
+  const heatmapSourceLabel = useMemo(
+    () => `DATA_SOURCE: ${String(heatmapSource || "edge").toUpperCase()}`,
+    [heatmapSource]
+  );
 
   const identityHandle = useMemo(() => {
     const raw = (auth?.name || auth?.email || "Anonymous").trim();
@@ -235,14 +222,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
 
   return (
     <MatrixShell
-      headerStatus={
-        <BackendStatus
-          baseUrl={baseUrl}
-          statusOverride={dataStatus}
-          titleOverride={dataStatusTitle}
-          onRefresh={refreshAll}
-        />
-      }
+      headerStatus={<BackendStatus baseUrl={baseUrl} />}
       headerRight={headerRight}
       footerLeft={
         accessEnabled ? (
@@ -330,6 +310,9 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black">
                 Range: {heatmapFrom}..{heatmapTo}
               </div>
+              <div className="mt-1 text-[8px] opacity-30 uppercase tracking-widest font-black">
+                {heatmapSourceLabel}
+              </div>
             </AsciiBox>
 
           </div>
@@ -350,16 +333,16 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               loading={usageLoadingState}
               error={usageError}
               rangeLabel={rangeLabel}
-              statusLabel={usageStatusLabel}
+              statusLabel={usageSourceLabel}
             />
 
-            <TrendMonitor
-              rows={trendRows}
-              label="TREND"
-              from={from}
-              to={to}
-              period={period}
-            />
+            <NeuralFluxMonitor data={fluxData} />
+
+            {period !== "total" ? (
+              <AsciiBox title="Sparkline" subtitle={`${period.toUpperCase()} ${from}..${to}`}>
+                <Sparkline rows={sparklineRows} />
+              </AsciiBox>
+            ) : null}
 
             {period !== "total" ? (
               <AsciiBox title="Daily_Totals" subtitle="Sortable">
