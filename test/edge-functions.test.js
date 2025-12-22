@@ -169,6 +169,7 @@ test('vibescore-ingest uses serviceRoleKey as edgeFunctionToken and ingests even
 
   const calls = [];
   const insertedEvents = [];
+  const fetchCalls = [];
 
   const tokenRow = {
     id: 'token-id',
@@ -220,6 +221,20 @@ test('vibescore-ingest uses serviceRoleKey as edgeFunctionToken and ingests even
     throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
   };
 
+  globalThis.fetch = async (url, init) => {
+    fetchCalls.push({ url, init });
+    const u = new URL(url);
+
+    if (u.pathname.endsWith('/api/database/records/vibescore_tracker_events')) {
+      return new Response(JSON.stringify([{ event_id: 'e1' }]), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response('not found', { status: 404 });
+  };
+
   const deviceToken = 'device_token_test';
   const ev = {
     event_id: 'e1',
@@ -243,7 +258,22 @@ test('vibescore-ingest uses serviceRoleKey as edgeFunctionToken and ingests even
 
   const data = await res.json();
   assert.deepEqual(data, { success: true, inserted: 1, skipped: 0 });
-  assert.equal(insertedEvents.length, 1);
+  assert.equal(insertedEvents.length, 0);
+
+  assert.equal(fetchCalls.length, 1);
+  const postCall = fetchCalls[0];
+  const postUrl = new URL(postCall.url);
+  assert.ok(String(postCall.url).includes('/api/database/records/vibescore_tracker_events'));
+  assert.equal(postCall.init?.method, 'POST');
+  assert.equal(postCall.init?.headers?.apikey, SERVICE_ROLE_KEY);
+  assert.equal(postCall.init?.headers?.Authorization, `Bearer ${SERVICE_ROLE_KEY}`);
+  assert.equal(postCall.init?.headers?.Prefer, 'return=representation,resolution=ignore-duplicates');
+  assert.equal(postUrl.searchParams.get('on_conflict'), 'user_id,event_id');
+  assert.equal(postUrl.searchParams.get('select'), 'event_id');
+
+  const postBody = JSON.parse(postCall.init?.body || '[]');
+  assert.equal(postBody.length, 1);
+  assert.equal(postBody[0]?.event_id, 'e1');
 
   const serviceClientCall = calls.find((c) => c && c.edgeFunctionToken === SERVICE_ROLE_KEY);
   assert.ok(serviceClientCall, 'service client not created');
@@ -306,9 +336,10 @@ test('vibescore-ingest works without serviceRoleKey via anonKey records API', as
   const data = await res.json();
   assert.deepEqual(data, { success: true, inserted: 1, skipped: 0 });
 
-  assert.equal(fetchCalls.length, 2);
+  assert.equal(fetchCalls.length, 3);
   const getCall = fetchCalls[0];
   const postCall = fetchCalls[1];
+  const touchCall = fetchCalls[2];
 
   assert.ok(String(getCall.url).includes('/api/database/records/vibescore_tracker_device_tokens'));
   assert.equal(getCall.init?.method, 'GET');
@@ -323,6 +354,12 @@ test('vibescore-ingest works without serviceRoleKey via anonKey records API', as
   const postUrl = new URL(postCall.url);
   assert.equal(postUrl.searchParams.get('on_conflict'), 'user_id,event_id');
   assert.equal(postUrl.searchParams.get('select'), 'event_id');
+
+  assert.ok(String(touchCall.url).includes('/api/database/rpc/vibescore_touch_device_token_sync'));
+  assert.equal(touchCall.init?.method, 'POST');
+  assert.equal(touchCall.init?.headers?.apikey, ANON_KEY);
+  assert.equal(touchCall.init?.headers?.Authorization, `Bearer ${ANON_KEY}`);
+  assert.equal(typeof touchCall.init?.headers?.['x-vibescore-device-token-hash'], 'string');
 });
 
 test('vibescore-ingest anonKey path falls back to per-row inserts on 23505', async () => {
@@ -560,25 +597,39 @@ test('vibescore-usage-hourly aggregates events into hourly buckets', async () =>
           from: (table) => {
             assert.equal(table, 'vibescore_tracker_events');
             return {
-              select: () => ({
-                eq: (col, value) => {
-                  assert.equal(col, 'user_id');
-                  assert.equal(value, userId);
-                  return {
-                    gte: (gteCol, from) => {
-                      assert.equal(gteCol, 'token_timestamp');
-                      assert.equal(from, '2025-12-21T00:00:00.000Z');
-                      return {
-                        lt: async (ltCol, to) => {
-                          assert.equal(ltCol, 'token_timestamp');
-                          assert.equal(to, '2025-12-22T00:00:00.000Z');
-                          return { data: rows, error: null };
-                        }
-                      };
-                    }
-                  };
-                }
-              })
+              select: (columns) => {
+                const isAggregate =
+                  typeof columns === 'string' && columns.includes("date_trunc('hour'");
+                return {
+                  eq: (col, value) => {
+                    assert.equal(col, 'user_id');
+                    assert.equal(value, userId);
+                    return {
+                      gte: (gteCol, from) => {
+                        assert.equal(gteCol, 'token_timestamp');
+                        assert.equal(from, '2025-12-21T00:00:00.000Z');
+                        return {
+                          lt: (ltCol, to) => {
+                            assert.equal(ltCol, 'token_timestamp');
+                            assert.equal(to, '2025-12-22T00:00:00.000Z');
+                            return {
+                              order: async (orderCol, opts) => {
+                                assert.equal(opts?.ascending, true);
+                                if (isAggregate) {
+                                  assert.equal(orderCol, 'hour');
+                                  return { data: null, error: { message: 'not supported' } };
+                                }
+                                assert.equal(orderCol, 'token_timestamp');
+                                return { data: rows, error: null };
+                              }
+                            };
+                          }
+                        };
+                      }
+                    };
+                  }
+                };
+              }
             };
           }
         }
@@ -733,10 +784,12 @@ test('vibescore-leaderboard returns a week window and slices entries to limit', 
             if (table === 'vibescore_leaderboard_week_current') {
               return {
                 select: () => ({
-                  order: async (col, opts) => {
+                  order: (col, opts) => {
                     assert.equal(col, 'rank');
                     assert.equal(opts?.ascending, true);
-                    return { data: entriesRows, error: null };
+                    return {
+                      limit: async () => ({ data: entriesRows, error: null })
+                    };
                   }
                 })
               };
@@ -823,7 +876,9 @@ test('vibescore-leaderboard uses system earliest day for total window', async ()
             if (table === 'vibescore_leaderboard_total_current') {
               return {
                 select: () => ({
-                  order: async () => ({ data: entriesRows, error: null })
+                  order: () => ({
+                    limit: async () => ({ data: entriesRows, error: null })
+                  })
                 })
               };
             }
