@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { probeBackend } from "../lib/vibescore-api.js";
+import {
+  createProbeCadence,
+  DEFAULT_PROBE_INTERVAL_MS,
+} from "../lib/backend-probe-scheduler.js";
 
 export function useBackendStatus({
   baseUrl,
   accessToken,
-  intervalMs = 60_000,
+  intervalMs = DEFAULT_PROBE_INTERVAL_MS,
   timeoutMs = 2500,
   retryDelayMs = 300,
   failureThreshold = 2,
@@ -19,17 +23,48 @@ export function useBackendStatus({
 
   const inFlightRef = useRef(false);
   const failureCountRef = useRef(0);
+  const cadenceRef = useRef(createProbeCadence({ intervalMs }));
+  const nextDelayRef = useRef(cadenceRef.current.getNextDelay());
+  const scheduleNextRef = useRef(null);
   const threshold = Number.isFinite(Number(failureThreshold))
     ? Math.max(1, Math.floor(Number(failureThreshold)))
     : 2;
 
-  const refresh = useCallback(async () => {
+  useEffect(() => {
+    cadenceRef.current = createProbeCadence({ intervalMs });
+    nextDelayRef.current = cadenceRef.current.getNextDelay();
+    if (scheduleNextRef.current) {
+      scheduleNextRef.current(nextDelayRef.current);
+    }
+  }, [intervalMs]);
+
+  const applyCadence = useCallback((outcome) => {
+    const cadence = cadenceRef.current;
+    if (!cadence) return nextDelayRef.current;
+
+    if (outcome === "success") {
+      nextDelayRef.current = cadence.onSuccess();
+    } else if (outcome === "failure") {
+      nextDelayRef.current = cadence.onFailure();
+    } else {
+      nextDelayRef.current = cadence.onError();
+    }
+
+    return nextDelayRef.current;
+  }, []);
+
+  const refresh = useCallback(async ({ reschedule = true } = {}) => {
+    let outcome = "error";
     if (!baseUrl) {
       setStatus("error");
       setChecking(false);
       setHttpStatus(null);
       setLastCheckedAt(new Date().toISOString());
       setError("Missing baseUrl");
+      applyCadence(outcome);
+      if (reschedule && scheduleNextRef.current) {
+        scheduleNextRef.current(nextDelayRef.current);
+      }
       return;
     }
 
@@ -41,10 +76,19 @@ export function useBackendStatus({
       setHttpStatus(null);
       setLastCheckedAt(new Date().toISOString());
       setError("Invalid baseUrl");
+      applyCadence(outcome);
+      if (reschedule && scheduleNextRef.current) {
+        scheduleNextRef.current(nextDelayRef.current);
+      }
       return;
     }
 
-    if (inFlightRef.current) return;
+    if (inFlightRef.current) {
+      if (reschedule && scheduleNextRef.current) {
+        scheduleNextRef.current(nextDelayRef.current);
+      }
+      return;
+    }
     inFlightRef.current = true;
     setChecking(true);
     setError(null);
@@ -61,6 +105,7 @@ export function useBackendStatus({
         throw result.error;
       }
 
+      outcome = "success";
       failureCountRef.current = 0;
       setHttpStatus(result.status ?? 200);
       const now = new Date().toISOString();
@@ -82,6 +127,7 @@ export function useBackendStatus({
         setStatus("error");
         setError(`HTTP ${statusCode}`);
       } else {
+        outcome = "failure";
         failureCountRef.current += 1;
         const nextStatus = failureCountRef.current >= threshold ? "down" : "error";
         setStatus(nextStatus);
@@ -90,22 +136,42 @@ export function useBackendStatus({
     } finally {
       inFlightRef.current = false;
       setChecking(false);
+      applyCadence(outcome);
+      if (reschedule && scheduleNextRef.current) {
+        scheduleNextRef.current(nextDelayRef.current);
+      }
     }
-  }, [accessToken, baseUrl, retryDelayMs, threshold, timeoutMs]);
+  }, [
+    accessToken,
+    applyCadence,
+    baseUrl,
+    retryDelayMs,
+    threshold,
+    timeoutMs,
+  ]);
 
   useEffect(() => {
     let id = null;
 
     const stop = () => {
-      if (id) window.clearInterval(id);
+      if (id) window.clearTimeout(id);
       id = null;
     };
+
+    const scheduleNext = (delayMs) => {
+      stop();
+      if (typeof document !== "undefined" && document.hidden) return;
+      id = window.setTimeout(() => {
+        refresh({ reschedule: true });
+      }, delayMs);
+    };
+
+    scheduleNextRef.current = scheduleNext;
 
     const start = () => {
       if (typeof document !== "undefined" && document.hidden) return;
       if (id) return;
-      refresh();
-      id = window.setInterval(() => refresh(), intervalMs);
+      refresh({ reschedule: true });
     };
 
     const onVisibility = () => {
@@ -117,9 +183,10 @@ export function useBackendStatus({
     document?.addEventListener?.("visibilitychange", onVisibility);
     return () => {
       stop();
+      scheduleNextRef.current = null;
       document?.removeEventListener?.("visibilitychange", onVisibility);
     };
-  }, [intervalMs, refresh]);
+  }, [refresh]);
 
   return {
     status,
