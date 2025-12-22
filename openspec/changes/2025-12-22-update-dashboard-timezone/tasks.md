@@ -7,3 +7,7 @@
 - [x] 5) 更新 mock 数据生成以匹配本地日期语义。
 - [x] 6) 更新 `BACKEND_API.md` 文档与参数说明。
 - [x] 7) 运行 `npm run build:insforge` 并记录验证步骤。
+
+验证记录：
+- 2025-12-22：`npm run build:insforge`（输出：Built 12 InsForge edge functions into `insforge-functions/`）
+- 2025-12-22：`node scripts/acceptance/run-acceptance.cjs --pretty`（20/20 通过）
