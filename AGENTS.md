@@ -16,3 +16,9 @@ Use `@/openspec/AGENTS.md` to learn:
 Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
+
+# 文案规则（Copy Registry）
+
+- 本项目页面上所有展示文字必须来自 `dashboard/src/content/copy.csv`。
+- 任何文案改动必须汇总到文案表，不允许在组件内新增/修改硬编码文本。
+- 文案表与项目官网内容必须双向同步：官网改动需回写文案表，文案表更新需同步到官网。
