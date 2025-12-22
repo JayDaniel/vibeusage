@@ -130,8 +130,8 @@ async function main() {
   assert.equal(res.status, 200);
   assert.equal(calls.events, 1, 'expected events table query');
   assert.equal(calls.daily, 0, 'expected no daily table query');
-  assert.equal(calls.rangeStart, '2025-12-02T00:00:00.000Z');
-  assert.equal(calls.rangeEnd, '2025-12-03T00:00:00.000Z');
+  assert.equal(calls.rangeStart, '2025-12-02T08:00:00.000Z');
+  assert.equal(calls.rangeEnd, '2025-12-03T08:00:00.000Z');
   assert.equal(body.day, '2025-12-02');
   assert.equal(Array.isArray(body.data), true);
   assert.equal(body.data.length, 24);
@@ -175,7 +175,7 @@ function buildFetchStub() {
       calls.rangeEnd = endFilter.slice(3) || null;
       return jsonResponse(200, [
         {
-          token_timestamp: '2025-12-02T01:00:00.000Z',
+          token_timestamp: '2025-12-02T18:00:00.000Z',
           total_tokens: '3',
           input_tokens: '1',
           cached_input_tokens: '0',
@@ -183,7 +183,7 @@ function buildFetchStub() {
           reasoning_output_tokens: '0'
         },
         {
-          token_timestamp: '2025-12-02T13:00:00.000Z',
+          token_timestamp: '2025-12-03T01:00:00.000Z',
           total_tokens: '6',
           input_tokens: '2',
           cached_input_tokens: '1',

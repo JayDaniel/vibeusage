@@ -134,8 +134,8 @@ async function main() {
 
   assert.equal(dailyRes.status, 200);
   assert.equal(summaryRes.status, 200);
-  assert.equal(calls.events, 0, 'expected no events table query');
-  assert.ok(calls.daily >= 2, 'expected daily table queries');
+  assert.ok(calls.events >= 1, 'expected events table query');
+  assert.equal(calls.daily, 0, 'expected no daily table query');
   assert.equal(summaryBody.totals.total_tokens, '30');
   assert.equal(summaryBody.totals.input_tokens, '12');
   assert.equal(summaryBody.totals.cached_input_tokens, '3');
@@ -158,25 +158,6 @@ async function main() {
 }
 
 function buildFetchStub() {
-  const rows = [
-    {
-      day: '2025-12-01',
-      total_tokens: '10',
-      input_tokens: '4',
-      cached_input_tokens: '1',
-      output_tokens: '5',
-      reasoning_output_tokens: '0'
-    },
-    {
-      day: '2025-12-02',
-      total_tokens: '20',
-      input_tokens: '8',
-      cached_input_tokens: '2',
-      output_tokens: '10',
-      reasoning_output_tokens: '0'
-    }
-  ];
-
   const calls = { daily: 0, events: 0 };
 
   async function handler(input, init = {}) {
@@ -189,12 +170,29 @@ function buildFetchStub() {
 
     if (url.pathname === '/api/database/records/vibescore_tracker_daily' && method === 'GET') {
       calls.daily += 1;
-      return jsonResponse(200, rows);
+      return jsonResponse(200, []);
     }
 
     if (url.pathname === '/api/database/records/vibescore_tracker_events') {
       calls.events += 1;
-      return jsonResponse(200, []);
+      return jsonResponse(200, [
+        {
+          token_timestamp: '2025-12-01T18:00:00.000Z',
+          total_tokens: '10',
+          input_tokens: '4',
+          cached_input_tokens: '1',
+          output_tokens: '5',
+          reasoning_output_tokens: '0'
+        },
+        {
+          token_timestamp: '2025-12-02T18:00:00.000Z',
+          total_tokens: '20',
+          input_tokens: '8',
+          cached_input_tokens: '2',
+          output_tokens: '10',
+          reasoning_output_tokens: '0'
+        }
+      ]);
     }
 
     return jsonResponse(404, { error: 'not found' });

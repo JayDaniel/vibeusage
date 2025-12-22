@@ -31,16 +31,6 @@ class DatabaseStub {
   }
 
   lt() {
-    if (this._table !== 'vibescore_tracker_events') {
-      return { data: [], error: null };
-    }
-
-    const select = String(this._select || '');
-    const isAggregate = select.includes('date_trunc') || select.includes('sum_total_tokens');
-    if (!isAggregate) {
-      return { data: this.eventRows, error: null };
-    }
-
     return this;
   }
 
