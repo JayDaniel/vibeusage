@@ -220,3 +220,12 @@ The dashboard UI SHALL show an identity panel derived from the login state (name
 - **WHEN** the dashboard renders the identity panel
 - **THEN** it SHALL display `name` when available, otherwise fall back to `email`
 - **AND** it MAY display `userId` as a secondary identifier
+
+### Requirement: Debug output includes backend status and code
+When debug mode is enabled, the CLI SHALL surface backend status and error code to aid troubleshooting.
+
+#### Scenario: Debug output shows status and code
+- **GIVEN** `VIBESCORE_DEBUG=1`
+- **WHEN** `npx --yes @vibescore/tracker sync` encounters a backend error
+- **THEN** stderr SHALL include `Status:` and `Code:` when available
+
