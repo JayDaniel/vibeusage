@@ -217,7 +217,7 @@ var require_date = __commonJS({
     function parseOffsetMinutes(raw) {
       if (raw == null || raw === "") return null;
       const s = String(raw).trim();
-      if (!/^-?\\d+$/.test(s)) return null;
+      if (!/^-?\d+$/.test(s)) return null;
       const v = Number(s);
       if (!Number.isFinite(v)) return null;
       if (v < -840 || v > 840) return null;
@@ -241,8 +241,11 @@ var require_date = __commonJS({
       if (offsetMinutes != null) return { timeZone: null, offsetMinutes, source: "offset" };
       return { timeZone: null, offsetMinutes: 0, source: "utc" };
     }
-    function getUsageTimeZoneContext(_url) {
-      return normalizeTimeZone();
+    function getUsageTimeZoneContext(url) {
+      if (!url || !url.searchParams) return normalizeTimeZone();
+      const tz = url.searchParams.get("tz");
+      const offset = url.searchParams.get("tz_offset_minutes");
+      return normalizeTimeZone(tz, offset);
     }
     function isUtcTimeZone(tzContext) {
       if (!tzContext) return true;
