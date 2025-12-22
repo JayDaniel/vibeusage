@@ -1,6 +1,6 @@
 ## 1. Investigation
-- [ ] 1.1 Verify InsForge env keys (service role / anon key) and container restart signals
-- [ ] 1.2 Capture ingest logs during timeout windows (minute-aligned)
+- [x] 1.1 Verify InsForge env keys (service role / anon key) and container restart signals
+- [x] 1.2 Capture ingest logs during timeout windows (minute-aligned)
 
 ## 2. Ingest optimization
 - [x] 2.1 Implement bulk insert with duplicate ignore for anon path (records API or RPC)
