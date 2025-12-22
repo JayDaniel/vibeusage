@@ -1,0 +1,102 @@
+#!/usr/bin/env node
+'use strict';
+
+const assert = require('node:assert/strict');
+
+class QueryStub {
+  constructor(parent, table) {
+    this.parent = parent;
+    this.table = table;
+  }
+
+  select() {
+    return this;
+  }
+
+  order() {
+    return this;
+  }
+
+  limit(value) {
+    this.parent.limits.set(this.table, value);
+    return { data: this.parent.entries, error: null };
+  }
+
+  maybeSingle() {
+    return { data: { rank: 2, total_tokens: '99' }, error: null };
+  }
+}
+
+class DatabaseStub {
+  constructor(entries) {
+    this.entries = entries;
+    this.limits = new Map();
+  }
+
+  from(table) {
+    return new QueryStub(this, table);
+  }
+}
+
+async function main() {
+  process.env.INSFORGE_INTERNAL_URL = 'http://insforge:7130';
+  process.env.INSFORGE_ANON_KEY = 'anon';
+  process.env.INSFORGE_SERVICE_ROLE_KEY = '';
+
+  global.Deno = {
+    env: {
+      get(key) {
+        const v = process.env[key];
+        return v == null || v === '' ? null : v;
+      }
+    }
+  };
+
+  const entries = [
+    { rank: 1, is_me: true, display_name: 'Alpha', avatar_url: null, total_tokens: '10' },
+    { rank: 2, is_me: false, display_name: 'Beta', avatar_url: null, total_tokens: '9' }
+  ];
+
+  const db = new DatabaseStub(entries);
+
+  global.createClient = () => ({
+    auth: {
+      async getCurrentUser() {
+        return { data: { user: { id: 'user-id' } }, error: null };
+      }
+    },
+    database: db
+  });
+
+  const leaderboard = require('../../insforge-src/functions/vibescore-leaderboard.js');
+  const res = await leaderboard(
+    new Request('http://local/functions/vibescore-leaderboard?period=day&limit=1', {
+      method: 'GET',
+      headers: { Authorization: 'Bearer user-jwt' }
+    })
+  );
+
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.entries.length, 1);
+
+  const entriesView = 'vibescore_leaderboard_day_current';
+  assert.equal(db.limits.get(entriesView), 1);
+
+  process.stdout.write(
+    JSON.stringify(
+      {
+        ok: true,
+        limit: db.limits.get(entriesView),
+        entries: body.entries
+      },
+      null,
+      2
+    ) + '\n'
+  );
+}
+
+main().catch((err) => {
+  console.error(err && err.stack ? err.stack : String(err));
+  process.exit(1);
+});

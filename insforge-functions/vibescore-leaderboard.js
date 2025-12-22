@@ -477,7 +477,7 @@ module.exports = async function(request) {
   }
   const entriesView = `vibescore_leaderboard_${period}_current`;
   const meView = `vibescore_leaderboard_me_${period}_current`;
-  const { data: rawEntries, error: entriesErr } = await auth.edgeClient.database.from(entriesView).select("rank,is_me,display_name,avatar_url,total_tokens").order("rank", { ascending: true });
+  const { data: rawEntries, error: entriesErr } = await auth.edgeClient.database.from(entriesView).select("rank,is_me,display_name,avatar_url,total_tokens").order("rank", { ascending: true }).limit(limit);
   if (entriesErr) return json({ error: entriesErr.message }, 500);
   const { data: rawMe, error: meErr } = await auth.edgeClient.database.from(meView).select("rank,total_tokens").maybeSingle();
   if (meErr) return json({ error: meErr.message }, 500);

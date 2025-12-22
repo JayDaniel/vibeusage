@@ -81,7 +81,8 @@ module.exports = async function(request) {
   const { data: rawEntries, error: entriesErr } = await auth.edgeClient.database
     .from(entriesView)
     .select('rank,is_me,display_name,avatar_url,total_tokens')
-    .order('rank', { ascending: true });
+    .order('rank', { ascending: true })
+    .limit(limit);
 
   if (entriesErr) return json({ error: entriesErr.message }, 500);
 
