@@ -61,7 +61,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     [timeZone, tzOffsetMinutes]
   );
   const timeZoneRangeLabel = useMemo(
-    () => `Local time ${timeZoneShortLabel}`,
+    () => `Local time (${timeZoneShortLabel})`,
     [timeZoneShortLabel]
   );
 
@@ -311,7 +311,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
       headerRight={headerRight}
       footerLeft={
         accessEnabled ? (
-          <span>Local time ({timeZoneShortLabel}) • click Refresh to reload</span>
+          <span>{timeZoneRangeLabel} • click Refresh to reload</span>
         ) : (
           <span>Sign in to view usage</span>
         )
@@ -400,7 +400,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
                 timeZoneShortLabel={timeZoneShortLabel}
               />
               <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black">
-                Range: {heatmapFrom}..{heatmapTo} ({timeZoneRangeLabel})
+                Range: {heatmapFrom}..{heatmapTo} {timeZoneRangeLabel}
               </div>
               <div className="mt-1 text-[8px] opacity-30 uppercase tracking-widest font-black">
                 {heatmapSourceLabel}
@@ -420,7 +420,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
               useSummaryLayout
               summaryLabel={summaryLabel}
               summaryValue={toDisplayNumber(summary?.total_tokens)}
-              summarySubLabel={`SINCE ${rangeLabel} (${timeZoneRangeLabel})`}
+              summarySubLabel={`SINCE ${rangeLabel} ${timeZoneRangeLabel}`}
               onRefresh={refreshAll}
               loading={usageLoadingState}
               error={usageError}

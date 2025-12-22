@@ -158,7 +158,7 @@ export function UsagePanel({
       {rangeLabel ? (
         <div className="mt-3 text-[8px] opacity-30 uppercase tracking-widest font-black px-2">
           Range: {rangeLabel}
-          {rangeTimeZoneLabel ? ` (${rangeTimeZoneLabel})` : ""}
+          {rangeTimeZoneLabel ? ` ${rangeTimeZoneLabel}` : ""}
         </div>
       ) : null}
     </AsciiBox>
