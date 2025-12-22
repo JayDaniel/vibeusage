@@ -46,7 +46,10 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   }, []);
 
   const [period, setPeriod] = useState("week");
-  const range = useMemo(() => getRangeForPeriod(period), [period]);
+  const range = useMemo(
+    () => getRangeForPeriod(period, { timeZone, offsetMinutes: tzOffsetMinutes }),
+    [period, timeZone, tzOffsetMinutes]
+  );
   const from = range.from;
   const to = range.to;
   const mockEnabled = isMockEnabled();

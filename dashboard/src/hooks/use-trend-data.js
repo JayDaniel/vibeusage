@@ -7,7 +7,7 @@ import {
 } from "../lib/vibescore-api.js";
 import { formatDateLocal, formatDateUTC } from "../lib/date-range.js";
 import { isMockEnabled } from "../lib/mock-data.js";
-import { getTimeZoneCacheKey } from "../lib/timezone.js";
+import { getLocalDayKey, getTimeZoneCacheKey } from "../lib/timezone.js";
 
 const DEFAULT_MONTHS = 24;
 
@@ -130,7 +130,10 @@ export function useTrendData({
       const nextTo = response?.to || to || response?.day || null;
       let nextRows = Array.isArray(response?.data) ? response.data : [];
       if (mode === "daily") {
-        nextRows = fillDailyGaps(nextRows, nextFrom || from, nextTo || to);
+        nextRows = fillDailyGaps(nextRows, nextFrom || from, nextTo || to, {
+          timeZone,
+          offsetMinutes: tzOffsetMinutes,
+        });
       } else if (mode === "hourly") {
         nextRows = markHourlyFuture(nextRows, {
           timeZone,
@@ -154,7 +157,16 @@ export function useTrendData({
     } catch (e) {
       const cached = readCache();
       if (cached?.rows) {
-        setRows(Array.isArray(cached.rows) ? cached.rows : []);
+        const filledRows =
+          mode === "daily"
+            ? fillDailyGaps(cached.rows || [], cached.from || from, cached.to || to, {
+                timeZone,
+                offsetMinutes: tzOffsetMinutes,
+              })
+            : Array.isArray(cached.rows)
+            ? cached.rows
+            : [];
+        setRows(filledRows);
         setRange({ from: cached.from || from, to: cached.to || to });
         setSource("cache");
         setFetchedAt(cached.fetchedAt || null);
@@ -208,7 +220,16 @@ export function useTrendData({
     }
     const cached = readCache();
     if (cached?.rows) {
-      setRows(Array.isArray(cached.rows) ? cached.rows : []);
+      const filledRows =
+        mode === "daily"
+          ? fillDailyGaps(cached.rows || [], cached.from || from, cached.to || to, {
+              timeZone,
+              offsetMinutes: tzOffsetMinutes,
+            })
+          : Array.isArray(cached.rows)
+          ? cached.rows
+          : [];
+      setRows(filledRows);
       setRange({ from: cached.from || from, to: cached.to || to });
       setSource("cache");
       setFetchedAt(cached.fetchedAt || null);
@@ -261,15 +282,14 @@ function addUtcDays(date, days) {
   );
 }
 
-function fillDailyGaps(rows, from, to) {
+function fillDailyGaps(rows, from, to, { timeZone, offsetMinutes } = {}) {
   const start = parseUtcDate(from);
   const end = parseUtcDate(to);
   if (!start || !end || end < start) return Array.isArray(rows) ? rows : [];
 
-  const now = new Date();
-  const todayKey = formatDateLocal(now);
+  const todayKey = getLocalDayKey({ timeZone, offsetMinutes, date: new Date() });
   const today = parseUtcDate(todayKey);
-  const todayTime = today ? today.getTime() : now.getTime();
+  const todayTime = today ? today.getTime() : new Date().getTime();
 
   const byDay = new Map();
   for (const row of rows || []) {

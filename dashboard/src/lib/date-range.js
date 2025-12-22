@@ -1,3 +1,5 @@
+import { getLocalDateParts } from "./timezone.js";
+
 export function formatDateUTC(d) {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
     .toISOString()
@@ -29,10 +31,23 @@ function parseDateString(yyyyMmDd) {
   return formatDateUTC(dt) === raw ? dt : null;
 }
 
-export function getRangeForPeriod(period) {
-  const todayKey = formatDateLocal(new Date());
-  const today = parseDateString(todayKey);
-  const to = todayKey;
+function formatDateParts(parts) {
+  if (!parts) return "";
+  const y = parts.year;
+  const m = String(parts.month).padStart(2, "0");
+  const d = String(parts.day).padStart(2, "0");
+  if (!y || !m || !d) return "";
+  return `${y}-${m}-${d}`;
+}
+
+export function getRangeForPeriod(period, { timeZone, offsetMinutes } = {}) {
+  const parts = getLocalDateParts({ timeZone, offsetMinutes, date: new Date() });
+  if (!parts) {
+    const fallbackKey = formatDateLocal(new Date());
+    return { from: fallbackKey, to: fallbackKey };
+  }
+  const to = formatDateParts(parts);
+  const today = parseDateString(to);
   if (!today) return { from: to, to };
 
   if (period === "day") {

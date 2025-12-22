@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getUsageDaily, getUsageSummary } from "../lib/vibescore-api.js";
 import { formatDateLocal, formatDateUTC } from "../lib/date-range.js";
 import { isMockEnabled } from "../lib/mock-data.js";
-import { getTimeZoneCacheKey } from "../lib/timezone.js";
+import { getLocalDayKey, getTimeZoneCacheKey } from "../lib/timezone.js";
 import { sumDailyRowsToTotals } from "../lib/usage-aggregate.js";
 
 export function useUsageData({
@@ -83,7 +83,10 @@ export function useUsageData({
       let nextDaily =
         includeDaily && Array.isArray(dailyRes?.data) ? dailyRes.data : [];
       if (includeDaily) {
-        nextDaily = fillDailyGaps(nextDaily, from, to);
+        nextDaily = fillDailyGaps(nextDaily, from, to, {
+          timeZone,
+          offsetMinutes: tzOffsetMinutes,
+        });
       }
       const nextSummary = shouldDeriveSummary
         ? sumDailyRowsToTotals(nextDaily)
@@ -111,7 +114,10 @@ export function useUsageData({
         setSummary(cached.summary);
         const cachedDaily = Array.isArray(cached.daily) ? cached.daily : [];
         const filledDaily = includeDaily
-          ? fillDailyGaps(cachedDaily, cached.from || from, cached.to || to)
+          ? fillDailyGaps(cachedDaily, cached.from || from, cached.to || to, {
+              timeZone,
+              offsetMinutes: tzOffsetMinutes,
+            })
           : cachedDaily;
         setDaily(filledDaily);
         setSource("cache");
@@ -156,7 +162,10 @@ export function useUsageData({
       setSummary(cached.summary);
       const cachedDaily = Array.isArray(cached.daily) ? cached.daily : [];
       const filledDaily = includeDaily
-        ? fillDailyGaps(cachedDaily, cached.from || from, cached.to || to)
+        ? fillDailyGaps(cachedDaily, cached.from || from, cached.to || to, {
+            timeZone,
+            offsetMinutes: tzOffsetMinutes,
+          })
         : cachedDaily;
       setDaily(filledDaily);
       setSource("cache");
@@ -209,15 +218,14 @@ function addUtcDays(date, days) {
   );
 }
 
-function fillDailyGaps(rows, from, to) {
+function fillDailyGaps(rows, from, to, { timeZone, offsetMinutes } = {}) {
   const start = parseUtcDate(from);
   const end = parseUtcDate(to);
   if (!start || !end || end < start) return Array.isArray(rows) ? rows : [];
 
-  const now = new Date();
-  const todayKey = formatDateLocal(now);
+  const todayKey = getLocalDayKey({ timeZone, offsetMinutes, date: new Date() });
   const today = parseUtcDate(todayKey);
-  const todayTime = today ? today.getTime() : now.getTime();
+  const todayTime = today ? today.getTime() : new Date().getTime();
 
   const byDay = new Map();
   for (const row of rows || []) {
