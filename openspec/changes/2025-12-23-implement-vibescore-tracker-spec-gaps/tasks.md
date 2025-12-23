@@ -37,6 +37,10 @@
   1) 打开 Dashboard → 选择 `week` → 观察范围从本地周一开始。
   2) 查看 UsagePanel/Heatmap/页脚时区标识为 `Local time (UTC±HH:MM)`。
   3) TREND 在当前日期之后不再连线（future 桶空线）。
+- UI 观察结果（https://www.vibescore.space/）：
+  - UsagePanel 显示 `SINCE 2025-12-22..2025-12-28 Local time (UTC+08:00)`（周一起始 + 本地时区）。
+  - Activity heatmap 显示 `LOCAL TIME (UTC+08:00)`，并显示 `RANGE: 2024-12-29..2025-12-23`。
+  - 页脚显示 `LOCAL TIME (UTC+08:00) • CLICK REFRESH TO RELOAD`。
 
 ## 3. 文档
 - [x] 3.1 更新相关文档（如 `BACKEND_API.md`/运行手册/变更记录）。
