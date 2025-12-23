@@ -2,6 +2,7 @@ import React from "react";
 
 import { copy } from "../../../lib/copy.js";
 import { AsciiBox } from "./AsciiBox.jsx";
+import { DecodingText } from "./DecodingText.jsx";
 import { MatrixButton } from "./MatrixButton.jsx";
 
 function normalizePeriods(periods) {
@@ -102,7 +103,11 @@ export function UsagePanel({
               {summaryLabel}
             </div>
             <div className="text-5xl font-black text-white glow-text tracking-tighter">
-              {summaryValue}
+              {summaryValue && summaryValue !== "—" ? (
+                <DecodingText text={summaryValue} />
+              ) : (
+                summaryValue
+              )}
             </div>
             {summarySubLabel ? (
               <div className="text-[8px] opacity-40 mt-1 font-mono">
