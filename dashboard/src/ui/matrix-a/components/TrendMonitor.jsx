@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 
 import { copy } from "../../../lib/copy.js";
+import { ASCII_CHARS } from "./AsciiBox.jsx";
 
 // --- Trend Monitor (NeuralFluxMonitor v2.0) ---
 // Industrial TUI style: independent axes, precise grid, physical partitions.
@@ -337,14 +338,19 @@ export function TrendMonitor({
 
   return (
     <div className="w-full h-full min-h-[160px] flex flex-col relative group select-none bg-[#050505] border border-white/10 p-1">
-      <div className="flex justify-between items-center px-1 mb-1 border-b border-white/5 pb-1">
-        <span className="shrink-0 font-black uppercase tracking-[0.2em] text-[#00FF41] px-2 py-0.5 bg-[#00FF41]/10 text-[9px] border border-[#00FF41]/20">
+      <div className="flex items-center leading-none px-1 mb-1">
+        <span className="shrink-0 text-[#00FF41]/30">{ASCII_CHARS.TOP_LEFT}</span>
+        <span className="mx-2 shrink-0 font-black uppercase tracking-[0.2em] text-[#00FF41] px-2 py-0.5 bg-[#00FF41]/10 text-[9px] border border-[#00FF41]/20">
           {label}
         </span>
         <div className="flex gap-3 text-[8px] font-mono text-[#00FF41]/50">
           <span>{copy("trend.monitor.max_label", { value: Math.round(max) })}</span>
           <span>{copy("trend.monitor.avg_label", { value: Math.round(avg) })}</span>
         </div>
+        <span className="flex-1 overflow-hidden whitespace-nowrap opacity-10 text-[#00FF41]">
+          {ASCII_CHARS.HORIZONTAL.repeat(100)}
+        </span>
+        <span className="shrink-0 text-[#00FF41]/30">{ASCII_CHARS.TOP_RIGHT}</span>
       </div>
 
       <div className="flex-1 relative overflow-hidden border border-white/5 bg-black/40">

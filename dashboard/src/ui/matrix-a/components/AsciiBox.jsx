@@ -1,6 +1,6 @@
 import React from "react";
 
-const CHARS = {
+export const ASCII_CHARS = {
   TOP_LEFT: "┌",
   TOP_RIGHT: "┐",
   BOTTOM_LEFT: "└",
@@ -15,7 +15,7 @@ export function AsciiBox({ title, subtitle, children, className = "" }) {
       className={`relative flex flex-col bg-black/90 border border-[#00FF41]/10 ${className}`}
     >
       <div className="flex items-center leading-none">
-        <span className="shrink-0 text-[#00FF41]/30">{CHARS.TOP_LEFT}</span>
+        <span className="shrink-0 text-[#00FF41]/30">{ASCII_CHARS.TOP_LEFT}</span>
         <span className="mx-2 shrink-0 font-black uppercase tracking-[0.2em] text-[#00FF41] px-2 py-0.5 bg-[#00FF41]/10 text-[9px] border border-[#00FF41]/20">
           {title}
         </span>
@@ -25,27 +25,27 @@ export function AsciiBox({ title, subtitle, children, className = "" }) {
           </span>
         ) : null}
         <span className="flex-1 overflow-hidden whitespace-nowrap opacity-10 text-[#00FF41]">
-          {CHARS.HORIZONTAL.repeat(100)}
+          {ASCII_CHARS.HORIZONTAL.repeat(100)}
         </span>
-        <span className="shrink-0 text-[#00FF41]/30">{CHARS.TOP_RIGHT}</span>
+        <span className="shrink-0 text-[#00FF41]/30">{ASCII_CHARS.TOP_RIGHT}</span>
       </div>
 
       <div className="flex flex-1">
         <div className="shrink-0 w-3 flex justify-center opacity-10 text-[#00FF41]">
-          {CHARS.VERTICAL}
+          {ASCII_CHARS.VERTICAL}
         </div>
         <div className="flex-1 min-w-0 py-4 px-2 relative z-10">{children}</div>
         <div className="shrink-0 w-3 flex justify-center opacity-10 text-[#00FF41]">
-          {CHARS.VERTICAL}
+          {ASCII_CHARS.VERTICAL}
         </div>
       </div>
 
       <div className="flex items-center leading-none opacity-10 text-[#00FF41]">
-        <span className="shrink-0">{CHARS.BOTTOM_LEFT}</span>
+        <span className="shrink-0">{ASCII_CHARS.BOTTOM_LEFT}</span>
         <span className="flex-1 overflow-hidden whitespace-nowrap">
-          {CHARS.HORIZONTAL.repeat(100)}
+          {ASCII_CHARS.HORIZONTAL.repeat(100)}
         </span>
-        <span className="shrink-0">{CHARS.BOTTOM_RIGHT}</span>
+        <span className="shrink-0">{ASCII_CHARS.BOTTOM_RIGHT}</span>
       </div>
     </div>
   );
