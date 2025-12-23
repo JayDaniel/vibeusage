@@ -17,8 +17,16 @@ landing.handle.default,landing,LandingPage,LandingPage,handle_default,"VIBE_USER
 landing.handle.special,landing,LandingPage,LandingPage,handle_special,"VOLT",,active
 landing.hero.title_primary,landing,LandingPage,LandingPage,hero_title_primary,"MORE_TOKENS.",,active
 landing.hero.title_secondary,landing,LandingPage,LandingPage,hero_title_secondary,"MORE_VIBE.",,active
-landing.hero.tagline,landing,LandingPage,LandingPage,hero_tagline,"QUANTIFY YOUR NEURAL OUTPUT",,active
-landing.hero.subtagline,landing,LandingPage,LandingPage,hero_subtagline,"for codex cli token // Real-time Neural Analytics",,active
+landing.hero.tagline,landing,LandingPage,LandingPage,hero_tagline,"CODEX TOKEN USAGE TRACKER",,active
+landing.hero.subtagline,landing,LandingPage,LandingPage,hero_subtagline,"Track Codex token usage from the CLI in real time.",,active
+landing.meta.title,landing,LandingPage,Meta,title,"VibeScore | Codex Token Usage Tracker",,active
+landing.meta.description,landing,LandingPage,Meta,description,"VibeScore is a Codex token usage tracker for Codex CLI. Auto-track token usage, visualize in a Matrix-style UI, and compare on the leaderboard.",,active
+landing.seo.title,landing,LandingPage,LandingPage,seo_title,"Codex Token Usage, Quantified",,active
+landing.seo.summary,landing,LandingPage,LandingPage,seo_summary,"VibeScore is a token usage tracker built for Codex CLI users who want a fast, reliable view of Codex token spend.",,active
+landing.seo.point1,landing,LandingPage,LandingPage,seo_point_1,"Auto-track Codex CLI token usage with zero manual steps.",,active
+landing.seo.point2,landing,LandingPage,LandingPage,seo_point_2,"Matrix-style interface that highlights the signals you care about.",,active
+landing.seo.point3,landing,LandingPage,LandingPage,seo_point_3,"Codex CLI token leaderboard to compare usage and rank.",,active
+landing.seo.roadmap,landing,LandingPage,LandingPage,seo_roadmap,"Designed to expand to other runtimes, including Claude Code.",,active
 landing.signal.identity_probe,landing,LandingPage,SignalBox,title,"Identity_Probe",,active
 landing.signal.live_sniffer,landing,LandingPage,SignalBox,title,"LIVE_SNIFFER",,active
 landing.handle.label,landing,LandingPage,LandingPage,handle_label,"Set_Handle",,active

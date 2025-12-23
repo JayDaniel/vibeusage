@@ -123,6 +123,32 @@ export function LandingPage({ signInUrl }) {
           extrasSkeleton
         )}
 
+        <section className="w-full max-w-3xl border border-[#00FF41]/20 bg-[#00FF41]/5 px-6 py-6 space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+            {copy("landing.seo.title")}
+          </h2>
+          <p className="text-xs md:text-sm text-[#00FF41]/70">
+            {copy("landing.seo.summary")}
+          </p>
+          <ul className="space-y-2 text-[11px] md:text-xs text-[#00FF41]/80">
+            <li className="flex gap-2">
+              <span className="text-[#00FF41]">-</span>
+              <span>{copy("landing.seo.point1")}</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-[#00FF41]">-</span>
+              <span>{copy("landing.seo.point2")}</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-[#00FF41]">-</span>
+              <span>{copy("landing.seo.point3")}</span>
+            </li>
+          </ul>
+          <p className="text-[9px] text-[#00FF41]/50 uppercase tracking-[0.2em]">
+            {copy("landing.seo.roadmap")}
+          </p>
+        </section>
+
         {/* 核心操作区域 */}
         <div className="w-full max-w-sm flex flex-col items-center space-y-4">
           <a
