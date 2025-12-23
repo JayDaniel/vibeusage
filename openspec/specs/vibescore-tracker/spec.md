@@ -82,12 +82,18 @@ The ingest endpoint SHALL upsert half-hour aggregates without double-counting wh
 - **THEN** the stored totals SHALL remain unchanged
 
 ### Requirement: Auto sync uploads are throttled to half-hour cadence
-The CLI auto sync path SHALL rate-limit uploads to at most one upload attempt per device every 30 minutes, while manual sync and init-triggered sync run immediately without upload throttling.
+The CLI auto sync path SHALL rate-limit uploads to at most one upload attempt per device every 30 minutes, while manual sync and init-triggered sync run immediately without upload throttling. If auto sync is skipped due to throttling/backoff while pending data exists, the CLI SHALL schedule a retry at or after the next allowed window without requiring a new notify event.
 
 #### Scenario: Auto sync enforces half-hour throttle
 - **GIVEN** a device ran `sync --auto` less than 30 minutes ago
 - **WHEN** `sync --auto` runs again with pending data
 - **THEN** the upload SHOULD be skipped until the next allowed window
+
+#### Scenario: Auto sync schedules retry after throttle
+- **GIVEN** pending half-hour buckets exist
+- **AND** `sync --auto` is skipped due to throttle/backoff
+- **WHEN** the next allowed window arrives
+- **THEN** the CLI SHALL attempt a retry without requiring another notify event
 
 #### Scenario: Manual sync uploads immediately
 - **GIVEN** pending half-hour buckets exist
@@ -699,7 +705,7 @@ The CLI SHALL expose sufficient diagnostics to determine whether auto sync is fu
 
 #### Scenario: User validates auto sync health
 - **WHEN** a user runs `npx @vibescore/tracker status --diagnostics`
-- **THEN** the output SHALL include the latest notify timestamp, last notify-triggered sync timestamp, queue pending bytes, and upload throttle state
+- **THEN** the output SHALL include the latest notify timestamp, last notify-triggered sync timestamp, queue pending bytes, upload throttle state, and any scheduled auto retry state
 
 ### Requirement: Usage endpoints accept dashboard timezone
 The system SHALL allow the dashboard to request usage aggregates in a specified timezone using `tz` (IANA) or `tz_offset_minutes` (fixed offset). When timezone parameters are omitted, usage endpoints SHALL default to UTC behavior.
