@@ -253,7 +253,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   }
 
   function sortIconFor(key) {
-    if (effectiveSort.key !== key) return copy("daily.sort.indicator");
+    if (effectiveSort.key !== key) return "";
     return effectiveSort.dir === "asc" ? "▲" : "▼";
   }
 

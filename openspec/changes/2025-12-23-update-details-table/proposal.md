@@ -8,7 +8,7 @@
 - Align DETAILS header text with numeric columns (left-aligned).
 - DETAILS rows follow selected period: day -> hour, week/month -> day, total -> month.
 - Total period shows latest 24 months with pagination (12 months per page).
-- Date/time sorting defaults to newest-first and all columns show sortable indicators.
+- Date/time sorting defaults to newest-first; only the active column shows a sort indicator.
 
 ## Impact
 - Affected specs: vibescore-tracker
