@@ -135,15 +135,15 @@ module.exports = async function(request) {
   const cutoffIso = cutoff.toISOString();
   let deleted = 0;
   if (dryRun) {
-    const { count, error } = await serviceClient.database.from("vibescore_tracker_events").select("id", { count: "exact", head: true }).lt("token_timestamp", cutoffIso);
+    const { count, error } = await serviceClient.database.from("vibescore_tracker_events").select("event_id", { count: "exact" }).lt("token_timestamp", cutoffIso).limit(1);
     if (error) return json({ error: formatError(error) }, 500);
     deleted = toSafeInt(count);
   } else {
-    const before = await serviceClient.database.from("vibescore_tracker_events").select("id", { count: "exact", head: true }).lt("token_timestamp", cutoffIso);
+    const before = await serviceClient.database.from("vibescore_tracker_events").select("event_id", { count: "exact" }).lt("token_timestamp", cutoffIso).limit(1);
     if (before.error) return json({ error: formatError(before.error) }, 500);
     const { error: deleteErr } = await serviceClient.database.from("vibescore_tracker_events").delete().lt("token_timestamp", cutoffIso);
     if (deleteErr) return json({ error: formatError(deleteErr) }, 500);
-    const after = await serviceClient.database.from("vibescore_tracker_events").select("id", { count: "exact", head: true }).lt("token_timestamp", cutoffIso);
+    const after = await serviceClient.database.from("vibescore_tracker_events").select("event_id", { count: "exact" }).lt("token_timestamp", cutoffIso).limit(1);
     if (after.error) return json({ error: formatError(after.error) }, 500);
     deleted = Math.max(0, toSafeInt(before.count) - toSafeInt(after.count));
   }
