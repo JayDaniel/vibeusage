@@ -358,6 +358,10 @@ function spawnInitSync({ trackerBinPath, packageName }) {
     stdio: 'ignore',
     env: process.env
   });
+  child.on('error', (err) => {
+    const msg = err && err.message ? err.message : 'unknown error';
+    process.stderr.write(`Initial sync spawn failed: ${msg}\n`);
+  });
   child.unref();
 }
 
