@@ -11,8 +11,6 @@ function formatUsdValue(value) {
 }
 
 export function CostAnalysisModal({ isOpen, onClose, fleetData = [] }) {
-  if (!isOpen) return null;
-
   useEffect(() => {
     if (typeof onClose !== "function") return undefined;
     const handleKeyDown = (event) => {
@@ -21,6 +19,8 @@ export function CostAnalysisModal({ isOpen, onClose, fleetData = [] }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  if (!isOpen) return null;
 
   const percentSymbol = copy("shared.unit.percent");
   const calcPrefix = copy("dashboard.cost_breakdown.calc_prefix");
