@@ -18,16 +18,16 @@ landing.handle.default,landing,LandingPage,LandingPage,handle_default,"VIBE_USER
 landing.handle.special,landing,LandingPage,LandingPage,handle_special,"VOLT",,active
 landing.hero.title_primary,landing,LandingPage,LandingPage,hero_title_primary,"MORE_TOKENS.",,active
 landing.hero.title_secondary,landing,LandingPage,LandingPage,hero_title_secondary,"MORE_VIBE.",,active
-landing.hero.tagline,landing,LandingPage,LandingPage,hero_tagline,"AI CLI TOKEN USAGE TRACKER",,active
+landing.hero.tagline,landing,LandingPage,LandingPage,hero_tagline,"CODEX / CLAUDE CODE / GEMINI CLI TRACKER",,active
 landing.hero.subtagline,landing,LandingPage,LandingPage,hero_subtagline,"Track Codex, Claude Code & Gemini CLI usage in real time.",,active
-landing.meta.title,landing,LandingPage,Meta,title,"VibeScore | AI CLI Token Tracker",,active
+landing.meta.title,landing,LandingPage,Meta,title,"VibeScore | Codex, Claude Code & Gemini CLI Token Tracker",,active
 landing.meta.description,landing,LandingPage,Meta,description,"VibeScore is a token tracker for Codex, Claude Code & Gemini CLI. Auto-track usage, visualize in a Matrix-style UI, and compare rankings.",,active
 landing.meta.og_site_name,landing,LandingPage,Meta,og_site_name,"VibeScore",,active
 landing.meta.og_type,landing,LandingPage,Meta,og_type,"website",,active
 landing.meta.og_url,landing,LandingPage,Meta,og_url,"https://www.vibescore.space",,active
 landing.meta.og_image,landing,LandingPage,Meta,og_image,"https://www.vibescore.space/og-image.png",,active
 landing.meta.twitter_card,landing,LandingPage,Meta,twitter_card,"summary_large_image",,active
-landing.seo.title,landing,LandingPage,LandingPage,seo_title,"AI CLI Token Usage, Quantified",,active
+landing.seo.title,landing,LandingPage,LandingPage,seo_title,"Quantify Codex, Claude Code & Gemini CLI Usage",,active
 landing.seo.summary,landing,LandingPage,LandingPage,seo_summary,"VibeScore is a token usage tracker built for AI CLI users (Codex, Claude, Gemini) who want a fast, reliable view of token spend.",,active
 landing.seo.point1,landing,LandingPage,LandingPage,seo_point_1,"Auto-track AI CLI token usage with zero manual steps.",,active
 landing.seo.point2,landing,LandingPage,LandingPage,seo_point_2,"Matrix-style interface that highlights the signals you care about.",,active
