@@ -283,7 +283,15 @@ git commit -m "feat(cli): ingest gemini usage in sync"
 Run: `npm test`
 Expected: PASS (record in verification report).
 
-**Step 3: Commit**
+**Step 3: Trigger Codex review on PR**
+
+Comment on the PR:
+
+```
+@codex review
+```
+
+**Step 4: Commit**
 
 ```bash
 git add openspec/changes/2025-12-26-add-gemini-cli-usage
