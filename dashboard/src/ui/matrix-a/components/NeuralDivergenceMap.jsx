@@ -12,7 +12,7 @@ export const NeuralDivergenceMap = React.memo(function NeuralDivergenceMap({
 }) {
   return (
     <AsciiBox title={title} className={className}>
-      <div className="space-y-6 py-1 overflow-y-auto no-scrollbar">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-1 overflow-y-auto no-scrollbar">
         {fleetData.map((fleet, index) => (
           <NeuralAdaptiveFleet
             key={`${fleet.label}-${index}`}

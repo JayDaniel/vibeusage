@@ -62,7 +62,10 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
                 }}
               />
               <div className="flex items-baseline space-x-2 min-w-0">
-                <span className="text-[9px] font-mono truncate uppercase text-[#00FF41] font-bold">
+                <span
+                  className="text-[9px] font-mono truncate uppercase text-[#00FF41] font-bold"
+                  title={model.name}
+                >
                   {model.name}
                 </span>
                 <span className="text-[8px] font-mono text-[#00FF41]/60 font-bold">
