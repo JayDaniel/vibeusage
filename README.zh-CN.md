@@ -25,7 +25,7 @@ _Codex CLI 实时 AI 分析工具_
 
 ## 🌌 项目概述
 
-**VibeScore** 是一个专为 macOS 开发者设计的智能令牌（Token）使用追踪系统。它能够实时监控 Codex CLI 的输出，通过高度可视化的 **Matrix** 风格仪表盘，将你的 **AI 产出 (AI Output)** 转化为可量化的指标。
+**VibeScore** 是一个专为 macOS 开发者设计的智能令牌（Token）使用追踪系统。它通过全新的 **Matrix-A Design System**，提供高度可视化的赛博朋克风格仪表盘，将你的 **AI 产出 (AI Output)** 转化为可量化的指标，并支持通过 **Neural Divergence Map** 实时监控多模型的算力分布。
 
 > [!TIP] > **Core Index (核心指数)**: 我们的标志性指标，通过分析 Token 消耗速率与模式，反映你的开发心流状态。
 
@@ -41,8 +41,11 @@ _Codex CLI 实时 AI 分析工具_
 ## 🚀 核心功能
 
 - 📡 **自动嗅探与同步 (Auto-Sync)**: 实时监听 Codex CLI 管道并具备**全自动后台同步**功能。初始化后，你的 Token 产出将自动追踪并同步，无需手动执行脚本。
-- 🧭 **多来源采集**：支持 Codex CLI 与 Every Code（标记为 `source=every-code`），无需修改 Every Code 客户端。
-- 📊 **Matrix Dashboard (矩阵控制台)**: 基于 React + Vite 的高性能仪表盘，具备热力图、趋势图与实时日志。
+- 🧭 **多来源采集**: 支持 Codex CLI 与 Every Code（标记为 `source=every-code`），无需修改 Every Code 客户端。
+- 📊 **Matrix Dashboard (矩阵控制台)**: 基于 React + Vite 的高性能仪表盘，采用全新的 **Matrix-A** 设计语言。
+  - **Neural Divergence Map (神经发散图谱)**: 可视化多引擎负载均衡状态，直观展示算力分布。
+  - **Cost Intelligence (成本智能)**: 实时、多维度的成本分解与预测。
+  - **Smart Notifications (智能通知)**: 非侵入式的系统级通知，采用金色 (Gold/Amber) 视觉传达高价值信息。
 - ⚡ **AI Analytics (AI 分析)**: 深度分析 Input/Output Token，支持缓存 (Cached) 与推理 (Reasoning) 部分的分离监控。
 - 🔒 **Identity Core (身份核心)**: 完备的身份验证与权限管理，保护你的开发数据资产。
 
