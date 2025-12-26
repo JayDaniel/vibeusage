@@ -216,12 +216,13 @@ async function parseGeminiIncremental({ sessionFiles, cursors, queuePath, onProg
     const key = filePath;
     const prev = cursors.files[key] || null;
     const inode = st.ino || 0;
+    const sameInode = prev && prev.inode === inode;
 
     const result = await parseGeminiFile({
       filePath,
-      lastIndex: typeof prev?.lastIndex === 'number' ? prev.lastIndex : null,
-      lastMessageId: typeof prev?.lastMessageId === 'string' ? prev.lastMessageId : null,
-      lastTimestamp: typeof prev?.lastTimestamp === 'string' ? prev.lastTimestamp : null,
+      lastIndex: sameInode && typeof prev?.lastIndex === 'number' ? prev.lastIndex : null,
+      lastMessageId: sameInode && typeof prev?.lastMessageId === 'string' ? prev.lastMessageId : null,
+      lastTimestamp: sameInode && typeof prev?.lastTimestamp === 'string' ? prev.lastTimestamp : null,
       hourlyState,
       touchedBuckets,
       source: fileSource
