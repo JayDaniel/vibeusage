@@ -4,7 +4,14 @@ const fs = require('node:fs/promises');
 const cp = require('node:child_process');
 
 const { ensureDir, readJson, writeJson, openLock } = require('../lib/fs');
-const { listRolloutFiles, listClaudeProjectFiles, parseRolloutIncremental, parseClaudeIncremental } = require('../lib/rollout');
+const {
+  listRolloutFiles,
+  listClaudeProjectFiles,
+  listGeminiSessionFiles,
+  parseRolloutIncremental,
+  parseClaudeIncremental,
+  parseGeminiIncremental
+} = require('../lib/rollout');
 const { drainQueueToCloud } = require('../lib/uploader');
 const { createProgress, renderBar, formatNumber, formatBytes } = require('../lib/progress');
 const { syncHeartbeat } = require('../lib/vibescore-api');
@@ -45,6 +52,8 @@ async function cmdSync(argv) {
     const codexHome = process.env.CODEX_HOME || path.join(home, '.codex');
     const codeHome = process.env.CODE_HOME || path.join(home, '.code');
     const claudeProjectsDir = path.join(home, '.claude', 'projects');
+    const geminiHome = process.env.GEMINI_HOME || path.join(home, '.gemini');
+    const geminiTmpDir = path.join(geminiHome, 'tmp');
 
     const sources = [
       { source: 'codex', sessionsDir: path.join(codexHome, 'sessions') },
@@ -101,6 +110,29 @@ async function cmdSync(argv) {
           );
         },
         source: 'claude'
+      });
+    }
+
+    const geminiFiles = await listGeminiSessionFiles(geminiTmpDir);
+    let geminiResult = { filesProcessed: 0, eventsAggregated: 0, bucketsQueued: 0 };
+    if (geminiFiles.length > 0) {
+      if (progress?.enabled) {
+        progress.start(`Parsing Gemini ${renderBar(0)} 0/${formatNumber(geminiFiles.length)} files | buckets 0`);
+      }
+      geminiResult = await parseGeminiIncremental({
+        sessionFiles: geminiFiles,
+        cursors,
+        queuePath,
+        onProgress: (p) => {
+          if (!progress?.enabled) return;
+          const pct = p.total > 0 ? p.index / p.total : 1;
+          progress.update(
+            `Parsing Gemini ${renderBar(pct)} ${formatNumber(p.index)}/${formatNumber(p.total)} files | buckets ${formatNumber(
+              p.bucketsQueued
+            )}`
+          );
+        },
+        source: 'gemini'
       });
     }
 
@@ -229,8 +261,8 @@ async function cmdSync(argv) {
     });
 
     if (!opts.auto) {
-      const totalParsed = parseResult.filesProcessed + claudeResult.filesProcessed;
-      const totalBuckets = parseResult.bucketsQueued + claudeResult.bucketsQueued;
+      const totalParsed = parseResult.filesProcessed + claudeResult.filesProcessed + geminiResult.filesProcessed;
+      const totalBuckets = parseResult.bucketsQueued + claudeResult.bucketsQueued + geminiResult.bucketsQueued;
       process.stdout.write(
         [
           'Sync finished:',
