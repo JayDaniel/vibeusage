@@ -3,7 +3,11 @@ import React from "react";
 import { copy } from "../../../lib/copy.js";
 import { TEXTURES } from "./MatrixConstants.js";
 
-export function NeuralAdaptiveFleet({ label, totalPercent, models = [] }) {
+export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
+  label,
+  totalPercent,
+  models = [],
+}) {
   const percentSymbol = copy("shared.unit.percent");
 
   return (
@@ -45,7 +49,10 @@ export function NeuralAdaptiveFleet({ label, totalPercent, models = [] }) {
         {models.map((model, index) => {
           const styleConfig = TEXTURES[index % TEXTURES.length];
           return (
-            <div key={`${model.name}-${index}`} className="flex items-center space-x-2">
+            <div
+              key={`${model.name}-${index}`}
+              className="flex items-center space-x-2"
+            >
               <div
                 className="w-2 h-2 border border-[#00FF41]/20 shrink-0"
                 style={{
@@ -69,4 +76,4 @@ export function NeuralAdaptiveFleet({ label, totalPercent, models = [] }) {
       </div>
     </div>
   );
-}
+});

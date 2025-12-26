@@ -15,7 +15,7 @@ function normalizePeriods(periods) {
   });
 }
 
-export function UsagePanel({
+export const UsagePanel = React.memo(function UsagePanel({
   title = copy("usage.panel.title"),
   period,
   periods,
@@ -44,9 +44,18 @@ export function UsagePanel({
     breakdown && breakdown.length
       ? breakdown
       : [
-          { key: copy("usage.metric.input"), label: copy("usage.metric.input") },
-          { key: copy("usage.metric.output"), label: copy("usage.metric.output") },
-          { key: copy("usage.metric.cached_input"), label: copy("usage.metric.cached_short") },
+          {
+            key: copy("usage.metric.input"),
+            label: copy("usage.metric.input"),
+          },
+          {
+            key: copy("usage.metric.output"),
+            label: copy("usage.metric.output"),
+          },
+          {
+            key: copy("usage.metric.cached_input"),
+            label: copy("usage.metric.cached_short"),
+          },
           {
             key: copy("usage.metric.reasoning_output"),
             label: copy("usage.metric.reasoning_short"),
@@ -87,7 +96,9 @@ export function UsagePanel({
             ) : null}
             {onRefresh ? (
               <MatrixButton primary disabled={loading} onClick={onRefresh}>
-                {loading ? copy("usage.button.loading") : copy("usage.button.refresh")}
+                {loading
+                  ? copy("usage.button.loading")
+                  : copy("usage.button.refresh")}
               </MatrixButton>
             ) : null}
           </div>
@@ -127,7 +138,9 @@ export function UsagePanel({
             </div>
             {summaryCostValue ? (
               <div className="flex items-center justify-center gap-2">
-                <span className="sr-only">{copy("usage.metric.total_cost")}</span>
+                <span className="sr-only">
+                  {copy("usage.metric.total_cost")}
+                </span>
                 <span className="text-sm font-bold text-[#FFD700] font-mono leading-none drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]">
                   {summaryCostValue}
                 </span>
@@ -192,9 +205,7 @@ export function UsagePanel({
                 {row.value}
               </div>
               {row.subValue ? (
-                <div className="text-[8px] opacity-40 mt-1">
-                  {row.subValue}
-                </div>
+                <div className="text-[8px] opacity-40 mt-1">{row.subValue}</div>
               ) : null}
             </div>
           ))}
@@ -209,4 +220,4 @@ export function UsagePanel({
       ) : null}
     </AsciiBox>
   );
-}
+});

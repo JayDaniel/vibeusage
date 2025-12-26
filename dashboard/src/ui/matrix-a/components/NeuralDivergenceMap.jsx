@@ -4,7 +4,7 @@ import { copy } from "../../../lib/copy.js";
 import { AsciiBox } from "./AsciiBox.jsx";
 import { NeuralAdaptiveFleet } from "./NeuralAdaptiveFleet.jsx";
 
-export function NeuralDivergenceMap({
+export const NeuralDivergenceMap = React.memo(function NeuralDivergenceMap({
   fleetData = [],
   className = "",
   title = copy("dashboard.model_breakdown.title"),
@@ -29,4 +29,4 @@ export function NeuralDivergenceMap({
       ) : null}
     </AsciiBox>
   );
-}
+});

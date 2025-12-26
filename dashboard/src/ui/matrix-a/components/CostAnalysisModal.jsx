@@ -10,7 +10,11 @@ function formatUsdValue(value) {
   return formatted === "-" ? copy("shared.placeholder.short") : formatted;
 }
 
-export function CostAnalysisModal({ isOpen, onClose, fleetData = [] }) {
+export const CostAnalysisModal = React.memo(function CostAnalysisModal({
+  isOpen,
+  onClose,
+  fleetData = [],
+}) {
   useEffect(() => {
     if (typeof onClose !== "function") return undefined;
     const handleKeyDown = (event) => {
@@ -40,19 +44,24 @@ export function CostAnalysisModal({ isOpen, onClose, fleetData = [] }) {
           const shareLabel = Number.isFinite(shareValue)
             ? `${shareValue}${percentSymbol}`
             : copy("shared.placeholder.short");
-          const calcRaw = typeof model?.calc === "string" ? model.calc.trim() : "";
+          const calcRaw =
+            typeof model?.calc === "string" ? model.calc.trim() : "";
           const calcValue = calcRaw ? calcRaw.toUpperCase() : calcFallback;
           return {
             name: model?.name ? String(model.name) : "",
             shareLabel,
             calcValue,
+            calcRaw,
           };
         }),
       };
     }
   );
 
-  const totalUsd = normalizedFleet.reduce((acc, fleet) => acc + fleet.usdValue, 0);
+  const totalUsd = normalizedFleet.reduce(
+    (acc, fleet) => acc + fleet.usdValue,
+    0
+  );
   const totalUsdLabel = formatUsdValue(totalUsd);
 
   return (
@@ -119,4 +128,4 @@ export function CostAnalysisModal({ isOpen, onClose, fleetData = [] }) {
       </div>
     </div>
   );
-}
+});
