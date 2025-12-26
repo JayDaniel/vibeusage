@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-12-26
+### Fixed
+- Preserve per-model half-hour buckets (avoid collapsing multi-model hours into `unknown`).
+
 ## [0.1.0] - 2025-12-26
 ### Added
 - Gemini CLI session parsing from `~/.gemini/tmp/**/chats/session-*.json` with UTC half-hour aggregation.
