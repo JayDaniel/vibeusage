@@ -93,6 +93,11 @@ Source: `openspec/specs/vibescore-tracker/spec.md`
 - Verification: `scripts/acceptance/usage-hourly-missing.cjs`
 - Status: Implemented
 
+### Requirement: Dashboard resolves edge function path compatibility
+- Implementation: `dashboard/src/lib/vibescore-api.js`
+- Verification: `node --test test/dashboard-function-path.test.js`
+- Status: Implemented
+
 ### Requirement: Dashboard UI is retro-TUI themed (visual only)
 - Implementation: `dashboard/src/ui/matrix-a/**`, `dashboard/src/pages/DashboardPage.jsx`
 - Verification: manual visual check of dashboard

@@ -7,6 +7,11 @@ This document is a front-end friendly reference for the VibeScore tracker dashbo
 - Use `VITE_VIBESCORE_INSFORGE_BASE_URL` when available.
 - Fallback to the default InsForge base URL used by the CLI/back end.
 
+## Function Path
+
+- Dashboard SHOULD call `/api/functions/<slug>` first.
+- If `/api/functions` returns `404`, fallback to `/functions/<slug>`.
+
 ## Auth
 
 All endpoints require a user JWT:
