@@ -1469,3 +1469,49 @@ test('vibescore-leaderboard-settings rejects invalid body', async () => {
   const res = await fn(req);
   assert.equal(res.status, 400);
 });
+
+test('vibescore-user-status returns pro.active for cutoff user', async () => {
+  const fn = require('../insforge-functions/vibescore-user-status');
+
+  const userId = '11111111-1111-1111-1111-111111111111';
+  const userJwt = 'user_jwt_test';
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({
+            data: { user: { id: userId, created_at: '2025-01-01T00:00:00Z' } },
+            error: null
+          })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_user_entitlements');
+            return {
+              select: () => ({
+                eq: () => ({
+                  order: async () => ({ data: [], error: null })
+                })
+              })
+            };
+          }
+        }
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request('http://localhost/functions/vibescore-user-status', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${userJwt}` }
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.pro.active, true);
+  assert.equal(body.pro.sources.includes('registration_cutoff'), true);
+});
