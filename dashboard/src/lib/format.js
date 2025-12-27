@@ -11,6 +11,36 @@ export function toDisplayNumber(value) {
   }
 }
 
+export function formatCompactNumber(
+  value,
+  { thousandSuffix = "K", millionSuffix = "M", decimals = 1 } = {}
+) {
+  const n = Number(String(value));
+  if (!Number.isFinite(n)) return "-";
+  const sign = n < 0 ? "-" : "";
+  const abs = Math.abs(n);
+  const safeDecimals = Math.max(0, Math.min(6, Math.floor(decimals)));
+
+  if (abs < 1000) return `${sign}${String(abs)}`;
+
+  const formatWithSuffix = (val, suffix) => {
+    const fixed = val.toFixed(safeDecimals);
+    const normalized = Number(fixed).toString();
+    return `${sign}${normalized}${suffix}`;
+  };
+
+  if (abs >= 1000000) {
+    return formatWithSuffix(abs / 1000000, millionSuffix);
+  }
+
+  const kValue = abs / 1000;
+  const roundedK = Number(kValue.toFixed(safeDecimals));
+  if (roundedK >= 1000) {
+    return formatWithSuffix(roundedK / 1000, millionSuffix);
+  }
+  return formatWithSuffix(roundedK, thousandSuffix);
+}
+
 export function toFiniteNumber(value) {
   const n = Number(String(value));
   return Number.isFinite(n) ? n : null;

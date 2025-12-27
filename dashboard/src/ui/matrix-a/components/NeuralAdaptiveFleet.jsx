@@ -1,6 +1,7 @@
 import React from "react";
 
 import { copy } from "../../../lib/copy.js";
+import { formatCompactNumber } from "../../../lib/format.js";
 import { TEXTURES } from "./MatrixConstants.js";
 
 export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
@@ -10,13 +11,16 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
   models = [],
 }) {
   const percentSymbol = copy("shared.unit.percent");
-
-  const formatVolume = (val) => {
-    if (!val) return "0";
-    if (val >= 1000000) return (val / 1000000).toFixed(1) + "M";
-    if (val >= 1000) return (val / 1000).toFixed(1) + "K";
-    return val.toString();
-  };
+  const thousandSuffix = copy("shared.unit.thousand_abbrev");
+  const millionSuffix = copy("shared.unit.million_abbrev");
+  const usageValue = formatCompactNumber(usage, {
+    thousandSuffix,
+    millionSuffix,
+    decimals: 1,
+  });
+  const usageLabel = copy("dashboard.model_breakdown.usage_label", {
+    value: usageValue,
+  });
 
   return (
     <div className="w-full space-y-4">
@@ -26,7 +30,7 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
             {label}
           </span>
           <span className="text-[9px] font-mono text-[#00FF41]/60 tracking-wider">
-            Usage: {formatVolume(usage)}
+            {usageLabel}
           </span>
         </div>
         <div className="flex items-baseline space-x-1">

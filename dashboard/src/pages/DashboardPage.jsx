@@ -13,8 +13,8 @@ import {
 import {
   formatUsdCurrency,
   toDisplayNumber,
-  toFiniteNumber,
 } from "../lib/format.js";
+import { buildFleetData } from "../lib/model-breakdown.js";
 import { useActivityHeatmap } from "../hooks/use-activity-heatmap.js";
 import { useTrendData } from "../hooks/use-trend-data.js";
 import { useUsageData } from "../hooks/use-usage-data.js";
@@ -386,70 +386,10 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     return `$${formatted}`;
   }, [summary?.total_cost_usd]);
 
-  const modelBreakdownSources = useMemo(() => {
-    return Array.isArray(modelBreakdown?.sources) ? modelBreakdown.sources : [];
-  }, [modelBreakdown]);
-
-  const fleetData = useMemo(() => {
-    const sources = modelBreakdownSources
-      .map((entry) => {
-        const totalTokens = toFiniteNumber(entry?.totals?.total_tokens);
-        const totalCost = toFiniteNumber(entry?.totals?.total_cost_usd);
-        return {
-          source: entry?.source,
-          totalTokens: Number.isFinite(totalTokens) ? totalTokens : 0,
-          totalCost: Number.isFinite(totalCost) ? totalCost : 0,
-          models: Array.isArray(entry?.models) ? entry.models : [],
-        };
-      })
-      .filter((entry) => entry.totalTokens > 0);
-
-    if (!sources.length) return [];
-
-    const grandTotal = sources.reduce(
-      (acc, entry) => acc + entry.totalTokens,
-      0
-    );
-    const pricingMode =
-      typeof modelBreakdown?.pricing?.pricing_mode === "string"
-        ? modelBreakdown.pricing.pricing_mode.toUpperCase()
-        : null;
-
-    return sources
-      .map((entry) => {
-        const label = entry.source
-          ? String(entry.source).toUpperCase()
-          : copy("shared.placeholder.short");
-        const totalPercentRaw =
-          grandTotal > 0 ? (entry.totalTokens / grandTotal) * 100 : 0;
-        const totalPercent = Number.isFinite(totalPercentRaw)
-          ? totalPercentRaw.toFixed(1)
-          : "0.0";
-        const models = entry.models
-          .map((model) => {
-            const modelTokens = toFiniteNumber(model?.totals?.total_tokens);
-            if (!Number.isFinite(modelTokens) || modelTokens <= 0) return null;
-            const share =
-              entry.totalTokens > 0
-                ? Math.round((modelTokens / entry.totalTokens) * 1000) / 10
-                : 0;
-            const name = model?.model
-              ? String(model.model)
-              : copy("shared.placeholder.short");
-            return { name, share, usage: modelTokens, calc: pricingMode };
-          })
-          .filter(Boolean);
-        return {
-          label,
-          totalPercent: String(totalPercent),
-          usd: entry.totalCost,
-          models,
-          _tokens: entry.totalTokens,
-        };
-      })
-      .sort((a, b) => b._tokens - a._tokens)
-      .map(({ _tokens, ...rest }) => rest);
-  }, [modelBreakdown?.pricing?.pricing_mode, modelBreakdownSources]);
+  const fleetData = useMemo(
+    () => buildFleetData(modelBreakdown, { copyFn: copy }),
+    [modelBreakdown]
+  );
 
   const openCostModal = useCallback(() => setCostModalOpen(true), []);
   const closeCostModal = useCallback(() => setCostModalOpen(false), []);
