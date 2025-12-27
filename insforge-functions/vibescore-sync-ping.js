@@ -118,6 +118,24 @@ var require_auth = __commonJS({
         return null;
       }
     }
+    function getJwtRole(token) {
+      const payload = decodeJwtPayload(token);
+      const role = payload?.role;
+      if (typeof role === "string" && role.length > 0) return role;
+      const appRole = payload?.app_metadata?.role;
+      if (typeof appRole === "string" && appRole.length > 0) return appRole;
+      const roles = payload?.app_metadata?.roles;
+      if (Array.isArray(roles)) {
+        if (roles.includes("project_admin")) return "project_admin";
+        const match = roles.find((value) => typeof value === "string" && value.length > 0);
+        if (match) return match;
+      }
+      return null;
+    }
+    function isProjectAdminBearer(token) {
+      const role = getJwtRole(token);
+      return role === "project_admin";
+    }
     function isJwtExpired(payload) {
       const exp = Number(payload?.exp);
       if (!Number.isFinite(exp)) return false;
@@ -146,7 +164,8 @@ var require_auth = __commonJS({
     module2.exports = {
       getBearerToken: getBearerToken2,
       getEdgeClientAndUserId,
-      getEdgeClientAndUserIdFast
+      getEdgeClientAndUserIdFast,
+      isProjectAdminBearer
     };
   }
 });

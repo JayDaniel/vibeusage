@@ -35,7 +35,7 @@ var require_http = __commonJS({
       if (request.method !== method) return json2({ error: "Method not allowed" }, 405);
       return null;
     }
-    async function readJson2(request) {
+    async function readJson(request) {
       if (!request.headers.get("Content-Type")?.includes("application/json")) {
         return { error: "Content-Type must be application/json", status: 415, data: null };
       }
@@ -51,7 +51,7 @@ var require_http = __commonJS({
       handleOptions: handleOptions2,
       json: json2,
       requireMethod: requireMethod2,
-      readJson: readJson2
+      readJson
     };
   }
 });
@@ -141,7 +141,7 @@ var require_auth = __commonJS({
       if (!Number.isFinite(exp)) return false;
       return exp * 1e3 <= Date.now();
     }
-    async function getEdgeClientAndUserId({ baseUrl, bearer }) {
+    async function getEdgeClientAndUserId2({ baseUrl, bearer }) {
       const anonKey = getAnonKey2();
       const edgeClient = createClient({ baseUrl, anonKey: anonKey || void 0, edgeFunctionToken: bearer });
       const { data: userData, error: userErr } = await edgeClient.auth.getCurrentUser();
@@ -163,106 +163,133 @@ var require_auth = __commonJS({
     }
     module2.exports = {
       getBearerToken: getBearerToken2,
-      getEdgeClientAndUserId,
+      getEdgeClientAndUserId: getEdgeClientAndUserId2,
       getEdgeClientAndUserIdFast,
       isProjectAdminBearer
     };
   }
 });
 
-// insforge-src/functions/vibescore-events-retention.js
-var { handleOptions, json, requireMethod, readJson } = require_http();
-var { getBearerToken } = require_auth();
+// insforge-src/shared/pro-status.js
+var require_pro_status = __commonJS({
+  "insforge-src/shared/pro-status.js"(exports2, module2) {
+    "use strict";
+    var CUTOFF_UTC_ISO = "2025-12-31T15:59:59.000Z";
+    var REGISTRATION_YEARS = 99;
+    function toMs(value) {
+      const ms = Date.parse(value);
+      return Number.isFinite(ms) ? ms : null;
+    }
+    function addUtcYears(iso, years) {
+      const ms = toMs(iso);
+      if (!Number.isFinite(ms)) return null;
+      const d = new Date(ms);
+      const out = new Date(
+        Date.UTC(
+          d.getUTCFullYear() + years,
+          d.getUTCMonth(),
+          d.getUTCDate(),
+          d.getUTCHours(),
+          d.getUTCMinutes(),
+          d.getUTCSeconds(),
+          d.getUTCMilliseconds()
+        )
+      );
+      return out.toISOString();
+    }
+    function computeProStatus2({ createdAt, entitlements, now }) {
+      const nowMs = toMs(now) ?? Date.now();
+      const cutoffMs = toMs(CUTOFF_UTC_ISO);
+      const createdMs = toMs(createdAt);
+      const sources = [];
+      let expiresAt = null;
+      if (Number.isFinite(createdMs) && Number.isFinite(cutoffMs) && createdMs <= cutoffMs) {
+        sources.push("registration_cutoff");
+        const regExpiry = addUtcYears(createdAt, REGISTRATION_YEARS);
+        if (regExpiry) expiresAt = regExpiry;
+      }
+      const activeEntitlements = (Array.isArray(entitlements) ? entitlements : []).filter((row) => {
+        if (!row || row.revoked_at) return false;
+        const from = toMs(row.effective_from);
+        const to = toMs(row.effective_to);
+        if (!Number.isFinite(from) || !Number.isFinite(to)) return false;
+        return nowMs >= from && nowMs < to;
+      });
+      if (activeEntitlements.length > 0) {
+        sources.push("entitlement");
+        const maxTo = activeEntitlements.map((row) => toMs(row.effective_to)).filter(Number.isFinite).reduce((a, b) => Math.max(a, b), -Infinity);
+        if (Number.isFinite(maxTo)) {
+          const entExpiry = new Date(maxTo).toISOString();
+          if (!expiresAt || toMs(entExpiry) > toMs(expiresAt)) {
+            expiresAt = entExpiry;
+          }
+        }
+      }
+      return { active: sources.length > 0, sources, expires_at: expiresAt };
+    }
+    module2.exports = {
+      CUTOFF_UTC_ISO,
+      REGISTRATION_YEARS,
+      computeProStatus: computeProStatus2
+    };
+  }
+});
+
+// insforge-src/functions/vibescore-user-status.js
+var { handleOptions, json, requireMethod } = require_http();
+var { getBearerToken, getEdgeClientAndUserId } = require_auth();
 var { getAnonKey, getBaseUrl, getServiceRoleKey } = require_env();
-var DEFAULT_DAYS = 30;
-var MAX_DAYS = 365;
+var { computeProStatus } = require_pro_status();
 module.exports = async function(request) {
   const opt = handleOptions(request);
   if (opt) return opt;
-  const methodErr = requireMethod(request, "POST");
+  const methodErr = requireMethod(request, "GET");
   if (methodErr) return methodErr;
-  const serviceRoleKey = getServiceRoleKey();
-  if (!serviceRoleKey) return json({ error: "Service role key missing" }, 500);
   const bearer = getBearerToken(request.headers.get("Authorization"));
-  if (!bearer || bearer !== serviceRoleKey) return json({ error: "Unauthorized" }, 401);
-  const body = await readJson(request);
-  if (body.error) return json({ error: body.error }, body.status);
-  const days = clampDays(body.data?.days);
-  const dryRun = Boolean(body.data?.dry_run);
-  const includeIngestBatches = Boolean(body.data?.include_ingest_batches);
-  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1e3);
-  if (!Number.isFinite(cutoff.getTime())) return json({ error: "Invalid cutoff" }, 400);
+  if (!bearer) return json({ error: "Missing bearer token" }, 401);
   const baseUrl = getBaseUrl();
-  const anonKey = getAnonKey();
-  const serviceClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: serviceRoleKey
-  });
-  const cutoffIso = cutoff.toISOString();
-  const eventsResult = await purgeTable({
-    serviceClient,
-    table: "vibescore_tracker_events",
-    cutoffColumn: "token_timestamp",
-    cutoffIso,
-    dryRun,
-    countColumn: "event_id"
-  });
-  if (eventsResult.error) return json({ error: eventsResult.error }, 500);
-  let ingestResult = { deleted: 0 };
-  if (includeIngestBatches) {
-    ingestResult = await purgeTable({
-      serviceClient,
-      table: "vibescore_tracker_ingest_batches",
-      cutoffColumn: "created_at",
-      cutoffIso,
-      dryRun,
-      countColumn: "batch_id"
-    });
-    if (ingestResult.error) return json({ error: ingestResult.error }, 500);
+  const auth = await getEdgeClientAndUserId({ baseUrl, bearer });
+  if (!auth.ok) return json({ error: "Unauthorized" }, 401);
+  const { data: userData, error: userErr } = await auth.edgeClient.auth.getCurrentUser();
+  if (userErr || !userData?.user?.id) return json({ error: "Unauthorized" }, 401);
+  let createdAt = userData.user.created_at;
+  let partial = false;
+  if (typeof createdAt !== "string" || createdAt.length === 0) {
+    const serviceRoleKey = getServiceRoleKey();
+    if (!serviceRoleKey) {
+      createdAt = null;
+      partial = true;
+    } else {
+      const anonKey = getAnonKey();
+      const serviceClient = createClient({
+        baseUrl,
+        anonKey: anonKey || serviceRoleKey,
+        edgeFunctionToken: serviceRoleKey
+      });
+      const { data: userRow, error: userRowErr } = await serviceClient.database.from("users").select("created_at").eq("id", auth.userId).maybeSingle();
+      if (userRowErr) return json({ error: userRowErr.message }, 500);
+      if (typeof userRow?.created_at !== "string" || userRow.created_at.length === 0) {
+        return json({ error: "Missing user created_at" }, 500);
+      }
+      createdAt = userRow.created_at;
+    }
   }
+  const { data: entitlements, error: entErr } = await auth.edgeClient.database.from("vibescore_user_entitlements").select("source,effective_from,effective_to,revoked_at").eq("user_id", auth.userId).order("effective_to", { ascending: false });
+  if (entErr) return json({ error: entErr.message }, 500);
+  const asOf = (/* @__PURE__ */ new Date()).toISOString();
+  const status = computeProStatus({ createdAt, entitlements, now: asOf });
   return json(
     {
-      ok: true,
-      dry_run: dryRun,
-      days,
-      cutoff: cutoff.toISOString(),
-      deleted: eventsResult.deleted,
-      deleted_ingest_batches: ingestResult.deleted,
-      ingest_batches_enabled: includeIngestBatches
+      user_id: auth.userId,
+      created_at: createdAt ?? null,
+      pro: {
+        active: status.active,
+        sources: status.sources,
+        expires_at: status.expires_at,
+        partial,
+        as_of: asOf
+      }
     },
     200
   );
 };
-async function purgeTable({ serviceClient, table, cutoffColumn, cutoffIso, dryRun, countColumn }) {
-  if (!serviceClient) return { deleted: 0, error: "Service client missing" };
-  const countSelect = countColumn || "*";
-  if (dryRun) {
-    const { count, error } = await serviceClient.database.from(table).select(countSelect, { count: "exact" }).lt(cutoffColumn, cutoffIso).limit(1);
-    if (error) return { deleted: 0, error: formatError(error) };
-    return { deleted: toSafeInt(count), error: null };
-  }
-  const before = await serviceClient.database.from(table).select(countSelect, { count: "exact" }).lt(cutoffColumn, cutoffIso).limit(1);
-  if (before.error) return { deleted: 0, error: formatError(before.error) };
-  const { error: deleteErr } = await serviceClient.database.from(table).delete().lt(cutoffColumn, cutoffIso);
-  if (deleteErr) return { deleted: 0, error: formatError(deleteErr) };
-  const after = await serviceClient.database.from(table).select(countSelect, { count: "exact" }).lt(cutoffColumn, cutoffIso).limit(1);
-  if (after.error) return { deleted: 0, error: formatError(after.error) };
-  return { deleted: Math.max(0, toSafeInt(before.count) - toSafeInt(after.count)), error: null };
-}
-function toSafeInt(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < 0) return 0;
-  return Math.floor(n);
-}
-function formatError(error) {
-  if (!error) return "Unknown error";
-  if (typeof error === "string") return error;
-  return error.message || error.details || error.hint || JSON.stringify(error);
-}
-function clampDays(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return DEFAULT_DAYS;
-  if (n <= 0) return DEFAULT_DAYS;
-  return Math.min(MAX_DAYS, Math.floor(n));
-}
