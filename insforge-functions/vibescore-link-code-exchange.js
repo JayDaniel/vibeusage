@@ -204,11 +204,11 @@ module.exports = withRequestLogging("vibescore-link-code-exchange", async functi
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      code_hash: codeHash,
-      request_id: requestId,
-      device_name: deviceName,
-      platform,
-      token_hash: tokenHash
+      p_code_hash: codeHash,
+      p_request_id: requestId,
+      p_device_name: deviceName,
+      p_platform: platform,
+      p_token_hash: tokenHash
     })
   });
   const { data, error } = await readApiJson(res);
