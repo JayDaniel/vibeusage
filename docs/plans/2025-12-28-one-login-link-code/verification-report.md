@@ -10,6 +10,8 @@
 - `node --test test/edge-functions.test.js`
 - `node --test test/init-uninstall.test.js`
 - `node --test test/dashboard-link-code-install.test.js`
+- `node --test test/dashboard-function-path.test.js`
+- `node --test test/dashboard-render-order.test.js`
 - `node scripts/validate-copy-registry.cjs`
 - `node scripts/acceptance/link-code-e2e-manual.cjs --help`
 

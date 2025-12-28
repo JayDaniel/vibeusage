@@ -74,7 +74,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     let active = true;
     setLinkCodeLoading(true);
     setLinkCodeError(null);
-    requestInstallLinkCode({ baseUrl })
+    requestInstallLinkCode({ baseUrl, accessToken: auth?.accessToken || null })
       .then((data) => {
         if (!active) return;
         setLinkCode(typeof data?.link_code === "string" ? data.link_code : null);

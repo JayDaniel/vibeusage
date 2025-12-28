@@ -192,7 +192,7 @@ export async function getUsageHeatmap({
   });
 }
 
-export async function requestInstallLinkCode({ baseUrl } = {}) {
+export async function requestInstallLinkCode({ baseUrl, accessToken } = {}) {
   if (isMockEnabled()) {
     return {
       link_code: "mock_link_code",
@@ -201,6 +201,7 @@ export async function requestInstallLinkCode({ baseUrl } = {}) {
   }
   return requestPostJson({
     baseUrl,
+    accessToken,
     slug: PATHS.linkCodeInit,
     body: {},
   });
@@ -262,13 +263,14 @@ async function requestJson({
 
 async function requestPostJson({
   baseUrl,
+  accessToken,
   slug,
   body,
   fetchOptions,
   errorPrefix,
   retry,
 }) {
-  const client = getInsforgeClient({ baseUrl });
+  const client = createInsforgeClient({ baseUrl, accessToken });
   const http = client.getHttpClient();
   const retryOptions = normalizeRetryOptions(retry, "POST");
   let attempt = 0;
@@ -276,12 +278,8 @@ async function requestPostJson({
 
   while (true) {
     try {
-      const sessionResult = await ensureInsforgeSession({ baseUrl });
-      if (sessionResult?.error) throw sessionResult.error;
-      if (!sessionResult?.session) throw createUnauthorizedError();
       return await requestWithFallbackPost({
         http,
-        baseUrl,
         primaryPath,
         fallbackPath,
         body,
@@ -332,7 +330,6 @@ async function requestWithFallback({
 
 async function requestWithFallbackPost({
   http,
-  baseUrl,
   primaryPath,
   fallbackPath,
   body,
@@ -341,7 +338,6 @@ async function requestWithFallbackPost({
   try {
     return await requestWithAuthRetryPost({
       http,
-      baseUrl,
       path: primaryPath,
       body,
       fetchOptions,
@@ -350,7 +346,6 @@ async function requestWithFallbackPost({
     if (!shouldFallbackToLegacy(err, primaryPath)) throw err;
     return await requestWithAuthRetryPost({
       http,
-      baseUrl,
       path: fallbackPath,
       body,
       fetchOptions,
@@ -360,22 +355,11 @@ async function requestWithFallbackPost({
 
 async function requestWithAuthRetryPost({
   http,
-  baseUrl,
   path,
   body,
   fetchOptions,
 }) {
-  try {
-    return await http.post(path, body, { ...(fetchOptions || {}) });
-  } catch (err) {
-    if (!isUnauthorized(err)) throw err;
-    const refreshed = await refreshInsforgeSession({ baseUrl });
-    if (refreshed?.session) {
-      return await http.post(path, body, { ...(fetchOptions || {}) });
-    }
-    await clearInsforgeSession({ baseUrl });
-    throw err;
-  }
+  return await http.post(path, body, { ...(fetchOptions || {}) });
 }
 
 function shouldFallbackToLegacy(error, primaryPath) {
