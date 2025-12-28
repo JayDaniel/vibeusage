@@ -27,6 +27,14 @@ test('DashboardPage schedules link code expiry tick', () => {
     'expected link code expiry tick updater'
   );
   assert.ok(
+    src.includes('linkCodeRefreshToken'),
+    'expected link code refresh trigger state'
+  );
+  assert.ok(
+    src.includes('setLinkCodeRefreshToken'),
+    'expected link code refresh trigger updater'
+  );
+  assert.ok(
     src.includes('setTimeout') || src.includes('setTimeout(') || src.includes('setTimeout ('),
     'expected expiry timer to re-evaluate link code expiration'
   );

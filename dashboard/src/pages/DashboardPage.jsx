@@ -55,6 +55,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   const [linkCodeLoading, setLinkCodeLoading] = useState(false);
   const [linkCodeError, setLinkCodeError] = useState(null);
   const [linkCodeExpiryTick, setLinkCodeExpiryTick] = useState(0);
+  const [linkCodeRefreshToken, setLinkCodeRefreshToken] = useState(0);
   const [installCopied, setInstallCopied] = useState(false);
   const [userIdCopied, setUserIdCopied] = useState(false);
   const mockEnabled = isMockEnabled();
@@ -96,7 +97,29 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     return () => {
       active = false;
     };
-  }, [baseUrl, mockEnabled, signedIn, auth?.accessToken]);
+  }, [baseUrl, mockEnabled, signedIn, auth?.accessToken, linkCodeRefreshToken]);
+  const linkCodeExpired = useMemo(() => {
+    if (!linkCodeExpiresAt) return false;
+    const ts = Date.parse(linkCodeExpiresAt);
+    if (!Number.isFinite(ts)) return false;
+    const now = linkCodeExpiryTick || Date.now();
+    return ts <= now;
+  }, [linkCodeExpiresAt, linkCodeExpiryTick]);
+  useEffect(() => {
+    if (!signedIn || mockEnabled) return;
+    if (!linkCodeExpiresAt || !linkCodeExpired) return;
+    if (linkCodeLoading) return;
+    setLinkCode(null);
+    setLinkCodeExpiresAt(null);
+    setLinkCodeError(null);
+    setLinkCodeRefreshToken((value) => value + 1);
+  }, [
+    linkCodeExpired,
+    linkCodeExpiresAt,
+    linkCodeLoading,
+    mockEnabled,
+    signedIn,
+  ]);
   useEffect(() => {
     if (!linkCodeExpiresAt) return;
     const ts = Date.parse(linkCodeExpiresAt);
@@ -468,13 +491,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     summaryCostValue && summaryCostValue !== "-" && fleetData.length > 0;
 
   const installInitCmdBase = copy("dashboard.install.cmd.init");
-  const linkCodeExpired = useMemo(() => {
-    if (!linkCodeExpiresAt) return false;
-    const ts = Date.parse(linkCodeExpiresAt);
-    if (!Number.isFinite(ts)) return false;
-    const now = linkCodeExpiryTick || Date.now();
-    return ts <= now;
-  }, [linkCodeExpiresAt, linkCodeExpiryTick]);
   const resolvedLinkCode = !linkCodeExpired ? linkCode : null;
   const linkCodeMasked = resolvedLinkCode ? maskSecret(resolvedLinkCode) : null;
   const installInitCmdDisplay = resolvedLinkCode
