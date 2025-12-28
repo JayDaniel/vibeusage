@@ -1898,6 +1898,7 @@ test('vibescore-link-code-exchange calls rpc with hash and returns device token'
   const expectedToken = createHash('sha256')
     .update(`${SERVICE_ROLE_KEY}:${codeHash}:${requestId}`)
     .digest('hex');
+  const expectedTokenHash = createHash('sha256').update(expectedToken).digest('hex');
   assert.equal(body.token, expectedToken);
   assert.equal(body.device_id, deviceId);
   assert.equal(body.user_id, userId);
@@ -1905,6 +1906,7 @@ test('vibescore-link-code-exchange calls rpc with hash and returns device token'
   assert.equal(calls.length, 1);
   assert.ok(String(calls[0].url).includes('/api/database/rpc/vibescore_exchange_link_code'));
   const payload = JSON.parse(calls[0].init?.body || '{}');
-  assert.equal(payload.code_hash, codeHash);
-  assert.equal(payload.request_id, requestId);
+  assert.equal(payload.p_code_hash, codeHash);
+  assert.equal(payload.p_request_id, requestId);
+  assert.equal(payload.p_token_hash, expectedTokenHash);
 });
