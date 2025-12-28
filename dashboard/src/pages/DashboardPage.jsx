@@ -47,7 +47,13 @@ const PERIODS = ["day", "week", "month", "total"];
 const DETAILS_DATE_KEYS = new Set(["day", "hour", "month"]);
 const DETAILS_PAGED_PERIODS = new Set(["day", "total"]);
 
-export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
+export function DashboardPage({
+  baseUrl,
+  auth,
+  signedIn,
+  sessionExpired,
+  signOut,
+}) {
   const [booted, setBooted] = useState(false);
   const [costModalOpen, setCostModalOpen] = useState(false);
   const [linkCode, setLinkCode] = useState(null);
@@ -57,7 +63,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
   const [linkCodeExpiryTick, setLinkCodeExpiryTick] = useState(0);
   const [linkCodeRefreshToken, setLinkCodeRefreshToken] = useState(0);
   const [installCopied, setInstallCopied] = useState(false);
-  const [userIdCopied, setUserIdCopied] = useState(false);
+  const [sessionExpiredCopied, setSessionExpiredCopied] = useState(false);
   const mockEnabled = isMockEnabled();
   const accessEnabled = signedIn || mockEnabled;
   useEffect(() => {
@@ -504,11 +510,12 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
       })
     : installInitCmdBase;
   const installSyncCmd = copy("dashboard.install.cmd.sync");
-  const installCopyLabel = copy("dashboard.install.copy");
+  const installCopyLabel = resolvedLinkCode
+    ? copy("dashboard.install.copy")
+    : copy("dashboard.install.copy_base");
   const installCopiedLabel = copy("dashboard.install.copied");
-  const userIdLabel = copy("dashboard.install.user_id.label");
-  const userIdCopyLabel = copy("dashboard.install.user_id.copy");
-  const userIdCopiedLabel = copy("dashboard.install.user_id.copied");
+  const sessionExpiredCopyLabel = copy("dashboard.session_expired.copy_label");
+  const sessionExpiredCopiedLabel = copy("dashboard.session_expired.copied");
   const installSeenKey = "vibescore.dashboard.install.seen.v1";
   const [installSeen] = useState(() => {
     if (typeof window === "undefined") return true;
@@ -557,8 +564,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     ],
     [installInitCmdDisplay, installSyncCmd]
   );
-  const userIdMasked = auth?.userId ? maskSecret(auth.userId) : null;
-
   const handleCopyInstall = useCallback(async () => {
     if (!installInitCmdCopy) return;
     const didCopy = await safeWriteClipboard(installInitCmdCopy);
@@ -567,13 +572,13 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     window.setTimeout(() => setInstallCopied(false), 2000);
   }, [installInitCmdCopy]);
 
-  const handleCopyUserId = useCallback(async () => {
-    if (!auth?.userId) return;
-    const didCopy = await safeWriteClipboard(auth.userId);
+  const handleCopySessionExpired = useCallback(async () => {
+    if (!installInitCmdBase) return;
+    const didCopy = await safeWriteClipboard(installInitCmdBase);
     if (!didCopy) return;
-    setUserIdCopied(true);
-    window.setTimeout(() => setUserIdCopied(false), 2000);
-  }, [auth?.userId]);
+    setSessionExpiredCopied(true);
+    window.setTimeout(() => setSessionExpiredCopied(false), 2000);
+  }, [installInitCmdBase]);
 
   const redirectUrl = useMemo(
     () => `${window.location.origin}/auth/callback`,
@@ -623,7 +628,7 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
     return <BootScreen onSkip={() => setBooted(true)} />;
   }
 
-  const requireAuthGate = !signedIn && !mockEnabled;
+  const requireAuthGate = !signedIn && !mockEnabled && !sessionExpired;
 
   return (
     <>
@@ -648,6 +653,40 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
           <span className="font-bold">{copy("dashboard.footer.right")}</span>
         }
       >
+        {sessionExpired ? (
+          <div className="mb-6">
+            <AsciiBox
+              title={copy("dashboard.session_expired.title")}
+              subtitle={copy("dashboard.session_expired.subtitle")}
+              className="border-[#00FF41]/40"
+            >
+              <p className="text-[10px] mt-0 flex flex-wrap items-center gap-2">
+                <span className="opacity-50">
+                  {copy("dashboard.session_expired.body")}
+                </span>
+                <MatrixButton
+                  className="px-2 py-1 text-[9px] normal-case"
+                  onClick={handleCopySessionExpired}
+                >
+                  {sessionExpiredCopied
+                    ? sessionExpiredCopiedLabel
+                    : sessionExpiredCopyLabel}
+                </MatrixButton>
+                <span className="opacity-50">
+                  {copy("dashboard.session_expired.body_tail")}
+                </span>
+              </p>
+              <div className="flex flex-wrap gap-3 mt-4">
+                <MatrixButton as="a" primary href={signInUrl}>
+                  {copy("shared.button.sign_in")}
+                </MatrixButton>
+                <MatrixButton as="a" href={signUpUrl}>
+                  {copy("shared.button.sign_up")}
+                </MatrixButton>
+              </div>
+            </AsciiBox>
+          </div>
+        ) : null}
         {requireAuthGate ? (
           <div className="flex items-center justify-center">
             <AsciiBox
@@ -738,15 +777,6 @@ export function DashboardPage({ baseUrl, auth, signedIn, signOut }) {
                       </span>
                     ) : null}
                   </div>
-                  {signedIn && userIdMasked ? (
-                    <div className="flex flex-wrap items-center gap-2 text-[9px] opacity-60">
-                      <span className="font-mono">{userIdLabel}</span>
-                      <span className="font-mono">{userIdMasked}</span>
-                      <MatrixButton onClick={handleCopyUserId}>
-                        {userIdCopied ? userIdCopiedLabel : userIdCopyLabel}
-                      </MatrixButton>
-                    </div>
-                  ) : null}
                 </div>
               </AsciiBox>
 
