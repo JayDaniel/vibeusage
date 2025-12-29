@@ -153,6 +153,7 @@ async function main() {
   assert.equal(body.totals.cached_input_tokens, '60');
   assert.equal(body.totals.output_tokens, '300');
   assert.equal(body.totals.reasoning_output_tokens, '30');
+  assert.equal(body.pricing.pricing_mode, 'mixed');
   const expectedCost = formatUsdFromMicros(
     computeUsageCost(
       {

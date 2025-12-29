@@ -879,9 +879,11 @@ module.exports = async function(request) {
     effectiveDate: to
   });
   let totalCostMicros = 0n;
+  const pricingModes = /* @__PURE__ */ new Set();
   for (const entry of sourcesMap.values()) {
     const sourceCost = computeUsageCost(entry.totals, pricingProfile);
     totalCostMicros += sourceCost.cost_micros;
+    pricingModes.add(sourceCost.pricing_mode);
   }
   const overallCost = computeUsageCost(
     {
@@ -893,6 +895,12 @@ module.exports = async function(request) {
     },
     pricingProfile
   );
+  let summaryPricingMode = overallCost.pricing_mode;
+  if (pricingModes.size === 1) {
+    summaryPricingMode = Array.from(pricingModes)[0];
+  } else if (pricingModes.size > 1) {
+    summaryPricingMode = "mixed";
+  }
   const totals = {
     total_tokens: totalTokens.toString(),
     input_tokens: inputTokens.toString(),
@@ -909,7 +917,7 @@ module.exports = async function(request) {
       totals,
       pricing: buildPricingMetadata({
         profile: overallCost.profile,
-        pricingMode: overallCost.pricing_mode
+        pricingMode: summaryPricingMode
       })
     },
     200
