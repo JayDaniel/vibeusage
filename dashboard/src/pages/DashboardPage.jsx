@@ -577,6 +577,10 @@ export function DashboardPage({
   const coreIndexCollapseAria = copy("dashboard.core_index.collapse_aria");
   const coreIndexExpandAria = copy("dashboard.core_index.expand_aria");
   const allowBreakdownToggle = !screenshotMode;
+  const periodsForDisplay = useMemo(
+    () => (screenshotMode ? PERIODS.filter((p) => p !== "day") : PERIODS),
+    [screenshotMode]
+  );
 
   const metricsRows = useMemo(
     () => [
@@ -931,7 +935,7 @@ export function DashboardPage({
               <UsagePanel
                 title={copy("usage.panel.title")}
                 period={period}
-                periods={PERIODS}
+                periods={periodsForDisplay}
                 onPeriodChange={setPeriod}
                 metrics={metricsRows}
                 showSummary={period === "total"}
@@ -963,7 +967,7 @@ export function DashboardPage({
                 onRefresh={refreshAll}
                 loading={usageLoadingState}
                 error={usageError}
-                rangeLabel={rangeLabel}
+                rangeLabel={screenshotMode ? null : rangeLabel}
                 rangeTimeZoneLabel={timeZoneRangeLabel}
                 statusLabel={usageSourceLabel}
                 summaryScrambleDurationMs={identityScrambleDurationMs}

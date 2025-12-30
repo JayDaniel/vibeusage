@@ -36,3 +36,10 @@
 #### Scenario: Core Index simplified
 - **WHEN** 截图模式启用
 - **THEN** Core Index 仅保留总量摘要，四项明细模块不显示
+
+### Requirement: Simplify usage header in screenshot mode
+系统 SHALL 在截图模式下隐藏 Usage 区域的 `day` 选项与范围区间展示。
+
+#### Scenario: Usage header simplified
+- **WHEN** 截图模式启用
+- **THEN** Usage 区域不显示 `day` 选项与范围区间
