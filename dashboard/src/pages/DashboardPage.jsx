@@ -111,8 +111,7 @@ export function DashboardPage({
   }, []);
   const wrappedEntryUrl = useMemo(() => {
     if (!wrappedEntryEnabled || typeof window === "undefined") return "";
-    const url = new URL("/", window.location.origin);
-    url.searchParams.set("screenshot", "1");
+    const url = new URL("/wrapped-2025.html", window.location.origin);
     return url.toString();
   }, [wrappedEntryEnabled]);
   const showWrappedEntry =

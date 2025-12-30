@@ -113,3 +113,10 @@
 #### Scenario: Entry shown only on non-production host
 - **WHEN** 用户访问非生产环境的 Dashboard
 - **THEN** 顶部栏显示金色 “Wrapped 2025” 入口并跳转到截图模式页面
+
+### Requirement: Static wrapped image page
+系统 SHALL 提供静态图片页面用于展示截图结果，并作为 “Wrapped 2025” 入口跳转目标。
+
+#### Scenario: Wrapped entry opens static image
+- **WHEN** 用户点击 “Wrapped 2025” 入口
+- **THEN** 进入静态图片页面并展示截图图片
