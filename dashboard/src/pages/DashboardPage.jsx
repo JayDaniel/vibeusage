@@ -608,9 +608,10 @@ export function DashboardPage({
   const screenshotShareLabel = copy("dashboard.screenshot.share_label");
   const screenshotShareUrl = useMemo(() => {
     if (!screenshotMode || typeof window === "undefined") return "";
+    const shareUrl = new URL("/share.html", window.location.origin);
     const intentUrl = new URL("https://twitter.com/intent/tweet");
     intentUrl.searchParams.set("text", screenshotShareText);
-    intentUrl.searchParams.set("url", window.location.href);
+    intentUrl.searchParams.set("url", shareUrl.toString());
     return intentUrl.toString();
   }, [screenshotMode, screenshotShareText]);
   const handleShareToX = useCallback(() => {

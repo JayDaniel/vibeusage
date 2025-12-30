@@ -98,4 +98,11 @@
 
 #### Scenario: Share to X
 - **WHEN** 用户点击 X 分享按钮
-- **THEN** 页面跳转到 X Web Intent 分享窗口，并带上当前页面 URL
+- **THEN** 页面跳转到 X Web Intent 分享窗口，并带上分享页 URL
+
+### Requirement: Share page with OG image
+系统 SHALL 提供用于分享的静态页面，并通过 OG/Twitter Card 指向截图图片。
+
+#### Scenario: Share page metadata
+- **WHEN** X 抓取分享页元数据
+- **THEN** 返回包含截图图片的 OG/Twitter Card 元数据
