@@ -292,13 +292,16 @@ export function TrendMonitor({
   const xLabels = useMemo(() => buildXAxisLabels(), [from, period, to]);
 
   const plotRef = useRef(null);
+  const axisRef = useRef(null);
   const [hover, setHover] = useState(null);
 
   function handleMove(e) {
     const el = plotRef.current;
     if (!el || seriesValues.length === 0) return;
     const rect = el.getBoundingClientRect();
-    const axisWidthPx = (axisWidth / width) * rect.width;
+    const axisWidthPx =
+      axisRef.current?.getBoundingClientRect().width ??
+      (axisWidth / width) * rect.width;
     const plotWidthPx = rect.width - axisWidthPx;
     const rawX = Math.min(Math.max(e.clientX - rect.left, 0), plotWidthPx);
     const xPaddingPx = plotWidth > 0 ? (xPadding / plotWidth) * plotWidthPx : 0;
@@ -419,7 +422,10 @@ export function TrendMonitor({
           />
         ))}
 
-        <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-1 px-1 text-caption text-matrix-muted pointer-events-none bg-matrix-panelStrong border-l border-matrix-ghost w-10 text-right">
+        <div
+          ref={axisRef}
+          className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-1 px-1 text-caption text-matrix-muted pointer-events-none bg-matrix-panelStrong border-l border-matrix-ghost w-10 text-right"
+        >
           <span>{formatCompact(max)}</span>
           <span>{formatCompact(max * 0.75)}</span>
           <span>{formatCompact(max * 0.5)}</span>
