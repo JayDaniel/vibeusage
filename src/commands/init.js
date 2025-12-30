@@ -137,7 +137,8 @@ async function cmdInit(argv) {
   const codeHome = process.env.CODE_HOME || path.join(home, '.code');
   const codeConfigPath = path.join(codeHome, 'config.toml');
   const notifyCmd = ['/usr/bin/env', 'node', notifyPath];
-  const codexConfigExists = await isFile(codexConfigPath);
+  const codexProbe = await probeFile(codexConfigPath);
+  const codexConfigExists = codexProbe.exists;
   let result = null;
   let chained = null;
   if (codexConfigExists) {
@@ -149,7 +150,8 @@ async function cmdInit(argv) {
     chained = await loadCodexNotifyOriginal(notifyOriginalPath);
   }
   const codeNotifyOriginalPath = path.join(trackerDir, 'code_notify_original.json');
-  const codeConfigExists = await isFile(codeConfigPath);
+  const codeProbe = await probeFile(codeConfigPath);
+  const codeConfigExists = codeProbe.exists;
   let codeResult = null;
   let codeChained = null;
   if (codeConfigExists) {
@@ -199,14 +201,16 @@ async function cmdInit(argv) {
       `- Notify handler: ${notifyPath}`,
       codexConfigExists
         ? `- Codex config: ${codexConfigPath}`
-        : `- Codex notify: skipped (${codexConfigPath} not found)`,
+        : `- Codex notify: skipped (${renderProbeSkip(codexConfigPath, codexProbe)})`,
       codexConfigExists
         ? result?.changed
           ? '- Codex notify: updated'
           : '- Codex notify: already set'
         : null,
       codexConfigExists ? (chained ? '- Codex notify: chained (original preserved)' : '- Codex notify: no original') : null,
-      codeConfigExists ? `- Every Code config: ${codeConfigPath}` : '- Every Code notify: skipped (config.toml not found)',
+      codeConfigExists
+        ? `- Every Code config: ${codeConfigPath}`
+        : `- Every Code notify: skipped (${renderProbeSkip(codeConfigPath, codeProbe)})`,
       codeConfigExists && codeResult
         ? codeResult.changed
           ? '- Every Code notify: updated'
@@ -438,6 +442,26 @@ async function isFile(p) {
   } catch (_e) {
     return false;
   }
+}
+
+async function probeFile(p) {
+  try {
+    const st = await fs.stat(p);
+    if (st.isFile()) return { exists: true, reason: null };
+    return { exists: false, reason: 'not-file' };
+  } catch (e) {
+    if (e?.code === 'ENOENT' || e?.code === 'ENOTDIR') return { exists: false, reason: 'missing' };
+    if (e?.code === 'EACCES' || e?.code === 'EPERM') return { exists: false, reason: 'permission-denied' };
+    return { exists: false, reason: 'error', code: e?.code || 'unknown' };
+  }
+}
+
+function renderProbeSkip(pathname, probe) {
+  if (!probe || probe.reason === 'missing') return `${pathname} not found`;
+  if (probe.reason === 'not-file') return `${pathname} is not a file`;
+  if (probe.reason === 'permission-denied') return `permission denied: ${pathname}`;
+  const code = probe.code ? ` (${probe.code})` : '';
+  return `unavailable: ${pathname}${code}`;
 }
 
 async function isDir(p) {
