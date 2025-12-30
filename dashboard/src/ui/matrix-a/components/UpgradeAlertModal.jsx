@@ -7,8 +7,7 @@ import {
 } from "../../../lib/safe-browser.js";
 
 export function UpgradeAlertModal({
-  currentVersion = "0.1",
-  requiredVersion = "0.1.1",
+  requiredVersion = "0.2.2",
   installCommand,
   onClose,
 }) {
@@ -18,7 +17,6 @@ export function UpgradeAlertModal({
   const titleLabel = copy("dashboard.upgrade_alert.title");
   const subtitleLabel = copy("dashboard.upgrade_alert.subtitle", {
     required: requiredVersion,
-    current: currentVersion,
   });
   const promptLabel = copy("dashboard.upgrade_alert.prompt");
   const copyLabel = copy("dashboard.upgrade_alert.copy");
