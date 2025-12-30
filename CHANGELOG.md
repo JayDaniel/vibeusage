@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [0.2.2] - 2025-12-30
 ### Added
 - Opencode CLI usage ingestion via global plugin and local message parsing.
 
