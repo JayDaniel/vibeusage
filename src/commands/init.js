@@ -14,6 +14,12 @@ const {
   loadEveryCodeNotifyOriginal
 } = require('../lib/codex-config');
 const { upsertClaudeHook, buildClaudeHookCommand } = require('../lib/claude-config');
+const {
+  resolveGeminiConfigDir,
+  resolveGeminiSettingsPath,
+  buildGeminiHookCommand,
+  upsertGeminiHook
+} = require('../lib/gemini-config');
 const { resolveOpencodeConfigDir, upsertOpencodePlugin } = require('../lib/opencode-config');
 const { beginBrowserAuth } = require('../lib/browser-auth');
 const {
@@ -126,19 +132,26 @@ async function cmdInit(argv) {
   await fs.chmod(notifyPath, 0o755).catch(() => {});
 
   // Configure Codex notify hook.
-  const codexConfigPath = path.join(home, '.codex', 'config.toml');
+  const codexHome = process.env.CODEX_HOME || path.join(home, '.codex');
+  const codexConfigPath = path.join(codexHome, 'config.toml');
   const codeHome = process.env.CODE_HOME || path.join(home, '.code');
   const codeConfigPath = path.join(codeHome, 'config.toml');
   const notifyCmd = ['/usr/bin/env', 'node', notifyPath];
-  const result = await upsertCodexNotify({
-    codexConfigPath,
-    notifyCmd,
-    notifyOriginalPath
-  });
-
-  const chained = await loadCodexNotifyOriginal(notifyOriginalPath);
+  const codexProbe = await probeFile(codexConfigPath);
+  const codexConfigExists = codexProbe.exists;
+  let result = null;
+  let chained = null;
+  if (codexConfigExists) {
+    result = await upsertCodexNotify({
+      codexConfigPath,
+      notifyCmd,
+      notifyOriginalPath
+    });
+    chained = await loadCodexNotifyOriginal(notifyOriginalPath);
+  }
   const codeNotifyOriginalPath = path.join(trackerDir, 'code_notify_original.json');
-  const codeConfigExists = await isFile(codeConfigPath);
+  const codeProbe = await probeFile(codeConfigPath);
+  const codeConfigExists = codeProbe.exists;
   let codeResult = null;
   let codeChained = null;
   if (codeConfigExists) {
@@ -163,6 +176,18 @@ async function cmdInit(argv) {
     });
   }
 
+  const geminiConfigDir = resolveGeminiConfigDir({ home, env: process.env });
+  const geminiConfigExists = await isDir(geminiConfigDir);
+  const geminiSettingsPath = resolveGeminiSettingsPath({ configDir: geminiConfigDir });
+  let geminiResult = null;
+  if (geminiConfigExists) {
+    const geminiHookCommand = buildGeminiHookCommand(notifyPath);
+    geminiResult = await upsertGeminiHook({
+      settingsPath: geminiSettingsPath,
+      hookCommand: geminiHookCommand
+    });
+  }
+
   const opencodeConfigDir = resolveOpencodeConfigDir({ home, env: process.env });
   const opencodeResult = await upsertOpencodePlugin({
     configDir: opencodeConfigDir,
@@ -174,10 +199,18 @@ async function cmdInit(argv) {
       'Installed:',
       `- Tracker config: ${configPath}`,
       `- Notify handler: ${notifyPath}`,
-      `- Codex config: ${codexConfigPath}`,
-      result.changed ? '- Codex notify: updated' : '- Codex notify: already set',
-      chained ? '- Codex notify: chained (original preserved)' : '- Codex notify: no original',
-      codeConfigExists ? `- Every Code config: ${codeConfigPath}` : '- Every Code notify: skipped (config.toml not found)',
+      codexConfigExists
+        ? `- Codex config: ${codexConfigPath}`
+        : `- Codex notify: skipped (${renderProbeSkip(codexConfigPath, codexProbe)})`,
+      codexConfigExists
+        ? result?.changed
+          ? '- Codex notify: updated'
+          : '- Codex notify: already set'
+        : null,
+      codexConfigExists ? (chained ? '- Codex notify: chained (original preserved)' : '- Codex notify: no original') : null,
+      codeConfigExists
+        ? `- Every Code config: ${codeConfigPath}`
+        : `- Every Code notify: skipped (${renderProbeSkip(codeConfigPath, codeProbe)})`,
       codeConfigExists && codeResult
         ? codeResult.changed
           ? '- Every Code notify: updated'
@@ -193,6 +226,11 @@ async function cmdInit(argv) {
           ? `- Claude hooks: updated (${claudeSettingsPath})`
           : `- Claude hooks: already set (${claudeSettingsPath})`
         : '- Claude hooks: skipped (~/.claude not found)',
+      geminiConfigExists
+        ? geminiResult?.changed
+          ? `- Gemini hooks: updated (${geminiSettingsPath})`
+          : `- Gemini hooks: already set (${geminiSettingsPath})`
+        : `- Gemini hooks: skipped (${geminiConfigDir} not found)`,
       opencodeResult?.skippedReason === 'config-missing'
         ? '- Opencode plugin: skipped (config dir missing)'
         : opencodeResult?.changed
@@ -321,7 +359,7 @@ try {
   const originalPath =
     source === 'every-code'
       ? codeOriginalPath
-      : source === 'claude' || source === 'opencode'
+      : source === 'claude' || source === 'opencode' || source === 'gemini'
         ? null
         : codexOriginalPath;
   if (originalPath) {
@@ -404,6 +442,26 @@ async function isFile(p) {
   } catch (_e) {
     return false;
   }
+}
+
+async function probeFile(p) {
+  try {
+    const st = await fs.stat(p);
+    if (st.isFile()) return { exists: true, reason: null };
+    return { exists: false, reason: 'not-file' };
+  } catch (e) {
+    if (e?.code === 'ENOENT' || e?.code === 'ENOTDIR') return { exists: false, reason: 'missing' };
+    if (e?.code === 'EACCES' || e?.code === 'EPERM') return { exists: false, reason: 'permission-denied' };
+    return { exists: false, reason: 'error', code: e?.code || 'unknown' };
+  }
+}
+
+function renderProbeSkip(pathname, probe) {
+  if (!probe || probe.reason === 'missing') return `${pathname} not found`;
+  if (probe.reason === 'not-file') return `${pathname} is not a file`;
+  if (probe.reason === 'permission-denied') return `permission denied: ${pathname}`;
+  const code = probe.code ? ` (${probe.code})` : '';
+  return `unavailable: ${pathname}${code}`;
 }
 
 async function isDir(p) {
