@@ -3,8 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [0.2.3] - 2025-12-30
 ### Added
 - Install Gemini CLI SessionEnd hook and enable Gemini hooks automatically for auto sync.
+
+### Fixed
+- Opencode plugin command template no longer escapes the `$` command in the generated plugin.
 
 ## [0.2.2] - 2025-12-30
 ### Added
