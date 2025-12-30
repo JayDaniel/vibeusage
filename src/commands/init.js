@@ -132,17 +132,22 @@ async function cmdInit(argv) {
   await fs.chmod(notifyPath, 0o755).catch(() => {});
 
   // Configure Codex notify hook.
-  const codexConfigPath = path.join(home, '.codex', 'config.toml');
+  const codexHome = process.env.CODEX_HOME || path.join(home, '.codex');
+  const codexConfigPath = path.join(codexHome, 'config.toml');
   const codeHome = process.env.CODE_HOME || path.join(home, '.code');
   const codeConfigPath = path.join(codeHome, 'config.toml');
   const notifyCmd = ['/usr/bin/env', 'node', notifyPath];
-  const result = await upsertCodexNotify({
-    codexConfigPath,
-    notifyCmd,
-    notifyOriginalPath
-  });
-
-  const chained = await loadCodexNotifyOriginal(notifyOriginalPath);
+  const codexConfigExists = await isFile(codexConfigPath);
+  let result = null;
+  let chained = null;
+  if (codexConfigExists) {
+    result = await upsertCodexNotify({
+      codexConfigPath,
+      notifyCmd,
+      notifyOriginalPath
+    });
+    chained = await loadCodexNotifyOriginal(notifyOriginalPath);
+  }
   const codeNotifyOriginalPath = path.join(trackerDir, 'code_notify_original.json');
   const codeConfigExists = await isFile(codeConfigPath);
   let codeResult = null;
@@ -192,9 +197,15 @@ async function cmdInit(argv) {
       'Installed:',
       `- Tracker config: ${configPath}`,
       `- Notify handler: ${notifyPath}`,
-      `- Codex config: ${codexConfigPath}`,
-      result.changed ? '- Codex notify: updated' : '- Codex notify: already set',
-      chained ? '- Codex notify: chained (original preserved)' : '- Codex notify: no original',
+      codexConfigExists
+        ? `- Codex config: ${codexConfigPath}`
+        : `- Codex notify: skipped (${codexConfigPath} not found)`,
+      codexConfigExists
+        ? result?.changed
+          ? '- Codex notify: updated'
+          : '- Codex notify: already set'
+        : null,
+      codexConfigExists ? (chained ? '- Codex notify: chained (original preserved)' : '- Codex notify: no original') : null,
       codeConfigExists ? `- Every Code config: ${codeConfigPath}` : '- Every Code notify: skipped (config.toml not found)',
       codeConfigExists && codeResult
         ? codeResult.changed

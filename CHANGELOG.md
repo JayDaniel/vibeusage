@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Fixed
+- Skip Codex notify install when Codex config is missing.
 
 ## [0.2.3] - 2025-12-30
 ### Added

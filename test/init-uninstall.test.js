@@ -121,6 +121,43 @@ test('init then uninstall removes notify when none existed', async () => {
   }
 });
 
+test('init skips Codex notify when config is missing', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibescore-init-uninstall-'));
+  const prevHome = process.env.HOME;
+  const prevCodexHome = process.env.CODEX_HOME;
+  const prevToken = process.env.VIBESCORE_DEVICE_TOKEN;
+  const prevOpencodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
+  const prevGeminiHome = process.env.GEMINI_HOME;
+  const prevWrite = process.stdout.write;
+
+  try {
+    process.env.HOME = tmp;
+    process.env.CODEX_HOME = path.join(tmp, '.codex');
+    process.env.GEMINI_HOME = path.join(tmp, '.gemini');
+    delete process.env.VIBESCORE_DEVICE_TOKEN;
+    process.env.OPENCODE_CONFIG_DIR = path.join(tmp, '.config', 'opencode');
+
+    process.stdout.write = () => true;
+    await cmdInit(['--no-auth', '--no-open', '--base-url', 'https://example.invalid']);
+
+    const codexConfigPath = path.join(process.env.CODEX_HOME, 'config.toml');
+    await assert.rejects(fs.stat(codexConfigPath), /ENOENT/);
+  } finally {
+    process.stdout.write = prevWrite;
+    if (prevHome === undefined) delete process.env.HOME;
+    else process.env.HOME = prevHome;
+    if (prevCodexHome === undefined) delete process.env.CODEX_HOME;
+    else process.env.CODEX_HOME = prevCodexHome;
+    if (prevToken === undefined) delete process.env.VIBESCORE_DEVICE_TOKEN;
+    else process.env.VIBESCORE_DEVICE_TOKEN = prevToken;
+    if (prevOpencodeConfigDir === undefined) delete process.env.OPENCODE_CONFIG_DIR;
+    else process.env.OPENCODE_CONFIG_DIR = prevOpencodeConfigDir;
+    if (prevGeminiHome === undefined) delete process.env.GEMINI_HOME;
+    else process.env.GEMINI_HOME = prevGeminiHome;
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
 test('init then uninstall restores original Every Code notify (when config exists)', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibescore-init-uninstall-'));
   const prevHome = process.env.HOME;
