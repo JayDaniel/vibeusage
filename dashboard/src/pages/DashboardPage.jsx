@@ -68,6 +68,13 @@ function hasUsageValue(value, level) {
   return false;
 }
 
+function isScreenshotModeEnabled() {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  const raw = String(params.get("screenshot") || "").toLowerCase();
+  return raw === "1" || raw === "true";
+}
+
 export function DashboardPage({
   baseUrl,
   auth,
@@ -87,6 +94,7 @@ export function DashboardPage({
     if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(max-width: 640px)").matches;
   });
+  const screenshotMode = useMemo(() => isScreenshotModeEnabled(), []);
   const identityScrambleDurationMs = 2200;
   const [coreIndexCollapsed, setCoreIndexCollapsed] = useState(true);
   const [installCopied, setInstallCopied] = useState(false);
@@ -568,6 +576,7 @@ export function DashboardPage({
   const coreIndexExpandLabel = copy("dashboard.core_index.expand_label");
   const coreIndexCollapseAria = copy("dashboard.core_index.collapse_aria");
   const coreIndexExpandAria = copy("dashboard.core_index.expand_aria");
+  const allowBreakdownToggle = !screenshotMode;
 
   const metricsRows = useMemo(
     () => [
@@ -758,6 +767,9 @@ export function DashboardPage({
         footerRight={
           <span className="font-bold">{copy("dashboard.footer.right")}</span>
         }
+        contentClassName={
+          screenshotMode ? "w-full max-w-[720px] mx-auto" : ""
+        }
       >
         {sessionExpired ? (
           <div className="mb-6">
@@ -847,46 +859,48 @@ export function DashboardPage({
                 </AsciiBox>
               ) : null}
 
-              <AsciiBox
-                title={copy("dashboard.install.title")}
-                subtitle={copy("dashboard.install.subtitle")}
-                className="relative"
-              >
-                <div className="text-[12px] uppercase tracking-[0.25em] font-black text-[#00FF41]">
+              {!screenshotMode ? (
+                <AsciiBox
+                  title={copy("dashboard.install.title")}
+                  subtitle={copy("dashboard.install.subtitle")}
+                  className="relative"
+                >
+                  <div className="text-[12px] uppercase tracking-[0.25em] font-black text-[#00FF41]">
+                    <TypewriterText
+                      text={installHeadline}
+                      startDelayMs={installHeadlineDelayMs}
+                      speedMs={installHeadlineSpeedMs}
+                      cursor={false}
+                      active={shouldAnimateInstall}
+                    />
+                  </div>
                   <TypewriterText
-                    text={installHeadline}
-                    startDelayMs={installHeadlineDelayMs}
-                    speedMs={installHeadlineSpeedMs}
+                    className="text-[12px] opacity-50 mt-2"
+                    segments={installSegments}
+                    startDelayMs={installBodyDelayMs}
+                    speedMs={installBodySpeedMs}
                     cursor={false}
+                    wrap
                     active={shouldAnimateInstall}
                   />
-                </div>
-                <TypewriterText
-                  className="text-[12px] opacity-50 mt-2"
-                  segments={installSegments}
-                  startDelayMs={installBodyDelayMs}
-                  speedMs={installBodySpeedMs}
-                  cursor={false}
-                  wrap
-                  active={shouldAnimateInstall}
-                />
-                <div className="mt-4 flex flex-col gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <MatrixButton onClick={handleCopyInstall}>
-                      {installCopied ? installCopiedLabel : installCopyLabel}
-                    </MatrixButton>
-                    {linkCodeLoading ? (
-                      <span className="text-[12px] opacity-40">
-                        {copy("dashboard.install.link_code.loading")}
-                      </span>
-                    ) : linkCodeError ? (
-                      <span className="text-[12px] opacity-40">
-                        {copy("dashboard.install.link_code.failed")}
-                      </span>
-                    ) : null}
+                  <div className="mt-4 flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <MatrixButton onClick={handleCopyInstall}>
+                        {installCopied ? installCopiedLabel : installCopyLabel}
+                      </MatrixButton>
+                      {linkCodeLoading ? (
+                        <span className="text-[12px] opacity-40">
+                          {copy("dashboard.install.link_code.loading")}
+                        </span>
+                      ) : linkCodeError ? (
+                        <span className="text-[12px] opacity-40">
+                          {copy("dashboard.install.link_code.failed")}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              </AsciiBox>
+                </AsciiBox>
+              ) : null}
 
               <AsciiBox
                 title={copy("dashboard.activity.title")}
@@ -926,14 +940,26 @@ export function DashboardPage({
                 summaryValue={summaryValue}
                 summaryCostValue={summaryCostValue}
                 onCostInfo={costInfoEnabled ? openCostModal : null}
-                breakdownCollapsed={coreIndexCollapsed}
-                onToggleBreakdown={() =>
-                  setCoreIndexCollapsed((value) => !value)
+                breakdownCollapsed={
+                  allowBreakdownToggle ? coreIndexCollapsed : true
                 }
-                collapseLabel={coreIndexCollapseLabel}
-                expandLabel={coreIndexExpandLabel}
-                collapseAriaLabel={coreIndexCollapseAria}
-                expandAriaLabel={coreIndexExpandAria}
+                onToggleBreakdown={
+                  allowBreakdownToggle
+                    ? () => setCoreIndexCollapsed((value) => !value)
+                    : null
+                }
+                collapseLabel={
+                  allowBreakdownToggle ? coreIndexCollapseLabel : undefined
+                }
+                expandLabel={
+                  allowBreakdownToggle ? coreIndexExpandLabel : undefined
+                }
+                collapseAriaLabel={
+                  allowBreakdownToggle ? coreIndexCollapseAria : undefined
+                }
+                expandAriaLabel={
+                  allowBreakdownToggle ? coreIndexExpandAria : undefined
+                }
                 onRefresh={refreshAll}
                 loading={usageLoadingState}
                 error={usageError}
@@ -960,123 +986,125 @@ export function DashboardPage({
                 className="min-h-[240px]"
               />
 
-              <AsciiBox
-                title={copy("dashboard.daily.title")}
-                subtitle={copy("dashboard.daily.subtitle")}
-              >
-                {!hasDetailsActual ? (
-                  <div className="text-[10px] opacity-40 mb-2">
-                    {dailyEmptyPrefix}
-                    <code className="px-1 py-0.5 bg-black/40 border border-[#00FF41]/20">
-                      {installSyncCmd}
-                    </code>
-                    {dailyEmptySuffix}
-                  </div>
-                ) : null}
-                <div
-                  className="overflow-auto max-h-[520px] border border-[#00FF41]/10"
-                  role="region"
-                  aria-label={copy("daily.table.aria_label")}
-                  tabIndex={0}
+              {!screenshotMode ? (
+                <AsciiBox
+                  title={copy("dashboard.daily.title")}
+                  subtitle={copy("dashboard.daily.subtitle")}
                 >
-                  <table className="w-full border-collapse">
-                    <thead className="sticky top-0 bg-black/90">
-                      <tr className="border-b border-[#00FF41]/10">
-                        {detailsColumns.map((c) => (
-                          <th
-                            key={c.key}
-                            aria-sort={ariaSortFor(c.key)}
-                            className="text-left p-0"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => toggleSort(c.key)}
-                              title={c.title}
-                              className="w-full px-3 py-2 text-left text-[9px] uppercase tracking-widest font-black opacity-70 hover:opacity-100 hover:bg-[#00FF41]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF41]/30 flex items-center justify-start"
+                  {!hasDetailsActual ? (
+                    <div className="text-[10px] opacity-40 mb-2">
+                      {dailyEmptyPrefix}
+                      <code className="px-1 py-0.5 bg-black/40 border border-[#00FF41]/20">
+                        {installSyncCmd}
+                      </code>
+                      {dailyEmptySuffix}
+                    </div>
+                  ) : null}
+                  <div
+                    className="overflow-auto max-h-[520px] border border-[#00FF41]/10"
+                    role="region"
+                    aria-label={copy("daily.table.aria_label")}
+                    tabIndex={0}
+                  >
+                    <table className="w-full border-collapse">
+                      <thead className="sticky top-0 bg-black/90">
+                        <tr className="border-b border-[#00FF41]/10">
+                          {detailsColumns.map((c) => (
+                            <th
+                              key={c.key}
+                              aria-sort={ariaSortFor(c.key)}
+                              className="text-left p-0"
                             >
-                              <span className="inline-flex items-center gap-2">
-                                <span>{c.label}</span>
-                                <span className="opacity-40">
-                                  {sortIconFor(c.key)}
+                              <button
+                                type="button"
+                                onClick={() => toggleSort(c.key)}
+                                title={c.title}
+                                className="w-full px-3 py-2 text-left text-[9px] uppercase tracking-widest font-black opacity-70 hover:opacity-100 hover:bg-[#00FF41]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF41]/30 flex items-center justify-start"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <span>{c.label}</span>
+                                  <span className="opacity-40">
+                                    {sortIconFor(c.key)}
+                                  </span>
                                 </span>
-                              </span>
-                            </button>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pagedDetails.map((r) => (
-                        <tr
-                          key={String(
-                            r?.[detailsDateKey] ||
-                              r?.day ||
-                              r?.hour ||
-                              r?.month ||
-                              ""
-                          )}
-                          className={`border-b border-[#00FF41]/5 hover:bg-[#00FF41]/5 ${
-                            r.missing
-                              ? "text-[#00FF41]/50"
-                              : r.future
-                              ? "text-[#00FF41]/30"
-                              : ""
-                          }`}
-                        >
-                          <td className="px-3 py-2 text-[12px] opacity-80 font-mono">
-                            {renderDetailDate(r)}
-                          </td>
-                          <td className="px-3 py-2 text-[12px] font-mono">
-                            {renderDetailCell(r, "total_tokens")}
-                          </td>
-                          <td className="px-3 py-2 text-[12px] font-mono">
-                            {renderDetailCell(r, "input_tokens")}
-                          </td>
-                          <td className="px-3 py-2 text-[12px] font-mono">
-                            {renderDetailCell(r, "output_tokens")}
-                          </td>
-                          <td className="px-3 py-2 text-[12px] font-mono">
-                            {renderDetailCell(r, "cached_input_tokens")}
-                          </td>
-                          <td className="px-3 py-2 text-[12px] font-mono">
-                            {renderDetailCell(r, "reasoning_output_tokens")}
-                          </td>
+                              </button>
+                            </th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {DETAILS_PAGED_PERIODS.has(period) && detailsPageCount > 1 ? (
-                  <div className="flex items-center justify-between mt-3 text-[9px] uppercase tracking-widest font-black">
-                    <MatrixButton
-                      type="button"
-                      onClick={() =>
-                        setDetailsPage((prev) => Math.max(0, prev - 1))
-                      }
-                      disabled={detailsPage === 0}
-                    >
-                      {copy("details.pagination.prev")}
-                    </MatrixButton>
-                    <span className="opacity-50">
-                      {copy("details.pagination.page", {
-                        page: detailsPage + 1,
-                        total: detailsPageCount,
-                      })}
-                    </span>
-                    <MatrixButton
-                      type="button"
-                      onClick={() =>
-                        setDetailsPage((prev) =>
-                          Math.min(detailsPageCount - 1, prev + 1)
-                        )
-                      }
-                      disabled={detailsPage + 1 >= detailsPageCount}
-                    >
-                      {copy("details.pagination.next")}
-                    </MatrixButton>
+                      </thead>
+                      <tbody>
+                        {pagedDetails.map((r) => (
+                          <tr
+                            key={String(
+                              r?.[detailsDateKey] ||
+                                r?.day ||
+                                r?.hour ||
+                                r?.month ||
+                                ""
+                            )}
+                            className={`border-b border-[#00FF41]/5 hover:bg-[#00FF41]/5 ${
+                              r.missing
+                                ? "text-[#00FF41]/50"
+                                : r.future
+                                ? "text-[#00FF41]/30"
+                                : ""
+                            }`}
+                          >
+                            <td className="px-3 py-2 text-[12px] opacity-80 font-mono">
+                              {renderDetailDate(r)}
+                            </td>
+                            <td className="px-3 py-2 text-[12px] font-mono">
+                              {renderDetailCell(r, "total_tokens")}
+                            </td>
+                            <td className="px-3 py-2 text-[12px] font-mono">
+                              {renderDetailCell(r, "input_tokens")}
+                            </td>
+                            <td className="px-3 py-2 text-[12px] font-mono">
+                              {renderDetailCell(r, "output_tokens")}
+                            </td>
+                            <td className="px-3 py-2 text-[12px] font-mono">
+                              {renderDetailCell(r, "cached_input_tokens")}
+                            </td>
+                            <td className="px-3 py-2 text-[12px] font-mono">
+                              {renderDetailCell(r, "reasoning_output_tokens")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ) : null}
-              </AsciiBox>
+                  {DETAILS_PAGED_PERIODS.has(period) && detailsPageCount > 1 ? (
+                    <div className="flex items-center justify-between mt-3 text-[9px] uppercase tracking-widest font-black">
+                      <MatrixButton
+                        type="button"
+                        onClick={() =>
+                          setDetailsPage((prev) => Math.max(0, prev - 1))
+                        }
+                        disabled={detailsPage === 0}
+                      >
+                        {copy("details.pagination.prev")}
+                      </MatrixButton>
+                      <span className="opacity-50">
+                        {copy("details.pagination.page", {
+                          page: detailsPage + 1,
+                          total: detailsPageCount,
+                        })}
+                      </span>
+                      <MatrixButton
+                        type="button"
+                        onClick={() =>
+                          setDetailsPage((prev) =>
+                            Math.min(detailsPageCount - 1, prev + 1)
+                          )
+                        }
+                        disabled={detailsPage + 1 >= detailsPageCount}
+                      >
+                        {copy("details.pagination.next")}
+                      </MatrixButton>
+                    </div>
+                  ) : null}
+                </AsciiBox>
+              ) : null}
             </div>
           </div>
         )}
