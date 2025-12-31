@@ -922,7 +922,11 @@ export function DashboardPage({
           aria-label={wrappedEntryLabel}
           title={wrappedEntryLabel}
           className="matrix-header-action--ghost bg-transparent text-gold border-gold hover:border-gold hover:text-gold"
-          style={{ "--matrix-header-corner": "#FFD700" }}
+          style={{
+            "--matrix-header-corner": "#FFD700",
+            borderColor: "#FFD700",
+            color: "#FFD700",
+          }}
         >
           {wrappedEntryLabel}
         </MatrixButton>
