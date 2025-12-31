@@ -238,6 +238,14 @@ export function ActivityHeatmap({
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
+    if (!weeks.length) {
+      if (defaultToLatestMonth) {
+        el.dataset.latestMonthReady = "false";
+      }
+      hasAutoScrolledRef.current = false;
+      updateScrollState();
+      return;
+    }
     if (hasAutoScrolledRef.current) return;
     if (defaultToLatestMonth) {
       el.dataset.latestMonthReady = "false";

@@ -690,7 +690,7 @@ export function DashboardPage({
   const captureScreenshotBlob = useCallback(async () => {
     if (typeof window === "undefined") return null;
     const waitForHeatmapLatest = async () => {
-      const maxWaitMs = 900;
+      const maxWaitMs = 2000;
       const start = performance.now();
       while (performance.now() - start < maxWaitMs) {
         const el = document.querySelector("[data-heatmap-scroll='true']");
