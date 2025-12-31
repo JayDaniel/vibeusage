@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "screenshot": "node scripts/capture-dashboard-screenshot.mjs"
+    "screenshot": "node scripts/capture-dashboard-screenshot.mjs",
+    "verify:share-clipboard": "node scripts/verify-share-clipboard.mjs"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.0",

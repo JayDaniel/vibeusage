@@ -737,21 +737,23 @@ export function DashboardPage({
   const handleShareToX = useCallback(async () => {
     if (typeof window === "undefined" || isCapturing) return;
     setIsCapturing(true);
+    let copied = false;
     try {
       const blob = await captureScreenshotBlob();
       if (blob) {
         if (typeof document !== "undefined" && !document.hasFocus()) {
           window.focus?.();
         }
-        const copied = await safeWriteClipboardImage(blob);
-        if (!copied) {
-          console.warn("Failed to write screenshot to clipboard.");
-        }
+        copied = await safeWriteClipboardImage(blob);
       }
     } catch (error) {
       console.error("Failed to capture screenshot", error);
     } finally {
       setIsCapturing(false);
+      if (!copied) {
+        console.warn("Failed to write screenshot to clipboard.");
+        return;
+      }
       if (screenshotTwitterUrl) {
         window.location.href = screenshotTwitterUrl;
       }
