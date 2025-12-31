@@ -17,3 +17,5 @@ Date: 2025-12-31
 - Result: response includes `debug` object with `request_id`, `status`, `query_ms`, `slow_threshold_ms`, `slow_query` (2025-12-31 19:31 UTC).
 - Command: `curl -s -H "Authorization: Bearer <redacted>" "https://5tmappuk.us-east.insforge.app/functions/vibescore-usage-summary?from=2025-12-30&to=2025-12-30&debug=1"`
 - Result: response includes `debug` object with `request_id`, `status`, `query_ms`, `slow_threshold_ms`, `slow_query` (2025-12-31 19:34 UTC).
+- Command: `node -e "<script>"` (fetches usage summary without `debug=1`)
+- Result: status 200 and `debug` field absent (2025-12-31 19:37 UTC).

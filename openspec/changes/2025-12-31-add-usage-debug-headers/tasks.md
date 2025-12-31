@@ -11,3 +11,4 @@
 
 ## 3. Verification
 - [x] 3.1 Verify debug payload appears only when `debug=1` and is absent otherwise.
+- [x] 3.2 Cold regression: usage summary without `debug=1` returns no `debug` field.
