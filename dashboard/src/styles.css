@@ -146,6 +146,10 @@ body {
     filter: drop-shadow(0 0 2px rgba(0, 255, 65, 0.3));
   }
 
+  .matrix-shell-content {
+    margin-top: var(--matrix-banner-offset, 0px);
+  }
+
   .matrix-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 255, 65, 0.45) transparent;

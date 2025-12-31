@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { copy } from "../../../lib/copy.js";
 import {
   safeGetItem,
@@ -38,6 +38,7 @@ export function UpgradeAlertModal({ requiredVersion, installCommand, onClose }) 
     if (typeof window === "undefined") return true;
     return !safeGetItem(storageKey);
   });
+  const bannerRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -50,6 +51,24 @@ export function UpgradeAlertModal({ requiredVersion, installCommand, onClose }) 
     }
     setIsVisible(!dismissed);
   }, [storageKey, hasVersion, unknownDismissKey]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (!isVisible) {
+      root.style.setProperty("--matrix-banner-offset", "0px");
+      return;
+    }
+    const updateOffset = () => {
+      const height = bannerRef.current?.offsetHeight ?? 0;
+      root.style.setProperty("--matrix-banner-offset", `${height}px`);
+    };
+    updateOffset();
+    window.addEventListener("resize", updateOffset);
+    return () => {
+      window.removeEventListener("resize", updateOffset);
+    };
+  }, [isVisible]);
 
   if (!isVisible) return null;
 
@@ -67,7 +86,10 @@ export function UpgradeAlertModal({ requiredVersion, installCommand, onClose }) 
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[200] border-b border-gold/30 bg-matrix-dark/95 backdrop-blur-md shadow-[0_0_20px_rgba(255,215,0,0.1)] overflow-hidden">
+    <div
+      ref={bannerRef}
+      className="fixed top-0 left-0 right-0 z-[200] border-b border-gold/30 bg-matrix-dark/95 backdrop-blur-md shadow-[0_0_20px_rgba(255,215,0,0.1)] overflow-hidden"
+    >
       {/* Scanline effect */}
       <div className="absolute inset-0 pointer-events-none opacity-10">
         <div className="w-full h-full bg-[linear-gradient(rgba(255,215,0,0)_50%,rgba(255,215,0,0.1)_50%)] bg-[length:100%_4px]" />
