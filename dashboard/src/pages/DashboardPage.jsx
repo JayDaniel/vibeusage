@@ -748,10 +748,20 @@ export function DashboardPage({
   const handleShareToX = useCallback(async () => {
     if (typeof window === "undefined" || isCapturing) return;
     setIsCapturing(true);
-    let copied = false;
+    const userAgent = navigator?.userAgent || "";
+    const isIOS = /iP(hone|od|ad)/i.test(userAgent);
+    const isSafari =
+      /Safari/i.test(userAgent) && !/Chrome|Chromium|Edg|OPR|CriOS|FxiOS/i.test(userAgent);
+    const canCopyImage =
+      typeof navigator !== "undefined" &&
+      Boolean(navigator.clipboard?.write) &&
+      typeof window !== "undefined" &&
+      Boolean(window.ClipboardItem);
+    const allowBypassClipboard = !canCopyImage || isIOS || isSafari;
+    let copied = allowBypassClipboard;
     try {
       const blob = await captureScreenshotBlob();
-      if (blob) {
+      if (blob && canCopyImage) {
         if (typeof document !== "undefined" && !document.hasFocus()) {
           window.focus?.();
         }

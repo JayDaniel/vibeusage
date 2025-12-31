@@ -29,3 +29,4 @@
 - [x] 1.26 记录 freeze entry（dashboard share flow）。
 - [x] 1.27 生产环境开放 Wrapped 入口与截图模式。
 - [x] 1.28 截图模式热力图默认滚动到最新月份。
+- [x] 1.29 Safari/不支持剪贴板时允许直接跳转 X。

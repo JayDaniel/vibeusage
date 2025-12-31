@@ -118,6 +118,10 @@
 - **WHEN** 用户点击 X 按钮
 - **THEN** 先将截图写入剪贴板，再跳转到 X Web Intent（文本预填）
 
+#### Scenario: Clipboard unsupported fallback
+- **WHEN** 浏览器不支持图片剪贴板写入
+- **THEN** 仍可跳转到 X Web Intent（不强制剪贴板成功）
+
 #### Scenario: Freeze animated overlays during capture
 - **WHEN** 系统进行截图捕获
 - **THEN** 临时停用扫描线/代码雨等动效，避免截图重影
