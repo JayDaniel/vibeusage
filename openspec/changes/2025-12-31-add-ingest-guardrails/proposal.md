@@ -8,6 +8,7 @@
 - 为 `vibescore-ingest` / `vibescore-device-token-issue` / `vibescore-sync-ping` 增加 M1 结构化日志。
 - 为 `vibescore-ingest` 增加并发上限与 `Retry-After` 响应。
 - 新增 canary 脚本用于外部定时探测（不影响真实用户数据）。
+- usage 端默认排除 `source=model=canary` 桶（除非显式请求）。
 
 ## Impact
 - Affected specs: `openspec/specs/vibescore-tracker/spec.md`

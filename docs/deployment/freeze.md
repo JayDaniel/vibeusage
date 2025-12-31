@@ -1,7 +1,7 @@
 # Deployment Freeze Records
 
 ## 2025-12-31-add-ingest-guardrails
-- Scope: M1 logs for ingest/token/sync, ingest concurrency guard, canary probe
+- Scope: M1 logs for ingest/token/sync, ingest concurrency guard, canary probe, usage canary exclusion
 - Change ID: `2025-12-31-add-ingest-guardrails`
 - Freeze artifact: update `insforge-functions/` via `npm run build:insforge`
 - Cold regression step: `node --test test/edge-functions.test.js`

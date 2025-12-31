@@ -9,7 +9,7 @@
 
 ## Results
 - `node scripts/acceptance/ingest-concurrency-guard.cjs`: OK (429 + Retry-After observed)
-- `node --test test/edge-functions.test.js`: pass (37/37)
+- `node --test test/edge-functions.test.js`: pass (38/38)
 
 ## Evidence
 - CLI output captured in console during run

@@ -19,9 +19,24 @@ if (!deviceToken) {
   process.exit(2);
 }
 
+const confirmIsolated = normalizeFlag(process.env.VIBESCORE_CANARY_CONFIRM_ISOLATED);
+if (!confirmIsolated) {
+  console.error('Refusing to run canary without isolation confirmation.');
+  console.error('Set VIBESCORE_CANARY_CONFIRM_ISOLATED=1 and use a dedicated user token.');
+  console.error('Also disable leaderboard for that user to avoid public exposure.');
+  process.exit(2);
+}
+
 const source = process.env.VIBESCORE_CANARY_SOURCE || 'canary';
 const model = process.env.VIBESCORE_CANARY_MODEL || 'canary';
 const hourStart = process.env.VIBESCORE_CANARY_HOUR_START || currentHalfHourIso();
+const allowCustomTag = normalizeFlag(process.env.VIBESCORE_CANARY_ALLOW_CUSTOM_TAG);
+
+if (!allowCustomTag && (!isCanaryTag(source) || !isCanaryTag(model))) {
+  console.error('Refusing to run canary with non-canary source/model.');
+  console.error('Set VIBESCORE_CANARY_ALLOW_CUSTOM_TAG=1 to override.');
+  process.exit(2);
+}
 
 if (!isHalfHourIso(hourStart)) {
   console.error('Invalid VIBESCORE_CANARY_HOUR_START: must be UTC half-hour boundary ISO');
@@ -101,6 +116,10 @@ function isHalfHourIso(value) {
   return (minutes === 0 || minutes === 30) && dt.getUTCSeconds() === 0 && dt.getUTCMilliseconds() === 0;
 }
 
+function isCanaryTag(value) {
+  return typeof value === 'string' && value.trim().toLowerCase() === 'canary';
+}
+
 function toNonNegativeInt(raw) {
   if (raw == null || raw === '') return null;
   const n = Number(raw);
@@ -108,4 +127,10 @@ function toNonNegativeInt(raw) {
   if (!Number.isInteger(n)) return null;
   if (n < 0) return null;
   return n;
+}
+
+function normalizeFlag(value) {
+  if (value == null) return false;
+  const s = String(value).trim().toLowerCase();
+  return s === '1' || s === 'true' || s === 'yes' || s === 'y';
 }

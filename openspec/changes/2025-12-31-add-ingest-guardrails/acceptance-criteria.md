@@ -25,3 +25,10 @@
 - WHEN the canary script runs with a dedicated device token
 - THEN it SHALL perform a single ingest with `source=model=canary`
 - AND repeated runs SHALL not mutate real user usage totals
+
+### Requirement: Usage endpoints exclude canary by default
+- Rationale: 避免合成探针污染真实统计。
+
+#### Scenario: Default usage query ignores canary
+- WHEN a user calls a usage endpoint without `source=canary` or `model=canary`
+- THEN canary buckets SHALL be excluded from aggregates

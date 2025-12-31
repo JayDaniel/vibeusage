@@ -15,6 +15,7 @@
 - M1 logging -> Integration -> Backend -> Console log capture (synthetic)
 - Concurrency guard -> Integration -> Backend -> `scripts/acceptance/ingest-concurrency-guard.cjs`
 - Canary script -> Regression -> Ops -> `scripts/ops/ingest-canary.cjs` dry run with env
+- Canary exclusion -> Integration -> Backend -> usage endpoint query filter assertions
 
 ## Environments
 - Local Node (tests + acceptance script with mocks)

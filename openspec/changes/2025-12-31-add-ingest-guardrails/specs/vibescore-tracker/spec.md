@@ -23,3 +23,10 @@ The system SHALL provide a canary ingest script that uses a dedicated device tok
 - **WHEN** the canary script runs repeatedly
 - **THEN** it SHALL only affect canary buckets
 - **AND** it SHALL NOT modify real user usage totals
+
+### Requirement: Usage endpoints exclude canary buckets by default
+Usage endpoints SHALL exclude `source=model=canary` rows unless explicitly requested via `source=canary` or `model=canary`.
+
+#### Scenario: Default usage queries ignore canary buckets
+- **WHEN** a user calls a usage endpoint without `source=canary` or `model=canary`
+- **THEN** canary buckets SHALL be excluded from aggregates

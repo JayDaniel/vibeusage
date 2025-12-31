@@ -96,6 +96,8 @@ To keep low-tier backends stable, the CLI and dashboard apply conservative defau
 
 **Timezone note:** Usage endpoints accept `tz` (IANA) or `tz_offset_minutes` (fixed offset). When provided and non-UTC, date boundaries are interpreted in that timezone. When omitted, usage endpoints default to UTC behavior.
 
+**Canary note:** Usage endpoints exclude `source=model=canary` buckets by default unless explicitly requested via `source=canary` or `model=canary`.
+
 ### POST /functions/vibescore-device-token-issue
 
 Issue a long-lived device token for the current user.

@@ -977,6 +977,63 @@ test('vibescore-usage-daily treats empty source as missing', async () => {
   assert.ok(!filters.some((f) => f.op === 'eq' && f.col === 'source'));
 });
 
+test('vibescore-usage-daily excludes canary buckets by default', async () => {
+  const fn = require('../insforge-functions/vibescore-usage-daily');
+
+  const userId = '66666666-6666-6666-6666-666666666666';
+  const userJwt = 'user_jwt_test';
+  const filters = [];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_tracker_hourly');
+            const query = {
+              eq: (col, value) => {
+                filters.push({ op: 'eq', col, value });
+                return query;
+              },
+              neq: (col, value) => {
+                filters.push({ op: 'neq', col, value });
+                return query;
+              },
+              gte: (col, value) => {
+                filters.push({ op: 'gte', col, value });
+                return query;
+              },
+              lt: (col, value) => {
+                filters.push({ op: 'lt', col, value });
+                return query;
+              },
+              order: async () => ({ data: [], error: null })
+            };
+            return { select: () => query };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request(
+    'http://localhost/functions/vibescore-usage-daily?from=2025-12-20&to=2025-12-21',
+    {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${userJwt}` }
+    }
+  );
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  assert.ok(filters.some((f) => f.op === 'neq' && f.col === 'source' && f.value === 'canary'));
+  assert.ok(filters.some((f) => f.op === 'neq' && f.col === 'model' && f.value === 'canary'));
+});
+
 test('vibescore-usage-hourly aggregates half-hour buckets into half-hour totals', async () => {
   const fn = require('../insforge-functions/vibescore-usage-hourly');
 
