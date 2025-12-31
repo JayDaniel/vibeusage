@@ -3,9 +3,9 @@
     {
       "id": "test_auto-retry_test_c3ddea79",
       "type": "text",
-      "text": "**auto-retry.test**\n`test/auto-retry.test.js`\n\nTest module.\n\n包含：\n- auto-retry.test (67 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**auto-retry.test**\n`test/auto-retry.test.js`\n\nTest module.\n\n包含：\n- auto-retry.test (67 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1229,
-      "y": 8832,
+      "y": 15192,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -14,7 +14,7 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
@@ -22,7 +22,7 @@
       "type": "text",
       "text": "**browser-auth.test**\n`test/browser-auth.test.js`\n\nTest module.\n\n包含：\n- browser-auth.test (55 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1626,
-      "y": 8844,
+      "y": 15204,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -31,7 +31,7 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
@@ -39,7 +39,7 @@
       "type": "text",
       "text": "**diagnostics.test**\n`test/diagnostics.test.js`\n\nTest module.\n\n包含：\n- diagnostics.test (92 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1252,
-      "y": 9108,
+      "y": 15468,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -48,15 +48,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_edge-functions_test_deffefcc",
       "type": "text",
-      "text": "**edge-functions.test**\n`test/edge-functions.test.js`\n\nTest module.\n\n包含：\n- edge-functions.test (2204 行)\n- toBase64Url (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**edge-functions.test**\n`test/edge-functions.test.js`\n\nTest module.\n\n包含：\n- edge-functions.test (2516 行)\n- toBase64Url (1 个参数)\n\n依赖：2 个模块\n被依赖：0 次",
       "x": 1630,
-      "y": 9107,
+      "y": 15467,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -65,15 +65,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_init-uninstall_test_de3698fe",
       "type": "text",
-      "text": "**init-uninstall.test**\n`test/init-uninstall.test.js`\n\nTest module.\n\n包含：\n- init-uninstall.test (623 行)\n- waitForFile (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**init-uninstall.test**\n`test/init-uninstall.test.js`\n\nTest module.\n\n包含：\n- init-uninstall.test (623 行)\n- waitForFile (3 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1247,
-      "y": 9365,
+      "y": 15725,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -82,15 +82,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_insforge-src-shared_test_110fa035",
       "type": "text",
-      "text": "**insforge-src-shared.test**\n`test/insforge-src-shared.test.js`\n\nTest module.\n\n包含：\n- insforge-src-shared.test (42 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**insforge-src-shared.test**\n`test/insforge-src-shared.test.js`\n\nTest module.\n\n包含：\n- insforge-src-shared.test (42 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1618,
-      "y": 9359,
+      "y": 15719,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -99,15 +99,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_link-code-exchange-payload_test_900230c6",
       "type": "text",
-      "text": "**link-code-exchange-payload.test**\n`test/link-code-exchange-payload.test.js`\n\nTest module.\n\n包含：\n- link-code-exchange-payload.test (20 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**link-code-exchange-payload.test**\n`test/link-code-exchange-payload.test.js`\n\nTest module.\n\n包含：\n- link-code-exchange-payload.test (20 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1239,
-      "y": 9619,
+      "y": 15979,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -116,15 +116,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_link-code-request-id_test_ec56824f",
       "type": "text",
-      "text": "**link-code-request-id.test**\n`test/link-code-request-id.test.js`\n\nTest module.\n\n包含：\n- link-code-request-id.test (109 行)\n- loadInitWithStubbedInsforge (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**link-code-request-id.test**\n`test/link-code-request-id.test.js`\n\nTest module.\n\n包含：\n- link-code-request-id.test (109 行)\n- loadInitWithStubbedInsforge (1 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1615,
-      "y": 9617,
+      "y": 15977,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -133,15 +133,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_pro-status_test_b63d1907",
       "type": "text",
-      "text": "**pro-status.test**\n`test/pro-status.test.js`\n\nTest module.\n\n包含：\n- pro-status.test (32 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**pro-status.test**\n`test/pro-status.test.js`\n\nTest module.\n\n包含：\n- pro-status.test (32 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1233,
-      "y": 9875,
+      "y": 16235,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -150,15 +150,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "test_rollout-parser_test_e96ece4a",
       "type": "text",
-      "text": "**rollout-parser.test**\n`test/rollout-parser.test.js`\n\nTest module.\n\n包含：\n- rollout-parser.test (1164 行)\n- buildTurnContextLine (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**rollout-parser.test**\n`test/rollout-parser.test.js`\n\nTest module.\n\n包含：\n- rollout-parser.test (1164 行)\n- buildTurnContextLine (1 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1631,
-      "y": 9887,
+      "y": 16247,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -167,7 +167,7 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
@@ -175,7 +175,7 @@
       "type": "text",
       "text": "**status.test**\n`test/status.test.js`\n\nTest module.\n\n包含：\n- status.test (66 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1246,
-      "y": 10144,
+      "y": 16504,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -184,7 +184,7 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
@@ -192,7 +192,7 @@
       "type": "text",
       "text": "**upload-throttle.test**\n`test/upload-throttle.test.js`\n\nTest module.\n\n包含：\n- upload-throttle.test (103 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1608,
-      "y": 10132,
+      "y": 16492,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -201,7 +201,7 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
@@ -209,7 +209,7 @@
       "type": "text",
       "text": "**uploader.test**\n`test/uploader.test.js`\n\nTest module.\n\n包含：\n- uploader.test (125 行)\n- stubIngestHourly (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1237,
-      "y": 10398,
+      "y": 16758,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -218,15 +218,15 @@
         "category": "test",
         "group": "test",
         "side": "right",
-        "layerIndex": 3
+        "layerIndex": 6
       }
     },
     {
       "id": "undefined_cli_16331b99",
       "type": "text",
-      "text": "**cli**\n`src/cli.js`\n\nGeneral module.\n\n包含：\n- cli (63 行)\n- run (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**cli**\n`src/cli.js`\n\nGeneral module.\n\n包含：\n- cli (63 行)\n- run (1 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 1234,
-      "y": 15896,
+      "y": 18356,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -234,7 +234,7 @@
         "relPath": "src/cli.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
@@ -242,7 +242,7 @@
       "type": "text",
       "text": "**browser-auth**\n`src/lib/browser-auth.js`\n\nShared utilities.\n\n包含：\n- browser-auth (176 行)\n- beginBrowserAuth (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1234,
-      "y": 6456,
+      "y": 12816,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -251,7 +251,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -259,7 +259,7 @@
       "type": "text",
       "text": "**claude-config**\n`src/lib/claude-config.js`\n\nShared utilities.\n\n包含：\n- claude-config (191 行)\n- upsertClaudeHook (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1629,
-      "y": 6466,
+      "y": 12826,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -268,7 +268,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -276,7 +276,7 @@
       "type": "text",
       "text": "**codex-config**\n`src/lib/codex-config.js`\n\nShared utilities.\n\n包含：\n- codex-config (225 行)\n- upsertNotify (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1237,
-      "y": 6718,
+      "y": 13078,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -285,7 +285,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -293,7 +293,7 @@
       "type": "text",
       "text": "**diagnostics**\n`src/lib/diagnostics.js`\n\nShared utilities.\n\n包含：\n- diagnostics (190 行)\n- collectTrackerDiagnostics (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1622,
-      "y": 6722,
+      "y": 13082,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -302,7 +302,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -310,7 +310,7 @@
       "type": "text",
       "text": "**fs**\n`src/lib/fs.js`\n\nShared utilities.\n\n包含：\n- fs (63 行)\n- ensureDir (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1234,
-      "y": 6976,
+      "y": 13336,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -319,7 +319,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -327,7 +327,7 @@
       "type": "text",
       "text": "**gemini-config**\n`src/lib/gemini-config.js`\n\nShared utilities.\n\n包含：\n- gemini-config (285 行)\n- resolveGeminiConfigDir (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1614,
-      "y": 6976,
+      "y": 13336,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -336,7 +336,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -344,7 +344,7 @@
       "type": "text",
       "text": "**insforge-client**\n`src/lib/insforge-client.js`\n\nShared utilities.\n\n包含：\n- insforge-client (60 行)\n- getAnonKey (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1231,
-      "y": 7234,
+      "y": 13594,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -353,7 +353,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -361,7 +361,7 @@
       "type": "text",
       "text": "**insforge**\n`src/lib/insforge.js`\n\nShared utilities.\n\n包含：\n- insforge (24 行)\n- issueDeviceTokenWithPassword (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1613,
-      "y": 7235,
+      "y": 13595,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -370,7 +370,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -378,7 +378,7 @@
       "type": "text",
       "text": "**opencode-config**\n`src/lib/opencode-config.js`\n\nShared utilities.\n\n包含：\n- opencode-config (99 行)\n- resolveOpencodeConfigDir (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1250,
-      "y": 7507,
+      "y": 13867,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -387,7 +387,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -395,7 +395,7 @@
       "type": "text",
       "text": "**progress**\n`src/lib/progress.js`\n\nShared utilities.\n\n包含：\n- progress (78 行)\n- createProgress (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1619,
-      "y": 7499,
+      "y": 13859,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -404,7 +404,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -412,7 +412,7 @@
       "type": "text",
       "text": "**prompt**\n`src/lib/prompt.js`\n\nShared utilities.\n\n包含：\n- prompt (21 行)\n- prompt (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1243,
-      "y": 7762,
+      "y": 14122,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -421,7 +421,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -429,7 +429,7 @@
       "type": "text",
       "text": "**rollout**\n`src/lib/rollout.js`\n\nShared utilities.\n\n包含：\n- rollout (1318 行)\n- listRolloutFiles (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1616,
-      "y": 7757,
+      "y": 14117,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -438,7 +438,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -446,7 +446,7 @@
       "type": "text",
       "text": "**upload-throttle**\n`src/lib/upload-throttle.js`\n\nShared utilities.\n\n包含：\n- upload-throttle (130 行)\n- normalizeState (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1237,
-      "y": 8018,
+      "y": 14378,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -455,7 +455,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -463,7 +463,7 @@
       "type": "text",
       "text": "**uploader**\n`src/lib/uploader.js`\n\nShared utilities.\n\n包含：\n- uploader (117 行)\n- drainQueueToCloud (7 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1616,
-      "y": 8017,
+      "y": 14377,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -472,7 +472,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -480,7 +480,7 @@
       "type": "text",
       "text": "**vibescore-api**\n`src/lib/vibescore-api.js`\n\nShared utilities.\n\n包含：\n- vibescore-api (223 行)\n- signInWithPassword (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1237,
-      "y": 8278,
+      "y": 14638,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -489,7 +489,7 @@
         "category": "utils",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -497,7 +497,7 @@
       "type": "text",
       "text": "**diagnostics**\n`src/commands/diagnostics.js`\n\nGeneral module.\n\n包含：\n- diagnostics (40 行)\n- cmdDiagnostics (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1610,
-      "y": 15894,
+      "y": 18354,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -505,15 +505,15 @@
         "relPath": "src/commands/diagnostics.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_init_8ce62bde",
       "type": "text",
-      "text": "**init**\n`src/commands/init.js`\n\nGeneral module.\n\n包含：\n- init (576 行)\n- cmdInit (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**init**\n`src/commands/init.js`\n\nGeneral module.\n\n包含：\n- init (576 行)\n- cmdInit (1 个参数)\n\n依赖：2 个模块\n被依赖：1 次",
       "x": 1230,
-      "y": 16153,
+      "y": 18613,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -521,7 +521,7 @@
         "relPath": "src/commands/init.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
@@ -529,7 +529,7 @@
       "type": "text",
       "text": "**status**\n`src/commands/status.js`\n\nGeneral module.\n\n包含：\n- status (154 行)\n- cmdStatus (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1628,
-      "y": 16166,
+      "y": 18626,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -537,15 +537,15 @@
         "relPath": "src/commands/status.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_sync_324be1c3",
       "type": "text",
-      "text": "**sync**\n`src/commands/sync.js`\n\nGeneral module.\n\n包含：\n- sync (477 行)\n- cmdSync (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**sync**\n`src/commands/sync.js`\n\nGeneral module.\n\n包含：\n- sync (477 行)\n- cmdSync (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 1252,
-      "y": 16428,
+      "y": 18888,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -553,7 +553,7 @@
         "relPath": "src/commands/sync.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
@@ -561,7 +561,7 @@
       "type": "text",
       "text": "**uninstall**\n`src/commands/uninstall.js`\n\nGeneral module.\n\n包含：\n- uninstall (150 行)\n- cmdUninstall (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1616,
-      "y": 16417,
+      "y": 18877,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -569,562 +569,644 @@
         "relPath": "src/commands/uninstall.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
-      "id": "undefined_auth_7a311011",
+      "id": "utils_auth_7a311011",
       "type": "text",
-      "text": "**auth**\n`insforge-src/shared/auth.js`\n\nGeneral module.\n\n包含：\n- auth (100 行)\n- getBearerToken (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1245,
-      "y": 14083,
+      "text": "**auth**\n`insforge-src/shared/auth.js`\n\nShared utilities.\n\n包含：\n- auth (100 行)\n- getBearerToken (1 个参数)\n\n依赖：0 个模块\n被依赖：5 次",
+      "x": 1235,
+      "y": 10477,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/auth.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_crypto_6f5833da",
+      "id": "utils_canary_a8ae9a1f",
       "type": "text",
-      "text": "**crypto**\n`insforge-src/shared/crypto.js`\n\nGeneral module.\n\n包含：\n- crypto (15 行)\n- sha256Hex (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1614,
-      "y": 14076,
+      "text": "**canary**\n`insforge-src/shared/canary.js`\n\nShared utilities.\n\n包含：\n- canary (18 行)\n- isCanaryTag (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1631,
+      "y": 10487,
+      "width": 280,
+      "height": 232,
+      "color": "2",
+      "meta": {
+        "relPath": "insforge-src/shared/canary.js",
+        "category": "utils",
+        "group": "utils",
+        "side": "right",
+        "layerIndex": 5
+      }
+    },
+    {
+      "id": "utils_concurrency_e450ea3c",
+      "type": "text",
+      "text": "**concurrency**\n`insforge-src/shared/concurrency.js`\n\nShared utilities.\n\n包含：\n- concurrency (84 行)\n- createConcurrencyGuard (5 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1235,
+      "y": 10737,
+      "width": 280,
+      "height": 232,
+      "color": "2",
+      "meta": {
+        "relPath": "insforge-src/shared/concurrency.js",
+        "category": "utils",
+        "group": "utils",
+        "side": "right",
+        "layerIndex": 5
+      }
+    },
+    {
+      "id": "utils_crypto_6f5833da",
+      "type": "text",
+      "text": "**crypto**\n`insforge-src/shared/crypto.js`\n\nShared utilities.\n\n包含：\n- crypto (15 行)\n- sha256Hex (1 个参数)\n\n依赖：0 个模块\n被依赖：2 次",
+      "x": 1618,
+      "y": 10738,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/crypto.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_date_82b9796d",
+      "id": "utils_date_82b9796d",
       "type": "text",
-      "text": "**date**\n`insforge-src/shared/date.js`\n\nGeneral module.\n\n包含：\n- date (324 行)\n- isDate (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1241,
-      "y": 14341,
+      "text": "**date**\n`insforge-src/shared/date.js`\n\nShared utilities.\n\n包含：\n- date (324 行)\n- isDate (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1246,
+      "y": 11004,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/date.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_env_27e9ff64",
+      "id": "utils_debug_d2bf3a28",
       "type": "text",
-      "text": "**env**\n`insforge-src/shared/env.js`\n\nGeneral module.\n\n包含：\n- env (26 行)\n- getBaseUrl (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1611,
-      "y": 14334,
+      "text": "**debug**\n`insforge-src/shared/debug.js`\n\nShared utilities.\n\n包含：\n- debug (53 行)\n- isDebugEnabled (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1624,
+      "y": 11003,
+      "width": 280,
+      "height": 232,
+      "color": "2",
+      "meta": {
+        "relPath": "insforge-src/shared/debug.js",
+        "category": "utils",
+        "group": "utils",
+        "side": "right",
+        "layerIndex": 5
+      }
+    },
+    {
+      "id": "utils_env_27e9ff64",
+      "type": "text",
+      "text": "**env**\n`insforge-src/shared/env.js`\n\nShared utilities.\n\n包含：\n- env (26 行)\n- getBaseUrl (0 个参数)\n\n依赖：0 个模块\n被依赖：5 次",
+      "x": 1248,
+      "y": 11265,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/env.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_http_6ac7f961",
+      "id": "utils_http_6ac7f961",
       "type": "text",
-      "text": "**http**\n`insforge-src/shared/http.js`\n\nGeneral module.\n\n包含：\n- http (52 行)\n- handleOptions (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1238,
-      "y": 14599,
+      "text": "**http**\n`insforge-src/shared/http.js`\n\nShared utilities.\n\n包含：\n- http (52 行)\n- handleOptions (1 个参数)\n\n依赖：0 个模块\n被依赖：6 次",
+      "x": 1618,
+      "y": 11259,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/http.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_logging_951e02fa",
+      "id": "utils_logging_951e02fa",
       "type": "text",
-      "text": "**logging**\n`insforge-src/shared/logging.js`\n\nGeneral module.\n\n包含：\n- logging (128 行)\n- createRequestId (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1612,
-      "y": 14594,
+      "text": "**logging**\n`insforge-src/shared/logging.js`\n\nShared utilities.\n\n包含：\n- logging (129 行)\n- createRequestId (0 个参数)\n\n依赖：0 个模块\n被依赖：3 次",
+      "x": 1248,
+      "y": 11525,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/logging.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_model_516b2f36",
+      "id": "utils_model_516b2f36",
       "type": "text",
-      "text": "**model**\n`insforge-src/shared/model.js`\n\nGeneral module.\n\n包含：\n- model (25 行)\n- normalizeModel (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1244,
-      "y": 14863,
+      "text": "**model**\n`insforge-src/shared/model.js`\n\nShared utilities.\n\n包含：\n- model (25 行)\n- normalizeModel (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1609,
+      "y": 11513,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/model.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_numbers_b9abfb69",
+      "id": "utils_numbers_b9abfb69",
       "type": "text",
-      "text": "**numbers**\n`insforge-src/shared/numbers.js`\n\nGeneral module.\n\n包含：\n- numbers (48 行)\n- toBigInt (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1626,
-      "y": 14864,
+      "text": "**numbers**\n`insforge-src/shared/numbers.js`\n\nShared utilities.\n\n包含：\n- numbers (48 行)\n- toBigInt (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1237,
+      "y": 11778,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/numbers.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_pagination_9b6fbff5",
+      "id": "utils_pagination_9b6fbff5",
       "type": "text",
-      "text": "**pagination**\n`insforge-src/shared/pagination.js`\n\nGeneral module.\n\n包含：\n- pagination (44 行)\n- normalizePageSize (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1238,
-      "y": 15119,
+      "text": "**pagination**\n`insforge-src/shared/pagination.js`\n\nShared utilities.\n\n包含：\n- pagination (44 行)\n- normalizePageSize (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1628,
+      "y": 11786,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/pagination.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_pricing_23c132f1",
+      "id": "utils_pricing_23c132f1",
       "type": "text",
-      "text": "**pricing**\n`insforge-src/shared/pricing.js`\n\nGeneral module.\n\n包含：\n- pricing (247 行)\n- getDefaultPricingProfile (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1611,
-      "y": 15114,
+      "text": "**pricing**\n`insforge-src/shared/pricing.js`\n\nShared utilities.\n\n包含：\n- pricing (247 行)\n- getDefaultPricingProfile (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1242,
+      "y": 12041,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/pricing.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_pro-status_10e0e7ed",
+      "id": "utils_pro-status_10e0e7ed",
       "type": "text",
-      "text": "**pro-status**\n`insforge-src/shared/pro-status.js`\n\nGeneral module.\n\n包含：\n- pro-status (74 行)\n- toMs (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1241,
-      "y": 15381,
+      "text": "**pro-status**\n`insforge-src/shared/pro-status.js`\n\nShared utilities.\n\n包含：\n- pro-status (74 行)\n- toMs (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1610,
+      "y": 12034,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/pro-status.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_source_8ae561e4",
+      "id": "utils_source_8ae561e4",
       "type": "text",
-      "text": "**source**\n`insforge-src/shared/source.js`\n\nGeneral module.\n\n包含：\n- source (30 行)\n- normalizeSource (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1621,
-      "y": 15381,
+      "text": "**source**\n`insforge-src/shared/source.js`\n\nShared utilities.\n\n包含：\n- source (30 行)\n- normalizeSource (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1243,
+      "y": 12302,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/shared/source.js",
-        "group": "misc",
+        "category": "utils",
+        "group": "utils",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 5
       }
     },
     {
-      "id": "undefined_vibescore-debug-auth_e899af08",
+      "id": "edge-function_vibescore-debug-auth_e899af08",
       "type": "text",
-      "text": "**vibescore-debug-auth**\n`insforge-src/functions/vibescore-debug-auth.js`\n\nGeneral module.\n\n包含：\n- vibescore-debug-auth (78 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1246,
-      "y": 11484,
+      "text": "**vibescore-debug-auth**\n`insforge-src/functions/vibescore-debug-auth.js`\n\nEdge function handler.\n\n包含：\n- vibescore-debug-auth (78 行)\n- exports (0 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "x": 1244,
+      "y": 5683,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-debug-auth.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-device-token-issue_6ec30e66",
+      "id": "edge-function_vibescore-device-token-issue_6ec30e66",
       "type": "text",
-      "text": "**vibescore-device-token-issue**\n`insforge-src/functions/vibescore-device-token-issue.js`\n\nGeneral module.\n\n包含：\n- vibescore-device-token-issue (131 行)\n- sanitizeText (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1624,
-      "y": 11483,
+      "text": "**vibescore-device-token-issue**\n`insforge-src/functions/vibescore-device-token-issue.js`\n\nEdge function handler.\n\n包含：\n- vibescore-device-token-issue (132 行)\n- sanitizeText (2 个参数)\n\n依赖：5 个模块\n被依赖：0 次",
+      "x": 1621,
+      "y": 5680,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-device-token-issue.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-entitlements-revoke_f41ecebb",
+      "id": "edge-function_vibescore-entitlements-revoke_f41ecebb",
       "type": "text",
-      "text": "**vibescore-entitlements-revoke**\n`insforge-src/functions/vibescore-entitlements-revoke.js`\n\nGeneral module.\n\n包含：\n- vibescore-entitlements-revoke (65 行)\n- isValidIso (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1235,
-      "y": 11737,
+      "text": "**vibescore-entitlements-revoke**\n`insforge-src/functions/vibescore-entitlements-revoke.js`\n\nEdge function handler.\n\n包含：\n- vibescore-entitlements-revoke (65 行)\n- isValidIso (1 个参数)\n\n依赖：4 个模块\n被依赖：0 次",
+      "x": 1229,
+      "y": 5932,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-entitlements-revoke.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-entitlements_26527776",
+      "id": "edge-function_vibescore-entitlements_26527776",
       "type": "text",
-      "text": "**vibescore-entitlements**\n`insforge-src/functions/vibescore-entitlements.js`\n\nGeneral module.\n\n包含：\n- vibescore-entitlements (82 行)\n- isValidIso (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1631,
-      "y": 11748,
+      "text": "**vibescore-entitlements**\n`insforge-src/functions/vibescore-entitlements.js`\n\nEdge function handler.\n\n包含：\n- vibescore-entitlements (141 行)\n- isValidIso (1 个参数)\n\n依赖：5 个模块\n被依赖：0 次",
+      "x": 1624,
+      "y": 5943,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-entitlements.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-events-retention_66e231a",
+      "id": "edge-function_vibescore-events-retention_66e231a",
       "type": "text",
-      "text": "**vibescore-events-retention**\n`insforge-src/functions/vibescore-events-retention.js`\n\nGeneral module.\n\n包含：\n- vibescore-events-retention (138 行)\n- purgeTable (6 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1236,
-      "y": 11997,
+      "text": "**vibescore-events-retention**\n`insforge-src/functions/vibescore-events-retention.js`\n\nEdge function handler.\n\n包含：\n- vibescore-events-retention (138 行)\n- purgeTable (6 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "x": 1243,
+      "y": 6202,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-events-retention.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-ingest_2e431a7e",
+      "id": "edge-function_vibescore-ingest_2e431a7e",
       "type": "text",
-      "text": "**vibescore-ingest**\n`insforge-src/functions/vibescore-ingest.js`\n\nGeneral module.\n\n包含：\n- vibescore-ingest (496 行)\n- buildRows (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1617,
-      "y": 11998,
+      "text": "**vibescore-ingest**\n`insforge-src/functions/vibescore-ingest.js`\n\nEdge function handler.\n\n包含：\n- vibescore-ingest (523 行)\n- buildRows (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1615,
+      "y": 6197,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-ingest.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-leaderboard-refresh_4af3b98d",
+      "id": "edge-function_vibescore-leaderboard-refresh_4af3b98d",
       "type": "text",
-      "text": "**vibescore-leaderboard-refresh**\n`insforge-src/functions/vibescore-leaderboard-refresh.js`\n\nGeneral module.\n\n包含：\n- vibescore-leaderboard-refresh (183 行)\n- normalizePeriod (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1250,
-      "y": 12266,
+      "text": "**vibescore-leaderboard-refresh**\n`insforge-src/functions/vibescore-leaderboard-refresh.js`\n\nEdge function handler.\n\n包含：\n- vibescore-leaderboard-refresh (183 行)\n- normalizePeriod (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1244,
+      "y": 6463,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-leaderboard-refresh.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "misc_vibescore-leaderboard-settings_365d3875",
+      "id": "config_vibescore-leaderboard-settings_365d3875",
       "type": "text",
-      "text": "**vibescore-leaderboard-settings**\n`insforge-src/functions/vibescore-leaderboard-settings.js`\n\nGeneral module.\n\n包含：\n- vibescore-leaderboard-settings (74 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1612,
-      "y": 12254,
+      "text": "**vibescore-leaderboard-settings**\n`insforge-src/functions/vibescore-leaderboard-settings.js`\n\nConfiguration module.\n\n包含：\n- vibescore-leaderboard-settings (74 行)\n- exports (0 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "x": 1238,
+      "y": 8579,
       "width": 280,
       "height": 232,
       "color": "2",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-leaderboard-settings.js",
-        "category": "misc",
-        "group": "misc",
+        "category": "config",
+        "group": "infra",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 3
       }
     },
     {
-      "id": "undefined_vibescore-leaderboard_ec9b2c7d",
+      "id": "edge-function_vibescore-leaderboard_ec9b2c7d",
       "type": "text",
-      "text": "**vibescore-leaderboard**\n`insforge-src/functions/vibescore-leaderboard.js`\n\nGeneral module.\n\n包含：\n- vibescore-leaderboard (292 行)\n- tryLoadSingleQuery (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1243,
-      "y": 12522,
+      "text": "**vibescore-leaderboard**\n`insforge-src/functions/vibescore-leaderboard.js`\n\nEdge function handler.\n\n包含：\n- vibescore-leaderboard (292 行)\n- tryLoadSingleQuery (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1617,
+      "y": 6458,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-leaderboard.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-link-code-exchange_5e48faa",
+      "id": "edge-function_vibescore-link-code-exchange_5e48faa",
       "type": "text",
-      "text": "**vibescore-link-code-exchange**\n`insforge-src/functions/vibescore-link-code-exchange.js`\n\nGeneral module.\n\n包含：\n- vibescore-link-code-exchange (195 行)\n- sanitizeText (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1618,
-      "y": 12519,
+      "text": "**vibescore-link-code-exchange**\n`insforge-src/functions/vibescore-link-code-exchange.js`\n\nEdge function handler.\n\n包含：\n- vibescore-link-code-exchange (195 行)\n- sanitizeText (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1244,
+      "y": 6723,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-link-code-exchange.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-link-code-init_13bce0cb",
+      "id": "edge-function_vibescore-link-code-init_13bce0cb",
       "type": "text",
-      "text": "**vibescore-link-code-init**\n`insforge-src/functions/vibescore-link-code-init.js`\n\nGeneral module.\n\n包含：\n- vibescore-link-code-init (63 行)\n- generateLinkCode (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1242,
-      "y": 12781,
+      "text": "**vibescore-link-code-init**\n`insforge-src/functions/vibescore-link-code-init.js`\n\nEdge function handler.\n\n包含：\n- vibescore-link-code-init (63 行)\n- generateLinkCode (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1620,
+      "y": 6720,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-link-code-init.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-pricing-sync_76d1c55e",
+      "id": "edge-function_vibescore-pricing-sync_76d1c55e",
       "type": "text",
-      "text": "**vibescore-pricing-sync**\n`insforge-src/functions/vibescore-pricing-sync.js`\n\nGeneral module.\n\n包含：\n- vibescore-pricing-sync (400 行)\n- getEnvValue (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1624,
-      "y": 12783,
+      "text": "**vibescore-pricing-sync**\n`insforge-src/functions/vibescore-pricing-sync.js`\n\nEdge function handler.\n\n包含：\n- vibescore-pricing-sync (404 行)\n- getEnvValue (1 个参数)\n\n依赖：2 个模块\n被依赖：0 次",
+      "x": 1248,
+      "y": 6985,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-pricing-sync.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-sync-ping_b0285006",
+      "id": "edge-function_vibescore-sync-ping_b0285006",
       "type": "text",
-      "text": "**vibescore-sync-ping**\n`insforge-src/functions/vibescore-sync-ping.js`\n\nGeneral module.\n\n包含：\n- vibescore-sync-ping (147 行)\n- touchSyncWithAnonKey (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1233,
-      "y": 13035,
+      "text": "**vibescore-sync-ping**\n`insforge-src/functions/vibescore-sync-ping.js`\n\nEdge function handler.\n\n包含：\n- vibescore-sync-ping (149 行)\n- touchSyncWithAnonKey (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1614,
+      "y": 6976,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-sync-ping.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-daily_13bc8f2d",
+      "id": "edge-function_vibescore-usage-daily_13bc8f2d",
       "type": "text",
-      "text": "**vibescore-usage-daily**\n`insforge-src/functions/vibescore-usage-daily.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-daily (140 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1615,
-      "y": 13037,
+      "text": "**vibescore-usage-daily**\n`insforge-src/functions/vibescore-usage-daily.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-daily (148 行)\n- respond (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1247,
+      "y": 7244,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-daily.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-heatmap_67a4af30",
+      "id": "edge-function_vibescore-usage-heatmap_67a4af30",
       "type": "text",
-      "text": "**vibescore-usage-heatmap**\n`insforge-src/functions/vibescore-usage-heatmap.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-heatmap (352 行)\n- normalizeWeeks (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1238,
-      "y": 13299,
+      "text": "**vibescore-usage-heatmap**\n`insforge-src/functions/vibescore-usage-heatmap.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-heatmap (363 行)\n- normalizeWeeks (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1612,
+      "y": 7235,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-heatmap.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-hourly_7f0e1821",
+      "id": "edge-function_vibescore-usage-hourly_7f0e1821",
       "type": "text",
-      "text": "**vibescore-usage-hourly**\n`insforge-src/functions/vibescore-usage-hourly.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-hourly (427 行)\n- initHourlyBuckets (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1611,
-      "y": 13294,
+      "text": "**vibescore-usage-hourly**\n`insforge-src/functions/vibescore-usage-hourly.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-hourly (440 行)\n- initHourlyBuckets (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1242,
+      "y": 7502,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-hourly.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-model-breakdown_846bd53b",
+      "id": "edge-function_vibescore-usage-model-breakdown_846bd53b",
       "type": "text",
-      "text": "**vibescore-usage-model-breakdown**\n`insforge-src/functions/vibescore-usage-model-breakdown.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-model-breakdown (223 行)\n- createTotals (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1240,
-      "y": 13560,
+      "text": "**vibescore-usage-model-breakdown**\n`insforge-src/functions/vibescore-usage-model-breakdown.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-model-breakdown (231 行)\n- createTotals (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1608,
+      "y": 7492,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-model-breakdown.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-monthly_3f4484b1",
+      "id": "edge-function_vibescore-usage-monthly_3f4484b1",
       "type": "text",
-      "text": "**vibescore-usage-monthly**\n`insforge-src/functions/vibescore-usage-monthly.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-monthly (153 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1624,
-      "y": 13562,
+      "text": "**vibescore-usage-monthly**\n`insforge-src/functions/vibescore-usage-monthly.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-monthly (160 行)\n- respond (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1233,
+      "y": 7756,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-monthly.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-usage-summary_57a00ab8",
+      "id": "edge-function_vibescore-usage-summary_57a00ab8",
       "type": "text",
-      "text": "**vibescore-usage-summary**\n`insforge-src/functions/vibescore-usage-summary.js`\n\nGeneral module.\n\n包含：\n- vibescore-usage-summary (217 行)\n- createTotals (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1245,
-      "y": 13823,
+      "text": "**vibescore-usage-summary**\n`insforge-src/functions/vibescore-usage-summary.js`\n\nEdge function handler.\n\n包含：\n- vibescore-usage-summary (226 行)\n- createTotals (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1608,
+      "y": 7752,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-usage-summary.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "undefined_vibescore-user-status_7e8be314",
+      "id": "edge-function_vibescore-user-status_7e8be314",
       "type": "text",
-      "text": "**vibescore-user-status**\n`insforge-src/functions/vibescore-user-status.js`\n\nGeneral module.\n\n包含：\n- vibescore-user-status (84 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 1628,
-      "y": 13825,
+      "text": "**vibescore-user-status**\n`insforge-src/functions/vibescore-user-status.js`\n\nEdge function handler.\n\n包含：\n- vibescore-user-status (84 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1241,
+      "y": 8021,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "3",
       "meta": {
         "relPath": "insforge-src/functions/vibescore-user-status.js",
-        "group": "misc",
+        "category": "edge-function",
+        "group": "controller",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 2
       }
     },
     {
-      "id": "misc_App_50b6270d",
+      "id": "entry_App_50b6270d",
       "type": "text",
-      "text": "**App**\n`dashboard/src/App.jsx`\n\nGeneral module.\n\n包含：\n- App (113 行)\n- getSafeRedirect (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 137,
-      "y": 10958,
+      "text": "**App**\n`dashboard/src/App.jsx`\n\nEntry module.\n\n包含：\n- App (113 行)\n- getSafeRedirect (1 个参数)\n\n依赖：5 个模块\n被依赖：1 次",
+      "x": 151,
+      "y": 147,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "1",
       "meta": {
         "relPath": "dashboard/src/App.jsx",
-        "category": "misc",
-        "group": "misc",
+        "category": "entry",
+        "group": "entry",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 0
       }
     },
     {
-      "id": "misc_main_8ec1de27",
+      "id": "entry_main_8ec1de27",
       "type": "text",
-      "text": "**main**\n`dashboard/src/main.jsx`\n\nGeneral module.\n\n包含：\n- main (15 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 509,
-      "y": 11732,
+      "text": "**main**\n`dashboard/src/main.jsx`\n\nEntry module.\n\n包含：\n- main (15 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "x": 516,
+      "y": 137,
       "width": 280,
       "height": 232,
-      "color": "2",
+      "color": "1",
       "meta": {
         "relPath": "dashboard/src/main.jsx",
-        "category": "misc",
-        "group": "misc",
+        "category": "entry",
+        "group": "entry",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 0
       }
     },
     {
       "id": "frontend_MatrixShell_33cf7a77",
       "type": "text",
-      "text": "**MatrixShell**\n`dashboard/src/ui/matrix-a/layout/MatrixShell.jsx`\n\nUI component layer.\n\n包含：\n- MatrixShell (80 行)\n- MatrixShell (9 个参数)\n\n依赖：2 个模块\n被依赖：0 次",
+      "text": "**MatrixShell**\n`dashboard/src/ui/matrix-a/layout/MatrixShell.jsx`\n\nUI component layer.\n\n包含：\n- MatrixShell (80 行)\n- MatrixShell (9 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 147,
-      "y": 4565,
+      "y": 5125,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1133,15 +1215,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_ActivityHeatmap_753263dd",
       "type": "text",
-      "text": "**ActivityHeatmap**\n`dashboard/src/ui/matrix-a/components/ActivityHeatmap.jsx`\n\nUI component layer.\n\n包含：\n- ActivityHeatmap (599 行)\n- formatTokenValue (1 个参数)\n\n依赖：2 个模块\n被依赖：1 次",
+      "text": "**ActivityHeatmap**\n`dashboard/src/ui/matrix-a/components/ActivityHeatmap.jsx`\n\nUI component layer.\n\n包含：\n- ActivityHeatmap (599 行)\n- formatTokenValue (1 个参数)\n\n依赖：2 个模块\n被依赖：0 次",
       "x": 515,
-      "y": 916,
+      "y": 1476,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1150,15 +1232,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_ArchiveHeatmap_933d5992",
       "type": "text",
-      "text": "**ArchiveHeatmap**\n`dashboard/src/ui/matrix-a/components/ArchiveHeatmap.jsx`\n\nUI component layer.\n\n包含：\n- ArchiveHeatmap (36 行)\n- ArchiveHeatmap (2 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**ArchiveHeatmap**\n`dashboard/src/ui/matrix-a/components/ArchiveHeatmap.jsx`\n\nUI component layer.\n\n包含：\n- ArchiveHeatmap (36 行)\n- ArchiveHeatmap (2 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 144,
-      "y": 1183,
+      "y": 1743,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1167,15 +1249,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_AsciiBox_b2f02e50",
       "type": "text",
-      "text": "**AsciiBox**\n`dashboard/src/ui/matrix-a/components/AsciiBox.jsx`\n\nUI component layer.\n\n包含：\n- AsciiBox (53 行)\n- AsciiBox (4 个参数)\n\n依赖：0 个模块\n被依赖：5 次",
+      "text": "**AsciiBox**\n`dashboard/src/ui/matrix-a/components/AsciiBox.jsx`\n\nUI component layer.\n\n包含：\n- AsciiBox (53 行)\n- AsciiBox (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 532,
-      "y": 1188,
+      "y": 1748,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1184,15 +1266,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_BootScreen_935b542e",
       "type": "text",
-      "text": "**BootScreen**\n`dashboard/src/ui/matrix-a/components/BootScreen.jsx`\n\nUI component layer.\n\n包含：\n- BootScreen (43 行)\n- BootScreen (1 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "text": "**BootScreen**\n`dashboard/src/ui/matrix-a/components/BootScreen.jsx`\n\nUI component layer.\n\n包含：\n- BootScreen (43 行)\n- BootScreen (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 148,
-      "y": 1445,
+      "y": 2005,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1201,15 +1283,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_ConnectionStatus_7d8f2a16",
       "type": "text",
-      "text": "**ConnectionStatus**\n`dashboard/src/ui/matrix-a/components/ConnectionStatus.jsx`\n\nUI component layer.\n\n包含：\n- ConnectionStatus (92 行)\n- ConnectionStatus (5 个参数)\n\n依赖：1 个模块\n被依赖：1 次",
+      "text": "**ConnectionStatus**\n`dashboard/src/ui/matrix-a/components/ConnectionStatus.jsx`\n\nUI component layer.\n\n包含：\n- ConnectionStatus (92 行)\n- ConnectionStatus (5 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 518,
-      "y": 1439,
+      "y": 1999,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1218,15 +1300,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_CostAnalysisModal_6aec9906",
       "type": "text",
-      "text": "**CostAnalysisModal**\n`dashboard/src/ui/matrix-a/components/CostAnalysisModal.jsx`\n\nUI component layer.\n\n包含：\n- CostAnalysisModal (132 行)\n- formatUsdValue (1 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**CostAnalysisModal**\n`dashboard/src/ui/matrix-a/components/CostAnalysisModal.jsx`\n\nUI component layer.\n\n包含：\n- CostAnalysisModal (132 行)\n- formatUsdValue (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 141,
-      "y": 1701,
+      "y": 2261,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1235,15 +1317,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_DecodingText_b2b88660",
       "type": "text",
-      "text": "**DecodingText**\n`dashboard/src/ui/matrix-a/components/DecodingText.jsx`\n\nUI component layer.\n\n包含：\n- DecodingText (39 行)\n- DecodingText (2 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**DecodingText**\n`dashboard/src/ui/matrix-a/components/DecodingText.jsx`\n\nUI component layer.\n\n包含：\n- DecodingText (39 行)\n- DecodingText (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 510,
-      "y": 1694,
+      "y": 2254,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1252,15 +1334,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_GithubStar_d05e145",
       "type": "text",
-      "text": "**GithubStar**\n`dashboard/src/ui/matrix-a/components/GithubStar.jsx`\n\nUI component layer.\n\n包含：\n- GithubStar (81 行)\n- GithubStar (4 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**GithubStar**\n`dashboard/src/ui/matrix-a/components/GithubStar.jsx`\n\nUI component layer.\n\n包含：\n- GithubStar (81 行)\n- GithubStar (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 137,
-      "y": 1958,
+      "y": 2518,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1269,15 +1351,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_IdentityCard_281f9ab6",
       "type": "text",
-      "text": "**IdentityCard**\n`dashboard/src/ui/matrix-a/components/IdentityCard.jsx`\n\nUI component layer.\n\n包含：\n- IdentityCard (123 行)\n- IdentityCard (1 个参数)\n\n依赖：4 个模块\n被依赖：0 次",
+      "text": "**IdentityCard**\n`dashboard/src/ui/matrix-a/components/IdentityCard.jsx`\n\nUI component layer.\n\n包含：\n- IdentityCard (123 行)\n- IdentityCard (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 521,
-      "y": 1961,
+      "y": 2521,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1286,15 +1368,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_IdentityPanel_27a7e914",
       "type": "text",
-      "text": "**IdentityPanel**\n`dashboard/src/ui/matrix-a/components/IdentityPanel.jsx`\n\nUI component layer.\n\n包含：\n- IdentityPanel (58 行)\n- toHandle (1 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "text": "**IdentityPanel**\n`dashboard/src/ui/matrix-a/components/IdentityPanel.jsx`\n\nUI component layer.\n\n包含：\n- IdentityPanel (58 行)\n- toHandle (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 144,
-      "y": 2223,
+      "y": 2783,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1303,15 +1385,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_LeaderboardPanel_892d3523",
       "type": "text",
-      "text": "**LeaderboardPanel**\n`dashboard/src/ui/matrix-a/components/LeaderboardPanel.jsx`\n\nUI component layer.\n\n包含：\n- LeaderboardPanel (116 行)\n- LeaderboardPanel (1 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**LeaderboardPanel**\n`dashboard/src/ui/matrix-a/components/LeaderboardPanel.jsx`\n\nUI component layer.\n\n包含：\n- LeaderboardPanel (116 行)\n- LeaderboardPanel (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 509,
-      "y": 2212,
+      "y": 2772,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1320,15 +1402,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_LeaderboardRow_3cdf86df",
       "type": "text",
-      "text": "**LeaderboardRow**\n`dashboard/src/ui/matrix-a/components/LeaderboardRow.jsx`\n\nUI component layer.\n\n包含：\n- LeaderboardRow (61 行)\n- formatRank (1 个参数)\n\n依赖：2 个模块\n被依赖：1 次",
+      "text": "**LeaderboardRow**\n`dashboard/src/ui/matrix-a/components/LeaderboardRow.jsx`\n\nUI component layer.\n\n包含：\n- LeaderboardRow (61 行)\n- formatRank (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 145,
-      "y": 2484,
+      "y": 3044,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1337,15 +1419,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_LiveSniffer_3b2f77a1",
       "type": "text",
-      "text": "**LiveSniffer**\n`dashboard/src/ui/matrix-a/components/LiveSniffer.jsx`\n\nUI component layer.\n\n包含：\n- LiveSniffer (45 行)\n- LiveSniffer (0 个参数)\n\n依赖：1 个模块\n被依赖：1 次",
+      "text": "**LiveSniffer**\n`dashboard/src/ui/matrix-a/components/LiveSniffer.jsx`\n\nUI component layer.\n\n包含：\n- LiveSniffer (45 行)\n- LiveSniffer (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 518,
-      "y": 2479,
+      "y": 3039,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1354,15 +1436,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_MatrixAvatar_b8b692fe",
       "type": "text",
-      "text": "**MatrixAvatar**\n`dashboard/src/ui/matrix-a/components/MatrixAvatar.jsx`\n\nUI component layer.\n\n包含：\n- MatrixAvatar (84 行)\n- hashCode (1 个参数)\n\n依赖：1 个模块\n被依赖：3 次",
+      "text": "**MatrixAvatar**\n`dashboard/src/ui/matrix-a/components/MatrixAvatar.jsx`\n\nUI component layer.\n\n包含：\n- MatrixAvatar (84 行)\n- hashCode (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 129,
-      "y": 2732,
+      "y": 3292,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1371,7 +1453,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1379,7 +1461,7 @@
       "type": "text",
       "text": "**MatrixButton**\n`dashboard/src/ui/matrix-a/components/MatrixButton.jsx`\n\nUI component layer.\n\n包含：\n- MatrixButton (30 行)\n- MatrixButton (6 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 513,
-      "y": 2735,
+      "y": 3295,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1388,15 +1470,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_MatrixConstants_797f7b7a",
       "type": "text",
-      "text": "**MatrixConstants**\n`dashboard/src/ui/matrix-a/components/MatrixConstants.js`\n\nUI component layer.\n\n包含：\n- MatrixConstants (28 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**MatrixConstants**\n`dashboard/src/ui/matrix-a/components/MatrixConstants.js`\n\nUI component layer.\n\n包含：\n- MatrixConstants (28 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 133,
-      "y": 2996,
+      "y": 3556,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1405,15 +1487,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_MatrixRain_97f568bb",
       "type": "text",
-      "text": "**MatrixRain**\n`dashboard/src/ui/matrix-a/components/MatrixRain.jsx`\n\nUI component layer.\n\n包含：\n- MatrixRain (134 行)\n- MatrixRain (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**MatrixRain**\n`dashboard/src/ui/matrix-a/components/MatrixRain.jsx`\n\nUI component layer.\n\n包含：\n- MatrixRain (134 行)\n- MatrixRain (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 509,
-      "y": 2993,
+      "y": 3553,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1422,15 +1504,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_NeuralAdaptiveFleet_9f6d6cf1",
       "type": "text",
-      "text": "**NeuralAdaptiveFleet**\n`dashboard/src/ui/matrix-a/components/NeuralAdaptiveFleet.jsx`\n\nUI component layer.\n\n包含：\n- NeuralAdaptiveFleet (102 行)\n- NeuralAdaptiveFleet (5 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**NeuralAdaptiveFleet**\n`dashboard/src/ui/matrix-a/components/NeuralAdaptiveFleet.jsx`\n\nUI component layer.\n\n包含：\n- NeuralAdaptiveFleet (102 行)\n- NeuralAdaptiveFleet (5 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 149,
-      "y": 3266,
+      "y": 3826,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1439,15 +1521,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_NeuralDivergenceMap_db27756f",
       "type": "text",
-      "text": "**NeuralDivergenceMap**\n`dashboard/src/ui/matrix-a/components/NeuralDivergenceMap.jsx`\n\nUI component layer.\n\n包含：\n- NeuralDivergenceMap (46 行)\n- NeuralDivergenceMap (3 个参数)\n\n依赖：2 个模块\n被依赖：0 次",
+      "text": "**NeuralDivergenceMap**\n`dashboard/src/ui/matrix-a/components/NeuralDivergenceMap.jsx`\n\nUI component layer.\n\n包含：\n- NeuralDivergenceMap (46 行)\n- NeuralDivergenceMap (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 511,
-      "y": 3254,
+      "y": 3814,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1456,15 +1538,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_ScrambleText_18fe834c",
       "type": "text",
-      "text": "**ScrambleText**\n`dashboard/src/ui/matrix-a/components/ScrambleText.jsx`\n\nUI component layer.\n\n包含：\n- ScrambleText (123 行)\n- usePrefersReducedMotion (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**ScrambleText**\n`dashboard/src/ui/matrix-a/components/ScrambleText.jsx`\n\nUI component layer.\n\n包含：\n- ScrambleText (123 行)\n- usePrefersReducedMotion (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 151,
-      "y": 3528,
+      "y": 4088,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1473,15 +1555,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_SignalBox_7cca5cdf",
       "type": "text",
-      "text": "**SignalBox**\n`dashboard/src/ui/matrix-a/components/SignalBox.jsx`\n\nUI component layer.\n\n包含：\n- SignalBox (26 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**SignalBox**\n`dashboard/src/ui/matrix-a/components/SignalBox.jsx`\n\nUI component layer.\n\n包含：\n- SignalBox (26 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 527,
-      "y": 3525,
+      "y": 4085,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1490,7 +1572,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1498,7 +1580,7 @@
       "type": "text",
       "text": "**SystemHeader**\n`dashboard/src/ui/matrix-a/components/SystemHeader.jsx`\n\nUI component layer.\n\n包含：\n- SystemHeader (33 行)\n- SystemHeader (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 144,
-      "y": 3783,
+      "y": 4343,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1507,7 +1589,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1515,7 +1597,7 @@
       "type": "text",
       "text": "**TrendChart**\n`dashboard/src/ui/matrix-a/components/TrendChart.jsx`\n\nUI component layer.\n\n包含：\n- TrendChart (48 行)\n- TrendChart (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 522,
-      "y": 3781,
+      "y": 4341,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1524,7 +1606,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1532,7 +1614,7 @@
       "type": "text",
       "text": "**TrendMonitor**\n`dashboard/src/ui/matrix-a/components/TrendMonitor.jsx`\n\nUI component layer.\n\n包含：\n- TrendMonitor (539 行)\n- TrendMonitor (4 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 142,
-      "y": 4041,
+      "y": 4601,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1541,7 +1623,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1549,7 +1631,7 @@
       "type": "text",
       "text": "**TypewriterText**\n`dashboard/src/ui/matrix-a/components/TypewriterText.jsx`\n\nUI component layer.\n\n包含：\n- TypewriterText (123 行)\n- usePrefersReducedMotion (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 532,
-      "y": 4048,
+      "y": 4608,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1558,7 +1640,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1566,7 +1648,7 @@
       "type": "text",
       "text": "**UpgradeAlertModal**\n`dashboard/src/ui/matrix-a/components/UpgradeAlertModal.jsx`\n\nUI component layer.\n\n包含：\n- UpgradeAlertModal (145 行)\n- UpgradeAlertModal (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 141,
-      "y": 4301,
+      "y": 4861,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1575,7 +1657,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1583,7 +1665,7 @@
       "type": "text",
       "text": "**UsagePanel**\n`dashboard/src/ui/matrix-a/components/UsagePanel.jsx`\n\nUI component layer.\n\n包含：\n- UsagePanel (268 行)\n- normalizePeriods (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 528,
-      "y": 4306,
+      "y": 4866,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1592,7 +1674,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -1600,7 +1682,7 @@
       "type": "text",
       "text": "**AnnualPosterPage**\n`dashboard/src/pages/AnnualPosterPage.jsx`\n\nUI component layer.\n\n包含：\n- AnnualPosterPage (334 行)\n- parseIsoDate (1 个参数)\n\n依赖：5 个模块\n被依赖：0 次",
       "x": 527,
-      "y": 404,
+      "y": 964,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1609,15 +1691,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_DashboardPage_9ebda834",
       "type": "text",
-      "text": "**DashboardPage**\n`dashboard/src/pages/DashboardPage.jsx`\n\nUI component layer.\n\n包含：\n- DashboardPage (1359 行)\n- hasUsageValue (2 个参数)\n\n依赖：5 个模块\n被依赖：0 次",
+      "text": "**DashboardPage**\n`dashboard/src/pages/DashboardPage.jsx`\n\nUI component layer.\n\n包含：\n- DashboardPage (1359 行)\n- hasUsageValue (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 141,
-      "y": 661,
+      "y": 1221,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1626,15 +1708,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_LandingExtras_d794f96d",
       "type": "text",
-      "text": "**LandingExtras**\n`dashboard/src/pages/LandingExtras.jsx`\n\nUI component layer.\n\n包含：\n- LandingExtras (49 行)\n- LandingExtras (6 个参数)\n\n依赖：4 个模块\n被依赖：0 次",
+      "text": "**LandingExtras**\n`dashboard/src/pages/LandingExtras.jsx`\n\nUI component layer.\n\n包含：\n- LandingExtras (49 行)\n- LandingExtras (6 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 522,
-      "y": 661,
+      "y": 1221,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1643,15 +1725,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_LandingPage_8367c397",
       "type": "text",
-      "text": "**LandingPage**\n`dashboard/src/pages/LandingPage.jsx`\n\nUI component layer.\n\n包含：\n- LandingPage (199 行)\n- useDeferredMount (1 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**LandingPage**\n`dashboard/src/pages/LandingPage.jsx`\n\nUI component layer.\n\n包含：\n- LandingPage (199 行)\n- useDeferredMount (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 145,
-      "y": 923,
+      "y": 1483,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -1660,15 +1742,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "utils_activity-heatmap_9ca62158",
       "type": "text",
-      "text": "**activity-heatmap**\n`dashboard/src/lib/activity-heatmap.js`\n\nShared utilities.\n\n包含：\n- activity-heatmap (193 行)\n- parseDateString (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**activity-heatmap**\n`dashboard/src/lib/activity-heatmap.js`\n\nShared utilities.\n\n包含：\n- activity-heatmap (193 行)\n- parseDateString (1 个参数)\n\n依赖：1 个模块\n被依赖：1 次",
       "x": 132,
-      "y": 5934,
+      "y": 9954,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1677,7 +1759,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1685,7 +1767,7 @@
       "type": "text",
       "text": "**auth-storage**\n`dashboard/src/lib/auth-storage.js`\n\nShared utilities.\n\n包含：\n- auth-storage (110 行)\n- emitAuthStorageChange (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 520,
-      "y": 5940,
+      "y": 9960,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1694,7 +1776,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1702,7 +1784,7 @@
       "type": "text",
       "text": "**auth-url**\n`dashboard/src/lib/auth-url.js`\n\nShared utilities.\n\n包含：\n- auth-url (7 行)\n- buildAuthUrl (3 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 151,
-      "y": 6207,
+      "y": 10227,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1711,7 +1793,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1719,7 +1801,7 @@
       "type": "text",
       "text": "**backend-probe-scheduler**\n`dashboard/src/lib/backend-probe-scheduler.js`\n\nShared utilities.\n\n包含：\n- backend-probe-scheduler (105 行)\n- resolveProbeCadenceConfig (5 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 510,
-      "y": 6193,
+      "y": 10213,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1728,15 +1810,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "utils_config_2e57e3d6",
       "type": "text",
-      "text": "**config**\n`dashboard/src/lib/config.js`\n\nShared utilities.\n\n包含：\n- config (17 行)\n- getInsforgeBaseUrl (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**config**\n`dashboard/src/lib/config.js`\n\nShared utilities.\n\n包含：\n- config (17 行)\n- getInsforgeBaseUrl (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 129,
-      "y": 6453,
+      "y": 10473,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1745,15 +1827,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "utils_copy_ca6c3319",
       "type": "text",
-      "text": "**copy**\n`dashboard/src/lib/copy.js`\n\nShared utilities.\n\n包含：\n- copy (145 行)\n- parseCsv (1 个参数)\n\n依赖：0 个模块\n被依赖：20 次",
+      "text": "**copy**\n`dashboard/src/lib/copy.js`\n\nShared utilities.\n\n包含：\n- copy (145 行)\n- parseCsv (1 个参数)\n\n依赖：0 个模块\n被依赖：3 次",
       "x": 515,
-      "y": 6457,
+      "y": 10477,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1762,15 +1844,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "utils_daily_97e4fb45",
       "type": "text",
-      "text": "**daily**\n`dashboard/src/lib/daily.js`\n\nShared utilities.\n\n包含：\n- daily (47 行)\n- getDetailsSortColumns (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**daily**\n`dashboard/src/lib/daily.js`\n\nShared utilities.\n\n包含：\n- daily (47 行)\n- getDetailsSortColumns (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 146,
-      "y": 6724,
+      "y": 10744,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1779,7 +1861,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1787,7 +1869,7 @@
       "type": "text",
       "text": "**date-range**\n`dashboard/src/lib/date-range.js`\n\nShared utilities.\n\n包含：\n- date-range (100 行)\n- formatDateUTC (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 520,
-      "y": 6720,
+      "y": 10740,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1796,7 +1878,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1804,7 +1886,7 @@
       "type": "text",
       "text": "**detail-sort**\n`dashboard/src/lib/detail-sort.js`\n\nShared utilities.\n\n包含：\n- detail-sort (148 行)\n- isDetailDateKey (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 129,
-      "y": 6972,
+      "y": 10992,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1813,15 +1895,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "utils_details_e38a191e",
       "type": "text",
-      "text": "**details**\n`dashboard/src/lib/details.js`\n\nShared utilities.\n\n包含：\n- details (46 行)\n- isNonZeroToken (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "text": "**details**\n`dashboard/src/lib/details.js`\n\nShared utilities.\n\n包含：\n- details (46 行)\n- isNonZeroToken (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 528,
-      "y": 6985,
+      "y": 11005,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1830,15 +1912,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "utils_format_bfd0859f",
       "type": "text",
-      "text": "**format**\n`dashboard/src/lib/format.js`\n\nShared utilities.\n\n包含：\n- format (91 行)\n- toDisplayNumber (1 个参数)\n\n依赖：0 个模块\n被依赖：3 次",
+      "text": "**format**\n`dashboard/src/lib/format.js`\n\nShared utilities.\n\n包含：\n- format (91 行)\n- toDisplayNumber (1 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 149,
-      "y": 7246,
+      "y": 11266,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1847,7 +1929,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1855,7 +1937,7 @@
       "type": "text",
       "text": "**http-timeout**\n`dashboard/src/lib/http-timeout.js`\n\nShared utilities.\n\n包含：\n- http-timeout (62 行)\n- getHttpTimeoutMs (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 526,
-      "y": 7244,
+      "y": 11264,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1864,7 +1946,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1872,7 +1954,7 @@
       "type": "text",
       "text": "**insforge-client**\n`dashboard/src/lib/insforge-client.js`\n\nShared utilities.\n\n包含：\n- insforge-client (32 行)\n- createMemoryStorage (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 130,
-      "y": 7493,
+      "y": 11513,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1881,7 +1963,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1889,7 +1971,7 @@
       "type": "text",
       "text": "**mock-data**\n`dashboard/src/lib/mock-data.js`\n\nShared utilities.\n\n包含：\n- mock-data (419 行)\n- isMockEnabled (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 531,
-      "y": 7507,
+      "y": 11527,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1898,7 +1980,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1906,7 +1988,7 @@
       "type": "text",
       "text": "**model-breakdown**\n`dashboard/src/lib/model-breakdown.js`\n\nShared utilities.\n\n包含：\n- model-breakdown (67 行)\n- buildFleetData (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 139,
-      "y": 7760,
+      "y": 11780,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1915,7 +1997,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1923,7 +2005,7 @@
       "type": "text",
       "text": "**npm-version**\n`dashboard/src/lib/npm-version.js`\n\nShared utilities.\n\n包含：\n- npm-version (73 行)\n- isValidVersion (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 521,
-      "y": 7760,
+      "y": 11780,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1932,7 +2014,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1940,7 +2022,7 @@
       "type": "text",
       "text": "**safe-browser**\n`dashboard/src/lib/safe-browser.js`\n\nShared utilities.\n\n包含：\n- safe-browser (87 行)\n- getLocalStorage (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 137,
-      "y": 8018,
+      "y": 12038,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1949,7 +2031,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1957,7 +2039,7 @@
       "type": "text",
       "text": "**timezone**\n`dashboard/src/lib/timezone.js`\n\nShared utilities.\n\n包含：\n- timezone (133 行)\n- getBrowserTimeZone (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 523,
-      "y": 8022,
+      "y": 12042,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1966,7 +2048,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1974,7 +2056,7 @@
       "type": "text",
       "text": "**usage-aggregate**\n`dashboard/src/lib/usage-aggregate.js`\n\nShared utilities.\n\n包含：\n- usage-aggregate (42 行)\n- toBigIntValue (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 143,
-      "y": 8282,
+      "y": 12302,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -1983,7 +2065,7 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
@@ -1991,7 +2073,7 @@
       "type": "text",
       "text": "**vibescore-api**\n`dashboard/src/lib/vibescore-api.js`\n\nShared utilities.\n\n包含：\n- vibescore-api (481 行)\n- probeBackend (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 520,
-      "y": 8280,
+      "y": 12300,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2000,15 +2082,15 @@
         "category": "utils",
         "group": "utils",
         "side": "left",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     },
     {
       "id": "undefined_use-activity-heatmap_22649861",
       "type": "text",
       "text": "**use-activity-heatmap**\n`dashboard/src/hooks/use-activity-heatmap.js`\n\nGeneral module.\n\n包含：\n- use-activity-heatmap (239 行)\n- useActivityHeatmap (9 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
-      "x": 526,
-      "y": 10964,
+      "x": 146,
+      "y": 17324,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2016,15 +2098,15 @@
         "relPath": "dashboard/src/hooks/use-activity-heatmap.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_use-auth_94cf338d",
       "type": "text",
-      "text": "**use-auth**\n`dashboard/src/hooks/use-auth.js`\n\nGeneral module.\n\n包含：\n- use-auth (68 行)\n- useAuth (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 130,
-      "y": 11213,
+      "text": "**use-auth**\n`dashboard/src/hooks/use-auth.js`\n\nGeneral module.\n\n包含：\n- use-auth (68 行)\n- useAuth (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
+      "x": 510,
+      "y": 17313,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2032,15 +2114,15 @@
         "relPath": "dashboard/src/hooks/use-auth.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_use-backend-status_f6637b78",
       "type": "text",
-      "text": "**use-backend-status**\n`dashboard/src/hooks/use-backend-status.js`\n\nGeneral module.\n\n包含：\n- use-backend-status (242 行)\n- useBackendStatus (7 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
-      "x": 521,
-      "y": 11221,
+      "text": "**use-backend-status**\n`dashboard/src/hooks/use-backend-status.js`\n\nGeneral module.\n\n包含：\n- use-backend-status (242 行)\n- useBackendStatus (7 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 141,
+      "y": 17581,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2048,15 +2130,15 @@
         "relPath": "dashboard/src/hooks/use-backend-status.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_use-trend-data_96a42251",
       "type": "text",
       "text": "**use-trend-data**\n`dashboard/src/hooks/use-trend-data.js`\n\nGeneral module.\n\n包含：\n- use-trend-data (518 行)\n- useTrendData (13 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
-      "x": 151,
-      "y": 11487,
+      "x": 531,
+      "y": 17587,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2064,15 +2146,15 @@
         "relPath": "dashboard/src/hooks/use-trend-data.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_use-usage-data_a20b1f9d",
       "type": "text",
       "text": "**use-usage-data**\n`dashboard/src/hooks/use-usage-data.js`\n\nGeneral module.\n\n包含：\n- use-usage-data (265 行)\n- useUsageData (11 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
-      "x": 530,
-      "y": 11486,
+      "x": 150,
+      "y": 17846,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2080,15 +2162,15 @@
         "relPath": "dashboard/src/hooks/use-usage-data.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "undefined_use-usage-model-breakdown_f5d46222",
       "type": "text",
       "text": "**use-usage-model-breakdown**\n`dashboard/src/hooks/use-usage-model-breakdown.js`\n\nGeneral module.\n\n包含：\n- use-usage-model-breakdown (123 行)\n- useUsageModelBreakdown (8 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
-      "x": 135,
-      "y": 11737,
+      "x": 515,
+      "y": 17837,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2096,15 +2178,15 @@
         "relPath": "dashboard/src/hooks/use-usage-model-breakdown.js",
         "group": "misc",
         "side": "left",
-        "layerIndex": 4
+        "layerIndex": 7
       }
     },
     {
       "id": "frontend_BackendStatus_aa3fa02f",
       "type": "text",
-      "text": "**BackendStatus**\n`dashboard/src/components/BackendStatus.jsx`\n\nUI component layer.\n\n包含：\n- BackendStatus (59 行)\n- BackendStatus (6 个参数)\n\n依赖：3 个模块\n被依赖：0 次",
+      "text": "**BackendStatus**\n`dashboard/src/components/BackendStatus.jsx`\n\nUI component layer.\n\n包含：\n- BackendStatus (59 行)\n- BackendStatus (6 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 148,
-      "y": 145,
+      "y": 705,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -2113,15 +2195,15 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
       "id": "frontend_ErrorBoundary_a5ae61df",
       "type": "text",
-      "text": "**ErrorBoundary**\n`dashboard/src/components/ErrorBoundary.jsx`\n\nUI component layer.\n\n包含：\n- ErrorBoundary (65 行)\n- exports (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "text": "**ErrorBoundary**\n`dashboard/src/components/ErrorBoundary.jsx`\n\nUI component layer.\n\n包含：\n- ErrorBoundary (65 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 527,
-      "y": 145,
+      "y": 705,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -2130,7 +2212,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -2138,7 +2220,7 @@
       "type": "text",
       "text": "**Sparkline**\n`dashboard/src/components/Sparkline.jsx`\n\nUI component layer.\n\n包含：\n- Sparkline (51 行)\n- Sparkline (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 150,
-      "y": 407,
+      "y": 967,
       "width": 280,
       "height": 232,
       "color": "6",
@@ -2147,7 +2229,7 @@
         "category": "frontend",
         "group": "frontend",
         "side": "left",
-        "layerIndex": 0
+        "layerIndex": 1
       }
     },
     {
@@ -2155,7 +2237,7 @@
       "type": "text",
       "text": "**tracker**\n`bin/tracker.js`\n\nGeneral module.\n\n包含：\n- tracker (33 行)\n- stripDebugFlag (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1234,
-      "y": 10956,
+      "y": 17836,
       "width": 280,
       "height": 232,
       "color": "2",
@@ -2163,15 +2245,31 @@
         "relPath": "bin/tracker.js",
         "group": "misc",
         "side": "right",
-        "layerIndex": 4
+        "layerIndex": 7
+      }
+    },
+    {
+      "id": "undefined_insforge-auth_a4c95e92",
+      "type": "text",
+      "text": "**insforge-auth**\n`.tmp/insforge-auth.js`\n\nGeneral module.\n\n包含：\n- extends (1455 行)\n- i (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "x": 1232,
+      "y": 17315,
+      "width": 280,
+      "height": 232,
+      "color": "2",
+      "meta": {
+        "relPath": ".tmp/insforge-auth.js",
+        "group": "misc",
+        "side": "right",
+        "layerIndex": 7
       }
     },
     {
       "id": "external_Anthropic_fbd19171",
       "type": "text",
-      "text": "**Anthropic**\n`external`\n\nThird-party service.\n\n包含：\n- Anthropic (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**Anthropic**\n`external`\n\nThird-party service.\n\n包含：\n- Anthropic (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：5 次",
       "x": 1245,
-      "y": 5123,
+      "y": 9143,
       "width": 280,
       "height": 232,
       "color": "4",
@@ -2180,16 +2278,16 @@
         "category": "external",
         "group": "external",
         "side": "right",
-        "layerIndex": 1
+        "layerIndex": 4
       },
       "externalService": "Anthropic"
     },
     {
       "id": "external_InsForge_f6643588",
       "type": "text",
-      "text": "**InsForge**\n`external`\n\nThird-party service.\n\n包含：\n- InsForge (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**InsForge**\n`external`\n\nThird-party service.\n\n包含：\n- InsForge (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：6 次",
       "x": 1614,
-      "y": 5116,
+      "y": 9136,
       "width": 280,
       "height": 232,
       "color": "4",
@@ -2198,16 +2296,16 @@
         "category": "external",
         "group": "external",
         "side": "right",
-        "layerIndex": 1
+        "layerIndex": 4
       },
       "externalService": "InsForge"
     },
     {
       "id": "external_OpenAI_ac6e26d9",
       "type": "text",
-      "text": "**OpenAI**\n`external`\n\nThird-party service.\n\n包含：\n- OpenAI (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**OpenAI**\n`external`\n\nThird-party service.\n\n包含：\n- OpenAI (integration)\n- api (0 个参数)\n\n依赖：0 个模块\n被依赖：1 次",
       "x": 1243,
-      "y": 5382,
+      "y": 9402,
       "width": 280,
       "height": 232,
       "color": "4",
@@ -2216,7 +2314,7 @@
         "category": "external",
         "group": "external",
         "side": "right",
-        "layerIndex": 1
+        "layerIndex": 4
       },
       "externalService": "OpenAI"
     },
@@ -2225,7 +2323,7 @@
       "type": "text",
       "text": "**工具模块**\n`grouped`\n\nGrouped isolated modules.\n\n包含：\n- 23 files (grouped)\n- samples: copy.jsx, test/architecture-canvas.test.js, test/compact-number.test.js\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1235,
-      "y": 5936,
+      "y": 9956,
       "width": 280,
       "height": 160,
       "color": "2",
@@ -2234,17 +2332,311 @@
         "category": "misc",
         "group": "utils",
         "side": "right",
-        "layerIndex": 2
+        "layerIndex": 5
       }
     }
   ],
   "edges": [
+    {
+      "id": "edge_edge-function_vibescore-pricing-sync_76d1c55e_external_OpenAI_ac6e26d9",
+      "fromNode": "edge-function_vibescore-pricing-sync_76d1c55e",
+      "fromSide": "bottom",
+      "toNode": "external_OpenAI_ac6e26d9",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-pricing-sync_76d1c55e_external_Anthropic_fbd19171",
+      "fromNode": "edge-function_vibescore-pricing-sync_76d1c55e",
+      "fromSide": "bottom",
+      "toNode": "external_Anthropic_fbd19171",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_test_edge-functions_test_deffefcc_external_InsForge_f6643588",
+      "fromNode": "test_edge-functions_test_deffefcc",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_edge-functions_test_deffefcc_external_Anthropic_fbd19171",
+      "fromNode": "test_edge-functions_test_deffefcc",
+      "fromSide": "top",
+      "toNode": "external_Anthropic_fbd19171",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_init-uninstall_test_de3698fe_external_Anthropic_fbd19171",
+      "fromNode": "test_init-uninstall_test_de3698fe",
+      "fromSide": "top",
+      "toNode": "external_Anthropic_fbd19171",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_insforge-src-shared_test_110fa035_external_InsForge_f6643588",
+      "fromNode": "test_insforge-src-shared_test_110fa035",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_link-code-exchange-payload_test_900230c6_external_InsForge_f6643588",
+      "fromNode": "test_link-code-exchange-payload_test_900230c6",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_link-code-request-id_test_ec56824f_external_InsForge_f6643588",
+      "fromNode": "test_link-code-request-id_test_ec56824f",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_pro-status_test_b63d1907_external_InsForge_f6643588",
+      "fromNode": "test_pro-status_test_b63d1907",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_test_rollout-parser_test_e96ece4a_external_Anthropic_fbd19171",
+      "fromNode": "test_rollout-parser_test_e96ece4a",
+      "fromSide": "top",
+      "toNode": "external_Anthropic_fbd19171",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_undefined_init_8ce62bde_external_Anthropic_fbd19171",
+      "fromNode": "undefined_init_8ce62bde",
+      "fromSide": "top",
+      "toNode": "external_Anthropic_fbd19171",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_undefined_init_8ce62bde_external_InsForge_f6643588",
+      "fromNode": "undefined_init_8ce62bde",
+      "fromSide": "top",
+      "toNode": "external_InsForge_f6643588",
+      "toSide": "bottom"
+    },
+    {
+      "id": "edge_config_vibescore-leaderboard-settings_365d3875_utils_http_6ac7f961",
+      "fromNode": "config_vibescore-leaderboard-settings_365d3875",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-debug-auth_e899af08_utils_http_6ac7f961",
+      "fromNode": "edge-function_vibescore-debug-auth_e899af08",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_App_50b6270d_utils_config_2e57e3d6",
+      "fromNode": "entry_App_50b6270d",
+      "fromSide": "bottom",
+      "toNode": "utils_config_2e57e3d6",
+      "toSide": "top"
+    },
     {
       "id": "edge_frontend_ActivityHeatmap_753263dd_utils_activity-heatmap_9ca62158",
       "fromNode": "frontend_ActivityHeatmap_753263dd",
       "fromSide": "bottom",
       "toNode": "utils_activity-heatmap_9ca62158",
       "toSide": "top"
+    },
+    {
+      "id": "edge_test_auto-retry_test_c3ddea79_undefined_sync_324be1c3",
+      "fromNode": "test_auto-retry_test_c3ddea79",
+      "fromSide": "bottom",
+      "toNode": "undefined_sync_324be1c3",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_undefined_cli_16331b99_undefined_init_8ce62bde",
+      "fromNode": "undefined_cli_16331b99",
+      "fromSide": "right",
+      "toNode": "undefined_init_8ce62bde",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_utils_activity-heatmap_9ca62158_utils_date-range_f68d83fa",
+      "fromNode": "utils_activity-heatmap_9ca62158",
+      "fromSide": "right",
+      "toNode": "utils_date-range_f68d83fa",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_config_vibescore-leaderboard-settings_365d3875_utils_auth_7a311011",
+      "fromNode": "config_vibescore-leaderboard-settings_365d3875",
+      "fromSide": "bottom",
+      "toNode": "utils_auth_7a311011",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_config_vibescore-leaderboard-settings_365d3875_utils_env_27e9ff64",
+      "fromNode": "config_vibescore-leaderboard-settings_365d3875",
+      "fromSide": "bottom",
+      "toNode": "utils_env_27e9ff64",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-debug-auth_e899af08_utils_auth_7a311011",
+      "fromNode": "edge-function_vibescore-debug-auth_e899af08",
+      "fromSide": "bottom",
+      "toNode": "utils_auth_7a311011",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-debug-auth_e899af08_utils_env_27e9ff64",
+      "fromNode": "edge-function_vibescore-debug-auth_e899af08",
+      "fromSide": "bottom",
+      "toNode": "utils_env_27e9ff64",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-device-token-issue_6ec30e66_utils_http_6ac7f961",
+      "fromNode": "edge-function_vibescore-device-token-issue_6ec30e66",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-device-token-issue_6ec30e66_utils_logging_951e02fa",
+      "fromNode": "edge-function_vibescore-device-token-issue_6ec30e66",
+      "fromSide": "bottom",
+      "toNode": "utils_logging_951e02fa",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-device-token-issue_6ec30e66_utils_auth_7a311011",
+      "fromNode": "edge-function_vibescore-device-token-issue_6ec30e66",
+      "fromSide": "bottom",
+      "toNode": "utils_auth_7a311011",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-device-token-issue_6ec30e66_utils_env_27e9ff64",
+      "fromNode": "edge-function_vibescore-device-token-issue_6ec30e66",
+      "fromSide": "bottom",
+      "toNode": "utils_env_27e9ff64",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-device-token-issue_6ec30e66_utils_crypto_6f5833da",
+      "fromNode": "edge-function_vibescore-device-token-issue_6ec30e66",
+      "fromSide": "bottom",
+      "toNode": "utils_crypto_6f5833da",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements_26527776_utils_http_6ac7f961",
+      "fromNode": "edge-function_vibescore-entitlements_26527776",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements_26527776_utils_auth_7a311011",
+      "fromNode": "edge-function_vibescore-entitlements_26527776",
+      "fromSide": "bottom",
+      "toNode": "utils_auth_7a311011",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements_26527776_utils_env_27e9ff64",
+      "fromNode": "edge-function_vibescore-entitlements_26527776",
+      "fromSide": "bottom",
+      "toNode": "utils_env_27e9ff64",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements_26527776_utils_logging_951e02fa",
+      "fromNode": "edge-function_vibescore-entitlements_26527776",
+      "fromSide": "bottom",
+      "toNode": "utils_logging_951e02fa",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements_26527776_utils_crypto_6f5833da",
+      "fromNode": "edge-function_vibescore-entitlements_26527776",
+      "fromSide": "bottom",
+      "toNode": "utils_crypto_6f5833da",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements-revoke_f41ecebb_utils_http_6ac7f961",
+      "fromNode": "edge-function_vibescore-entitlements-revoke_f41ecebb",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements-revoke_f41ecebb_utils_auth_7a311011",
+      "fromNode": "edge-function_vibescore-entitlements-revoke_f41ecebb",
+      "fromSide": "bottom",
+      "toNode": "utils_auth_7a311011",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements-revoke_f41ecebb_utils_env_27e9ff64",
+      "fromNode": "edge-function_vibescore-entitlements-revoke_f41ecebb",
+      "fromSide": "bottom",
+      "toNode": "utils_env_27e9ff64",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-entitlements-revoke_f41ecebb_utils_logging_951e02fa",
+      "fromNode": "edge-function_vibescore-entitlements-revoke_f41ecebb",
+      "fromSide": "bottom",
+      "toNode": "utils_logging_951e02fa",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_edge-function_vibescore-events-retention_66e231a_utils_http_6ac7f961",
+      "fromNode": "edge-function_vibescore-events-retention_66e231a",
+      "fromSide": "bottom",
+      "toNode": "utils_http_6ac7f961",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_App_50b6270d_undefined_use-auth_94cf338d",
+      "fromNode": "entry_App_50b6270d",
+      "fromSide": "bottom",
+      "toNode": "undefined_use-auth_94cf338d",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_App_50b6270d_utils_auth-url_f938f352",
+      "fromNode": "entry_App_50b6270d",
+      "fromSide": "bottom",
+      "toNode": "utils_auth-url_f938f352",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_App_50b6270d_frontend_ErrorBoundary_a5ae61df",
+      "fromNode": "entry_App_50b6270d",
+      "fromSide": "bottom",
+      "toNode": "frontend_ErrorBoundary_a5ae61df",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_App_50b6270d_frontend_LandingPage_8367c397",
+      "fromNode": "entry_App_50b6270d",
+      "fromSide": "bottom",
+      "toNode": "frontend_LandingPage_8367c397",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_entry_main_8ec1de27_entry_App_50b6270d",
+      "fromNode": "entry_main_8ec1de27",
+      "fromSide": "right",
+      "toNode": "entry_App_50b6270d",
+      "toSide": "left"
     },
     {
       "id": "edge_frontend_ActivityHeatmap_753263dd_utils_copy_ca6c3319",
@@ -2294,300 +2686,6 @@
       "fromSide": "bottom",
       "toNode": "utils_copy_ca6c3319",
       "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_ArchiveHeatmap_933d5992_frontend_ActivityHeatmap_753263dd",
-      "fromNode": "frontend_ArchiveHeatmap_933d5992",
-      "fromSide": "right",
-      "toNode": "frontend_ActivityHeatmap_753263dd",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_ArchiveHeatmap_933d5992_frontend_AsciiBox_b2f02e50",
-      "fromNode": "frontend_ArchiveHeatmap_933d5992",
-      "fromSide": "right",
-      "toNode": "frontend_AsciiBox_b2f02e50",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_BackendStatus_aa3fa02f_undefined_use-backend-status_f6637b78",
-      "fromNode": "frontend_BackendStatus_aa3fa02f",
-      "fromSide": "bottom",
-      "toNode": "undefined_use-backend-status_f6637b78",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_BackendStatus_aa3fa02f_utils_copy_ca6c3319",
-      "fromNode": "frontend_BackendStatus_aa3fa02f",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_BackendStatus_aa3fa02f_frontend_ConnectionStatus_7d8f2a16",
-      "fromNode": "frontend_BackendStatus_aa3fa02f",
-      "fromSide": "right",
-      "toNode": "frontend_ConnectionStatus_7d8f2a16",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_BootScreen_935b542e_utils_copy_ca6c3319",
-      "fromNode": "frontend_BootScreen_935b542e",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_ConnectionStatus_7d8f2a16_utils_copy_ca6c3319",
-      "fromNode": "frontend_ConnectionStatus_7d8f2a16",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_CostAnalysisModal_6aec9906_utils_copy_ca6c3319",
-      "fromNode": "frontend_CostAnalysisModal_6aec9906",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_CostAnalysisModal_6aec9906_utils_format_bfd0859f",
-      "fromNode": "frontend_CostAnalysisModal_6aec9906",
-      "fromSide": "bottom",
-      "toNode": "utils_format_bfd0859f",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_CostAnalysisModal_6aec9906_frontend_AsciiBox_b2f02e50",
-      "fromNode": "frontend_CostAnalysisModal_6aec9906",
-      "fromSide": "right",
-      "toNode": "frontend_AsciiBox_b2f02e50",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_DashboardPage_9ebda834_utils_auth-url_f938f352",
-      "fromNode": "frontend_DashboardPage_9ebda834",
-      "fromSide": "bottom",
-      "toNode": "utils_auth-url_f938f352",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_DashboardPage_9ebda834_utils_copy_ca6c3319",
-      "fromNode": "frontend_DashboardPage_9ebda834",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_DashboardPage_9ebda834_utils_date-range_f68d83fa",
-      "fromNode": "frontend_DashboardPage_9ebda834",
-      "fromSide": "bottom",
-      "toNode": "utils_date-range_f68d83fa",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_DashboardPage_9ebda834_utils_daily_97e4fb45",
-      "fromNode": "frontend_DashboardPage_9ebda834",
-      "fromSide": "bottom",
-      "toNode": "utils_daily_97e4fb45",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_DashboardPage_9ebda834_utils_details_e38a191e",
-      "fromNode": "frontend_DashboardPage_9ebda834",
-      "fromSide": "bottom",
-      "toNode": "utils_details_e38a191e",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_ErrorBoundary_a5ae61df_utils_copy_ca6c3319",
-      "fromNode": "frontend_ErrorBoundary_a5ae61df",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_IdentityCard_281f9ab6_utils_copy_ca6c3319",
-      "fromNode": "frontend_IdentityCard_281f9ab6",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_IdentityCard_281f9ab6_frontend_AsciiBox_b2f02e50",
-      "fromNode": "frontend_IdentityCard_281f9ab6",
-      "fromSide": "right",
-      "toNode": "frontend_AsciiBox_b2f02e50",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_IdentityCard_281f9ab6_frontend_MatrixAvatar_b8b692fe",
-      "fromNode": "frontend_IdentityCard_281f9ab6",
-      "fromSide": "right",
-      "toNode": "frontend_MatrixAvatar_b8b692fe",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_IdentityCard_281f9ab6_frontend_ScrambleText_18fe834c",
-      "fromNode": "frontend_IdentityCard_281f9ab6",
-      "fromSide": "right",
-      "toNode": "frontend_ScrambleText_18fe834c",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_IdentityPanel_27a7e914_utils_copy_ca6c3319",
-      "fromNode": "frontend_IdentityPanel_27a7e914",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_LandingExtras_d794f96d_frontend_MatrixAvatar_b8b692fe",
-      "fromNode": "frontend_LandingExtras_d794f96d",
-      "fromSide": "right",
-      "toNode": "frontend_MatrixAvatar_b8b692fe",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LandingExtras_d794f96d_frontend_LiveSniffer_3b2f77a1",
-      "fromNode": "frontend_LandingExtras_d794f96d",
-      "fromSide": "right",
-      "toNode": "frontend_LiveSniffer_3b2f77a1",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LandingExtras_d794f96d_frontend_SignalBox_7cca5cdf",
-      "fromNode": "frontend_LandingExtras_d794f96d",
-      "fromSide": "right",
-      "toNode": "frontend_SignalBox_7cca5cdf",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LandingExtras_d794f96d_utils_copy_ca6c3319",
-      "fromNode": "frontend_LandingExtras_d794f96d",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_LandingPage_8367c397_frontend_DecodingText_b2b88660",
-      "fromNode": "frontend_LandingPage_8367c397",
-      "fromSide": "right",
-      "toNode": "frontend_DecodingText_b2b88660",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LandingPage_8367c397_frontend_GithubStar_d05e145",
-      "fromNode": "frontend_LandingPage_8367c397",
-      "fromSide": "right",
-      "toNode": "frontend_GithubStar_d05e145",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LandingPage_8367c397_utils_copy_ca6c3319",
-      "fromNode": "frontend_LandingPage_8367c397",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_LeaderboardPanel_892d3523_utils_copy_ca6c3319",
-      "fromNode": "frontend_LeaderboardPanel_892d3523",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_LeaderboardPanel_892d3523_frontend_AsciiBox_b2f02e50",
-      "fromNode": "frontend_LeaderboardPanel_892d3523",
-      "fromSide": "right",
-      "toNode": "frontend_AsciiBox_b2f02e50",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LeaderboardPanel_892d3523_frontend_LeaderboardRow_3cdf86df",
-      "fromNode": "frontend_LeaderboardPanel_892d3523",
-      "fromSide": "right",
-      "toNode": "frontend_LeaderboardRow_3cdf86df",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LeaderboardRow_3cdf86df_utils_copy_ca6c3319",
-      "fromNode": "frontend_LeaderboardRow_3cdf86df",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_LeaderboardRow_3cdf86df_frontend_MatrixAvatar_b8b692fe",
-      "fromNode": "frontend_LeaderboardRow_3cdf86df",
-      "fromSide": "right",
-      "toNode": "frontend_MatrixAvatar_b8b692fe",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_LiveSniffer_3b2f77a1_utils_copy_ca6c3319",
-      "fromNode": "frontend_LiveSniffer_3b2f77a1",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_MatrixAvatar_b8b692fe_utils_copy_ca6c3319",
-      "fromNode": "frontend_MatrixAvatar_b8b692fe",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_MatrixShell_33cf7a77_frontend_MatrixRain_97f568bb",
-      "fromNode": "frontend_MatrixShell_33cf7a77",
-      "fromSide": "right",
-      "toNode": "frontend_MatrixRain_97f568bb",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_MatrixShell_33cf7a77_utils_copy_ca6c3319",
-      "fromNode": "frontend_MatrixShell_33cf7a77",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_NeuralAdaptiveFleet_9f6d6cf1_utils_copy_ca6c3319",
-      "fromNode": "frontend_NeuralAdaptiveFleet_9f6d6cf1",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_NeuralAdaptiveFleet_9f6d6cf1_utils_format_bfd0859f",
-      "fromNode": "frontend_NeuralAdaptiveFleet_9f6d6cf1",
-      "fromSide": "bottom",
-      "toNode": "utils_format_bfd0859f",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_NeuralAdaptiveFleet_9f6d6cf1_frontend_MatrixConstants_797f7b7a",
-      "fromNode": "frontend_NeuralAdaptiveFleet_9f6d6cf1",
-      "fromSide": "right",
-      "toNode": "frontend_MatrixConstants_797f7b7a",
-      "toSide": "left"
-    },
-    {
-      "id": "edge_frontend_NeuralDivergenceMap_db27756f_utils_copy_ca6c3319",
-      "fromNode": "frontend_NeuralDivergenceMap_db27756f",
-      "fromSide": "bottom",
-      "toNode": "utils_copy_ca6c3319",
-      "toSide": "top"
-    },
-    {
-      "id": "edge_frontend_NeuralDivergenceMap_db27756f_frontend_AsciiBox_b2f02e50",
-      "fromNode": "frontend_NeuralDivergenceMap_db27756f",
-      "fromSide": "right",
-      "toNode": "frontend_AsciiBox_b2f02e50",
-      "toSide": "left"
     }
   ]
 }

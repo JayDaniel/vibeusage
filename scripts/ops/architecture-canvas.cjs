@@ -40,6 +40,21 @@ const CONFIG_FILES = [
 const FRONT_DIR_HINTS = ["frontend", "client", "web", "dashboard", "ui"];
 const BACK_DIR_HINTS = ["backend", "server", "api", "services", "insforge", "src"];
 
+const PROTECTED_CATEGORIES = new Set([
+  "entry",
+  "routing",
+  "controller",
+  "service",
+  "data",
+  "infra",
+  "frontend",
+  "state",
+  "utils",
+  "config",
+  "test",
+  "edge-function",
+]);
+
 const CATEGORY_DEFINITIONS = [
   {
     name: "test",
@@ -99,6 +114,13 @@ const CATEGORY_DEFINITIONS = [
     match: (p, c) => p.includes("/routes/") || p.includes("/api/") || /@app\.route|express\.Router/i.test(c || ""),
   },
   {
+    name: "edge-function",
+    description: "Edge function handler.",
+    group: "controller",
+    color: "3",
+    match: (p) => p.startsWith("insforge-src/functions/") || p.includes("/insforge-src/functions/"),
+  },
+  {
     name: "controller",
     description: "Request handling layer.",
     group: "controller",
@@ -152,7 +174,12 @@ const CATEGORY_DEFINITIONS = [
     description: "Shared utilities.",
     group: "utils",
     color: "2",
-    match: (p) => p.includes("/utils/") || p.includes("/helpers/") || p.includes("/lib/") || p.includes("/common/"),
+    match: (p) =>
+      p.includes("/utils/") ||
+      p.includes("/helpers/") ||
+      p.includes("/lib/") ||
+      p.includes("/common/") ||
+      p.includes("/shared/"),
   },
   {
     name: "utils",
@@ -570,11 +597,12 @@ function groupByCategory(fileInfos) {
   return counts;
 }
 
-function mergeSmallCategories(fileInfos, minCount) {
+function mergeSmallCategories(fileInfos, minCount, options = {}) {
+  const keepCategories = options.keepCategories || new Set();
   const counts = groupByCategory(fileInfos);
   for (const info of fileInfos) {
     const count = counts.get(info.category) || 0;
-    if (info.category !== "external" && count > 0 && count < minCount) {
+    if (info.category !== "external" && count > 0 && count < minCount && !keepCategories.has(info.category)) {
       info.category = "misc";
       info.group = "misc";
       info.color = DEFAULT_CATEGORY.color;
@@ -641,7 +669,7 @@ function buildExternalNodes(externalServices) {
 
 function buildEdges(fileInfos, nodeByPath, externalNodes, fileIndex) {
   const edgeWeights = new Map();
-  const externalEdges = new Set();
+  const edgeMeta = new Map();
 
   for (const info of fileInfos) {
     const fromNode = nodeByPath.get(info.absPath);
@@ -659,14 +687,15 @@ function buildEdges(fileInfos, nodeByPath, externalNodes, fileIndex) {
       if (!toNode) continue;
       const key = `${fromNode.id}::${toNode.id}`;
       edgeWeights.set(key, (edgeWeights.get(key) || 0) + 1);
-      externalEdges.add(key);
+      edgeMeta.set(key, { isExternal: true });
     }
   }
 
   const edges = [];
   for (const [key, weight] of edgeWeights.entries()) {
     const [from, to] = key.split("::");
-    edges.push({ from, to, weight });
+    const meta = edgeMeta.get(key);
+    edges.push({ from, to, weight, isExternal: meta?.isExternal === true });
   }
 
   return edges;
@@ -875,16 +904,99 @@ function annotateLayers(nodes) {
 function pruneEdges(rawEdges, options = {}) {
   const maxEdges = options.maxEdges ?? 50;
   const maxOut = options.maxOut ?? 5;
+  const keepExternal = options.keepExternal ?? false;
+  const maxGroupEdges = options.maxGroupEdges ?? Math.max(10, Math.floor(maxEdges * 0.4));
+  const nodes = options.nodes || [];
+  const nodeIndex = new Map(nodes.map((node) => [node.id, node]));
   const edges = [...rawEdges].sort((a, b) => b.weight - a.weight || a.from.localeCompare(b.from));
   const result = [];
   const outCount = new Map();
+  const groupCounts = new Map();
+  const seen = new Set();
+
+  const edgeKey = (edge) => `${edge.from}::${edge.to}`;
+  const canAdd = (edge, ignoreMaxOut = false, ignoreGroupCap = false) => {
+    if (seen.has(edgeKey(edge))) return false;
+    if (!ignoreMaxOut) {
+      const count = outCount.get(edge.from) || 0;
+      if (count >= maxOut) return false;
+    }
+    if (!ignoreGroupCap && nodeIndex.size > 0) {
+      const group = nodeIndex.get(edge.from)?.meta?.group;
+      if (group) {
+        const count = groupCounts.get(group) || 0;
+        if (count >= maxGroupEdges) return false;
+      }
+    }
+    return true;
+  };
+  const addEdge = (edge, ignoreMaxOut = false, ignoreGroupCap = false) => {
+    if (!canAdd(edge, ignoreMaxOut, ignoreGroupCap)) return false;
+    seen.add(edgeKey(edge));
+    outCount.set(edge.from, (outCount.get(edge.from) || 0) + 1);
+    if (nodeIndex.size > 0) {
+      const group = nodeIndex.get(edge.from)?.meta?.group;
+      if (group) groupCounts.set(group, (groupCounts.get(group) || 0) + 1);
+    }
+    result.push(edge);
+    return true;
+  };
+
+  if (keepExternal) {
+    const externalEdges = edges.filter((edge) => edge.isExternal);
+    if (externalEdges.length > 0 && nodeIndex.size > 0) {
+      const edgesByService = new Map();
+      for (const edge of externalEdges) {
+        const service = nodeIndex.get(edge.to)?.externalService || edge.to;
+        if (!edgesByService.has(service)) edgesByService.set(service, []);
+        edgesByService.get(service).push(edge);
+      }
+      let externalCount = 0;
+      const maxExternalEdges = Math.max(
+        options.maxExternalEdges ?? Math.min(maxEdges, 12),
+        edgesByService.size
+      );
+      for (const groupEdges of edgesByService.values()) {
+        for (const edge of groupEdges) {
+          if (addEdge(edge, true)) {
+            externalCount += 1;
+            break;
+          }
+        }
+      }
+      for (const edge of externalEdges) {
+        if (externalCount >= maxExternalEdges) break;
+        if (addEdge(edge, true)) externalCount += 1;
+      }
+    } else {
+      for (const edge of externalEdges) {
+        addEdge(edge, true);
+      }
+    }
+  }
+
+  if (nodeIndex.size > 0) {
+    const edgesByGroup = new Map();
+    for (const edge of edges) {
+      const fromNode = nodeIndex.get(edge.from);
+      const group = fromNode?.meta?.group;
+      if (!group) continue;
+      if (!edgesByGroup.has(group)) edgesByGroup.set(group, []);
+      edgesByGroup.get(group).push(edge);
+    }
+    for (const groupEdges of edgesByGroup.values()) {
+      if (result.length >= maxEdges) break;
+      for (const edge of groupEdges) {
+        if (addEdge(edge)) break;
+      }
+    }
+  }
+
   for (const edge of edges) {
     if (result.length >= maxEdges) break;
-    const count = outCount.get(edge.from) || 0;
-    if (count >= maxOut) continue;
-    outCount.set(edge.from, count + 1);
-    result.push(edge);
+    addEdge(edge);
   }
+
   return result;
 }
 
@@ -1010,13 +1122,16 @@ function aggregateNodesIfNeeded(nodes, edges, maxNodes = 300) {
     const to = nodeMap.get(edge.to) || edge.to;
     if (from === to) continue;
     const key = `${from}::${to}`;
-    edgeWeights.set(key, (edgeWeights.get(key) || 0) + edge.weight);
+    const record = edgeWeights.get(key) || { weight: 0, isExternal: false };
+    record.weight += edge.weight;
+    if (edge.isExternal) record.isExternal = true;
+    edgeWeights.set(key, record);
   }
 
   const aggregatedEdges = [];
-  for (const [key, weight] of edgeWeights.entries()) {
+  for (const [key, record] of edgeWeights.entries()) {
     const [from, to] = key.split("::");
-    aggregatedEdges.push({ from, to, weight });
+    aggregatedEdges.push({ from, to, weight: record.weight, isExternal: record.isExternal });
   }
 
   return { nodes: aggregatedNodes, edges: aggregatedEdges };
@@ -1120,7 +1235,7 @@ async function buildCanvasModel({ rootDir }) {
     fileInfos.push(info);
   }
 
-  mergeSmallCategories(fileInfos, 3);
+  mergeSmallCategories(fileInfos, 3, { keepCategories: PROTECTED_CATEGORIES });
 
   const topDirs = await fs.readdir(rootDir, { withFileTypes: true }).catch(() => []);
   const topDirNames = topDirs.filter((d) => d.isDirectory()).map((d) => d.name);
@@ -1145,7 +1260,7 @@ async function buildCanvasModel({ rootDir }) {
   ({ nodes: allNodes, edges } = aggregateNodesIfNeeded(allNodes, edges, SOFT_NODE_LIMIT));
   ({ nodes: allNodes, edges } = applyIsolatedGrouping(allNodes, edges));
 
-  edges = pruneEdges(edges, { maxEdges: 50, maxOut: 5 });
+  edges = pruneEdges(edges, { maxEdges: 50, maxOut: 5, keepExternal: true, maxExternalEdges: 12, nodes: allNodes });
   allNodes = ensureMinimumNodes(allNodes);
 
   const depCounts = assignDependencyCounts(allNodes, edges);
