@@ -21,7 +21,7 @@ const DEFAULT_MODEL = 'unknown';
 const ingestGuard = createConcurrencyGuard({
   name: 'vibescore-ingest',
   envKey: 'VIBESCORE_INGEST_MAX_INFLIGHT',
-  defaultMax: 20,
+  defaultMax: 0,
   retryAfterEnvKey: 'VIBESCORE_INGEST_RETRY_AFTER_MS',
   defaultRetryAfterMs: 1000
 });

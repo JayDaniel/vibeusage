@@ -32,6 +32,7 @@
 - 幂等语义不变
 - canary 使用专用 token + `source/model=canary`
 - usage 端默认排除 canary 桶（除非显式请求）
+- 并发限制为显式开启（默认不限制）
 
 ## Assumptions
 - Insforge Edge Function 支持环境变量配置

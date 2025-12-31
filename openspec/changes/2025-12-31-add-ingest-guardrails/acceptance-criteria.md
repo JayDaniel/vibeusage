@@ -18,6 +18,10 @@
 - THEN the endpoint SHALL respond `429` with `Retry-After` header
 - AND the request SHALL NOT reach DB writes
 
+#### Scenario: Guard is opt-in by default
+- WHEN `VIBESCORE_INGEST_MAX_INFLIGHT` is unset or `0`
+- THEN ingest requests SHALL not be throttled by the guard
+
 ### Requirement: Canary probe is safe and idempotent
 - Rationale: 低成本早期发现
 
