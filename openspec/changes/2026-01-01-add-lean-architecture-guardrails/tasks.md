@@ -14,6 +14,7 @@
 - [x] 3.1 Enforce guardrails in code (if needed)
 - [x] 3.2 Add automation for schema/contract checks
 - [x] 3.3 Update verification report after implementation
+- [x] 3.4 Add CI guardrail workflow
 
 ## 4. Canvas Sync
 - [x] 4.1 Refresh canvas before planning
