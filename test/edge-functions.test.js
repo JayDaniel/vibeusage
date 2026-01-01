@@ -79,6 +79,7 @@ function createEntitlementsDbMock(options = {}) {
   const rows = new Map();
   const seedRows = Array.isArray(options.seedRows) ? options.seedRows : [];
   const failOnDuplicate = options.failOnDuplicate !== false;
+  const normalizeUserId = options.normalizeUserId === true;
   const conflictRow = options.conflictRow && typeof options.conflictRow.id === 'string'
     ? options.conflictRow
     : null;
@@ -88,8 +89,13 @@ function createEntitlementsDbMock(options = {}) {
   };
   let conflictArmed = Boolean(conflictRow);
 
+  const normalizeRow = (row) => {
+    if (!normalizeUserId || !row || typeof row.user_id !== 'string') return row;
+    return { ...row, user_id: row.user_id.toLowerCase() };
+  };
+
   for (const row of seedRows) {
-    if (row && typeof row.id === 'string') rows.set(row.id, row);
+    if (row && typeof row.id === 'string') rows.set(row.id, normalizeRow(row));
   }
 
   function from(table) {
@@ -101,7 +107,7 @@ function createEntitlementsDbMock(options = {}) {
             const hasConflict = newRows.some((row) => row && row.id === conflictRow.id);
             if (hasConflict) {
               conflictArmed = false;
-              rows.set(conflictRow.id, conflictRow);
+              rows.set(conflictRow.id, normalizeRow(conflictRow));
               return { error: duplicateError };
             }
           }
@@ -113,7 +119,7 @@ function createEntitlementsDbMock(options = {}) {
             }
           }
           for (const row of newRows) {
-            if (row && typeof row.id === 'string') rows.set(row.id, row);
+            if (row && typeof row.id === 'string') rows.set(row.id, normalizeRow(row));
           }
           return { error: null };
         },
@@ -2271,6 +2277,52 @@ test('vibescore-entitlements replays idempotency_key without duplicate insert', 
     body: JSON.stringify(body)
   });
   const res2 = await fn(req2);
+  assert.equal(res2.status, 200);
+  const row2 = await res2.json();
+
+  assert.equal(row1.id, row2.id);
+  assert.equal(db.rows.size, 1);
+});
+
+test('vibescore-entitlements normalizes user_id for idempotency replays', async () => {
+  const fn = require('../insforge-functions/vibescore-entitlements');
+
+  const db = createEntitlementsDbMock({ normalizeUserId: true });
+  const userId = 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA';
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === SERVICE_ROLE_KEY) {
+      return { database: db.db };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const body = {
+    user_id: userId,
+    source: 'manual',
+    effective_from: '2025-01-01T00:00:00Z',
+    effective_to: '2124-01-01T00:00:00Z',
+    note: 'test',
+    idempotency_key: 'entitlement-uppercase'
+  };
+
+  const res1 = await fn(
+    new Request('http://localhost/functions/vibescore-entitlements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+      body: JSON.stringify(body)
+    })
+  );
+  assert.equal(res1.status, 200);
+  const row1 = await res1.json();
+
+  const res2 = await fn(
+    new Request('http://localhost/functions/vibescore-entitlements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+      body: JSON.stringify(body)
+    })
+  );
   assert.equal(res2.status, 200);
   const row2 = await res2.json();
 

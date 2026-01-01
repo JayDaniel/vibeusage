@@ -328,7 +328,8 @@ module.exports = withRequestLogging("vibescore-entitlements", async function(req
   const body = await readJson(request);
   if (body.error) return json({ error: body.error }, body.status);
   const data = body.data || {};
-  const userId = typeof data.user_id === "string" ? data.user_id : null;
+  const rawUserId = typeof data.user_id === "string" ? data.user_id : null;
+  const userId = normalizeUuid(rawUserId);
   const source = typeof data.source === "string" ? data.source.trim().toLowerCase() : null;
   const effectiveFrom = typeof data.effective_from === "string" ? data.effective_from : null;
   const effectiveTo = typeof data.effective_to === "string" ? data.effective_to : null;
@@ -343,7 +344,8 @@ module.exports = withRequestLogging("vibescore-entitlements", async function(req
     effectiveTo,
     note: normalizedNote
   };
-  if (!userId) return json({ error: "user_id is required" }, 400);
+  if (!rawUserId) return json({ error: "user_id is required" }, 400);
+  if (!userId) return json({ error: "user_id must be a UUID" }, 400);
   if (!source || !ALLOWED_SOURCES.has(source)) return json({ error: "invalid source" }, 400);
   if (data.id != null && !providedId) return json({ error: "id must be a UUID" }, 400);
   if (data.idempotency_key != null && !idempotencyKey) {
@@ -448,7 +450,9 @@ async function loadEntitlementById({ dbClient, id }) {
 }
 function matchesEntitlementPayload(row, payload) {
   if (!row || !payload) return false;
-  if (String(row.user_id || "") !== payload.userId) return false;
+  const rowUserId = normalizeUuid(row.user_id);
+  const payloadUserId = normalizeUuid(payload.userId);
+  if (!rowUserId || !payloadUserId || rowUserId !== payloadUserId) return false;
   const rowSource = typeof row.source === "string" ? row.source.trim().toLowerCase() : "";
   if (rowSource !== payload.source) return false;
   if (normalizeIsoMillis(row.effective_from) !== normalizeIsoMillis(payload.effectiveFrom)) return false;
