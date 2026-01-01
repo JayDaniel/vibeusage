@@ -19,7 +19,8 @@
     "validate:copy": "node scripts/validate-copy-registry.cjs",
     "copy:pull": "node scripts/copy-sync.cjs pull",
     "copy:push": "node scripts/copy-sync.cjs push",
-    "architecture:canvas": "node scripts/ops/architecture-canvas.cjs"
+    "architecture:canvas": "node scripts/ops/architecture-canvas.cjs",
+    "validate:guardrails": "node scripts/validate-architecture-guardrails.cjs"
   },
   "bin": {
     "tracker": "bin/tracker.js",

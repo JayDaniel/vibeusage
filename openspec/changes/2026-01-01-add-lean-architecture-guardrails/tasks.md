@@ -11,9 +11,9 @@
 - [x] 2.4 Run `openspec validate 2026-01-01-add-lean-architecture-guardrails --strict`
 
 ## 3. Implementation (Future)
-- [ ] 3.1 Enforce guardrails in code (if needed)
-- [ ] 3.2 Add automation for schema/contract checks
-- [ ] 3.3 Update verification report after implementation
+- [x] 3.1 Enforce guardrails in code (if needed)
+- [x] 3.2 Add automation for schema/contract checks
+- [x] 3.3 Update verification report after implementation
 
 ## 4. Canvas Sync
 - [x] 4.1 Refresh canvas before planning

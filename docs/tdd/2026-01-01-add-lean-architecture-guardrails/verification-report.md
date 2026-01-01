@@ -4,13 +4,15 @@
 - Lean architecture guardrails planning artifacts only.
 
 ## Tests Run
-- None (planning-only phase).
+- `node --test test/architecture-guardrails.test.js`
+- `node --test test/edge-functions.test.js`
 
 ## Results
-- Not applicable.
+- All listed tests passed locally.
 
 ## Evidence
-- Documentation artifacts created under `docs/tdd/2026-01-01-add-lean-architecture-guardrails/`.
+- Guardrail script: `scripts/validate-architecture-guardrails.cjs`.
+- Test coverage: `test/architecture-guardrails.test.js`.
 
 ## Remaining Risks
 - Guardrails are documented but not yet enforced in code.
