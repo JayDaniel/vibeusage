@@ -1,0 +1,621 @@
+{
+  "nodes": [
+    {
+      "id": "group_tracker-sync-ingest",
+      "type": "group",
+      "x": 40,
+      "y": 40,
+      "width": 1728,
+      "height": 1024,
+      "label": "[Scenario] Tracker Sync -> Ingest"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_cli-user",
+      "type": "text",
+      "x": 64,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**CLI User**\n`tracker sync`\n\nStarts a manual sync run.",
+      "color": "6"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_tracker-sync",
+      "type": "text",
+      "x": 364,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**Tracker Sync**\n`cmdSync()`\n\nOrchestrates parsing and upload.",
+      "color": "2"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_local-storage",
+      "type": "text",
+      "x": 664,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**Local Storage**\n`~/.vibescore + logs`\n\nQueue, cursors, session files.",
+      "color": "5"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_uploader",
+      "type": "text",
+      "x": 964,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**Uploader**\n`drainQueueToCloud()`\n\nBatches hourly aggregates.",
+      "color": "3"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_edge",
+      "type": "text",
+      "x": 1264,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge Edge**\n`vibescore-ingest`\n\nValidates token and writes usage.",
+      "color": "4"
+    },
+    {
+      "id": "lifeline_tracker-sync-ingest_db",
+      "type": "text",
+      "x": 1564,
+      "y": 64,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge DB**\n`vibescore_tracker_*`\n\nIdempotent upserts + metrics.",
+      "color": "4"
+    },
+    {
+      "id": "message_tracker-sync-ingest_1",
+      "type": "text",
+      "x": 134,
+      "y": 200,
+      "width": 340,
+      "height": 50,
+      "text": "1. tracker sync(argv)\nAI: Start sync and acquire lock."
+    },
+    {
+      "id": "message_tracker-sync-ingest_2",
+      "type": "text",
+      "x": 434,
+      "y": 270,
+      "width": 340,
+      "height": 50,
+      "text": "2. read config + cursors\nAI: Load device token and state."
+    },
+    {
+      "id": "message_tracker-sync-ingest_3",
+      "type": "text",
+      "x": 434,
+      "y": 340,
+      "width": 340,
+      "height": 50,
+      "text": "3. parse session logs\nAI: Aggregate 30-min buckets into queue."
+    },
+    {
+      "id": "message_tracker-sync-ingest_4",
+      "type": "text",
+      "x": 584,
+      "y": 410,
+      "width": 340,
+      "height": 50,
+      "text": "4. drainQueueToCloud(queue.jsonl)\nAI: Begin batch upload."
+    },
+    {
+      "id": "message_tracker-sync-ingest_5",
+      "type": "text",
+      "x": 734,
+      "y": 480,
+      "width": 340,
+      "height": 50,
+      "text": "5. readBatch(queue.jsonl)\nAI: Deduplicate buckets per hour."
+    },
+    {
+      "id": "message_tracker-sync-ingest_6",
+      "type": "text",
+      "x": 1034,
+      "y": 550,
+      "width": 340,
+      "height": 50,
+      "text": "6. POST /functions/vibescore-ingest\nAI: Send hourly aggregates (idempotent)."
+    },
+    {
+      "id": "message_tracker-sync-ingest_7",
+      "type": "text",
+      "x": 1334,
+      "y": 620,
+      "width": 340,
+      "height": 50,
+      "text": "7. select token + upsert hourly\nAI: Validate device token and write rows."
+    },
+    {
+      "id": "message_tracker-sync-ingest_8",
+      "type": "text",
+      "x": 1334,
+      "y": 690,
+      "width": 340,
+      "height": 50,
+      "text": "8. rows upserted\nAI: Return inserted/skipped counts."
+    },
+    {
+      "id": "message_tracker-sync-ingest_9",
+      "type": "text",
+      "x": 1034,
+      "y": 760,
+      "width": 340,
+      "height": 50,
+      "text": "9. ingest response\nAI: Edge function returns success."
+    },
+    {
+      "id": "message_tracker-sync-ingest_10",
+      "type": "text",
+      "x": 584,
+      "y": 830,
+      "width": 340,
+      "height": 50,
+      "text": "10. uploadResult\nAI: Update throttle state and offsets."
+    },
+    {
+      "id": "message_tracker-sync-ingest_11",
+      "type": "text",
+      "x": 734,
+      "y": 900,
+      "width": 340,
+      "height": 50,
+      "text": "11. POST /functions/vibescore-sync-ping\nAI: Best-effort heartbeat."
+    },
+    {
+      "id": "message_tracker-sync-ingest_12",
+      "type": "text",
+      "x": 134,
+      "y": 970,
+      "width": 340,
+      "height": 50,
+      "text": "12. print summary\nAI: Report parsed/inserted/pending counts."
+    },
+    {
+      "id": "group_link-code-exchange",
+      "type": "group",
+      "x": 40,
+      "y": 1144,
+      "width": 1128,
+      "height": 884,
+      "label": "[Scenario] Link Code Exchange"
+    },
+    {
+      "id": "lifeline_link-code-exchange_cli-user",
+      "type": "text",
+      "x": 64,
+      "y": 1168,
+      "width": 180,
+      "height": 90,
+      "text": "**CLI User**\n`tracker init`\n\nStarts auth setup.",
+      "color": "6"
+    },
+    {
+      "id": "lifeline_link-code-exchange_tracker-init",
+      "type": "text",
+      "x": 364,
+      "y": 1168,
+      "width": 180,
+      "height": 90,
+      "text": "**Tracker Init**\n`cmdInit()`\n\nHandles link code flow.",
+      "color": "2"
+    },
+    {
+      "id": "lifeline_link-code-exchange_edge",
+      "type": "text",
+      "x": 664,
+      "y": 1168,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge Edge**\n`link-code-*`\n\nIssues and exchanges codes.",
+      "color": "4"
+    },
+    {
+      "id": "lifeline_link-code-exchange_db",
+      "type": "text",
+      "x": 964,
+      "y": 1168,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge DB**\n`link codes + tokens`\n\nPersists auth state.",
+      "color": "4"
+    },
+    {
+      "id": "message_link-code-exchange_1",
+      "type": "text",
+      "x": 134,
+      "y": 1304,
+      "width": 340,
+      "height": 50,
+      "text": "1. tracker init\nAI: Begin link-code auth flow."
+    },
+    {
+      "id": "message_link-code-exchange_2",
+      "type": "text",
+      "x": 434,
+      "y": 1374,
+      "width": 340,
+      "height": 50,
+      "text": "2. POST /functions/vibescore-link-code-init\nAI: Request a short-lived link code."
+    },
+    {
+      "id": "message_link-code-exchange_3",
+      "type": "text",
+      "x": 734,
+      "y": 1444,
+      "width": 340,
+      "height": 50,
+      "text": "3. insert link code\nAI: Store issued code with expiry."
+    },
+    {
+      "id": "message_link-code-exchange_4",
+      "type": "text",
+      "x": 734,
+      "y": 1514,
+      "width": 340,
+      "height": 50,
+      "text": "4. link code issued\nAI: Return code + request_id."
+    },
+    {
+      "id": "message_link-code-exchange_5",
+      "type": "text",
+      "x": 434,
+      "y": 1584,
+      "width": 340,
+      "height": 50,
+      "text": "5. link code response\nAI: Provide code for browser auth."
+    },
+    {
+      "id": "message_link-code-exchange_6",
+      "type": "text",
+      "x": 434,
+      "y": 1654,
+      "width": 340,
+      "height": 50,
+      "text": "6. POST /functions/vibescore-link-code-exchange\nAI: Exchange code for device token."
+    },
+    {
+      "id": "message_link-code-exchange_7",
+      "type": "text",
+      "x": 734,
+      "y": 1724,
+      "width": 340,
+      "height": 50,
+      "text": "7. create device token\nAI: Persist device token hash."
+    },
+    {
+      "id": "message_link-code-exchange_8",
+      "type": "text",
+      "x": 734,
+      "y": 1794,
+      "width": 340,
+      "height": 50,
+      "text": "8. device token row\nAI: Return token + device id."
+    },
+    {
+      "id": "message_link-code-exchange_9",
+      "type": "text",
+      "x": 434,
+      "y": 1864,
+      "width": 340,
+      "height": 50,
+      "text": "9. device token response\nAI: CLI stores token locally."
+    },
+    {
+      "id": "message_link-code-exchange_10",
+      "type": "text",
+      "x": 134,
+      "y": 1934,
+      "width": 340,
+      "height": 50,
+      "text": "10. print connect instructions\nAI: Guide user to finish setup."
+    },
+    {
+      "id": "group_usage-summary-query",
+      "type": "group",
+      "x": 40,
+      "y": 2108,
+      "width": 1128,
+      "height": 604,
+      "label": "[Scenario] Usage Summary Query"
+    },
+    {
+      "id": "lifeline_usage-summary-query_dashboard-ui",
+      "type": "text",
+      "x": 64,
+      "y": 2132,
+      "width": 180,
+      "height": 90,
+      "text": "**Dashboard UI**\n`DashboardPage`\n\nRequests usage totals.",
+      "color": "6"
+    },
+    {
+      "id": "lifeline_usage-summary-query_dashboard-api",
+      "type": "text",
+      "x": 364,
+      "y": 2132,
+      "width": 180,
+      "height": 90,
+      "text": "**Dashboard API**\n`getUsageSummary()`\n\nBuilds query + auth.",
+      "color": "2"
+    },
+    {
+      "id": "lifeline_usage-summary-query_edge",
+      "type": "text",
+      "x": 664,
+      "y": 2132,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge Edge**\n`vibescore-usage-summary`\n\nAggregates usage totals.",
+      "color": "4"
+    },
+    {
+      "id": "lifeline_usage-summary-query_db",
+      "type": "text",
+      "x": 964,
+      "y": 2132,
+      "width": 180,
+      "height": 90,
+      "text": "**InsForge DB**\n`vibescore_tracker_hourly`\n\nServes aggregate rows.",
+      "color": "4"
+    },
+    {
+      "id": "message_usage-summary-query_1",
+      "type": "text",
+      "x": 134,
+      "y": 2268,
+      "width": 340,
+      "height": 50,
+      "text": "1. getUsageSummary(from,to)\nAI: Request totals for selected range."
+    },
+    {
+      "id": "message_usage-summary-query_2",
+      "type": "text",
+      "x": 434,
+      "y": 2338,
+      "width": 340,
+      "height": 50,
+      "text": "2. GET /functions/vibescore-usage-summary\nAI: Fetch aggregated usage totals."
+    },
+    {
+      "id": "message_usage-summary-query_3",
+      "type": "text",
+      "x": 734,
+      "y": 2408,
+      "width": 340,
+      "height": 50,
+      "text": "3. select aggregates\nAI: Load totals for range."
+    },
+    {
+      "id": "message_usage-summary-query_4",
+      "type": "text",
+      "x": 734,
+      "y": 2478,
+      "width": 340,
+      "height": 50,
+      "text": "4. rows + totals\nAI: Return data for response."
+    },
+    {
+      "id": "message_usage-summary-query_5",
+      "type": "text",
+      "x": 434,
+      "y": 2548,
+      "width": 340,
+      "height": 50,
+      "text": "5. usage summary response\nAI: Return totals + metadata."
+    },
+    {
+      "id": "message_usage-summary-query_6",
+      "type": "text",
+      "x": 134,
+      "y": 2618,
+      "width": 340,
+      "height": 50,
+      "text": "6. render totals\nAI: Update dashboard metrics."
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_tracker-sync-ingest_1",
+      "fromNode": "lifeline_tracker-sync-ingest_cli-user",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_2",
+      "fromNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_local-storage",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_3",
+      "fromNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_local-storage",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_4",
+      "fromNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_uploader",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_5",
+      "fromNode": "lifeline_tracker-sync-ingest_uploader",
+      "fromSide": "left",
+      "toNode": "lifeline_tracker-sync-ingest_local-storage",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_6",
+      "fromNode": "lifeline_tracker-sync-ingest_uploader",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_edge",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_7",
+      "fromNode": "lifeline_tracker-sync-ingest_edge",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_db",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_8",
+      "fromNode": "lifeline_tracker-sync-ingest_db",
+      "fromSide": "left",
+      "toNode": "lifeline_tracker-sync-ingest_edge",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_9",
+      "fromNode": "lifeline_tracker-sync-ingest_edge",
+      "fromSide": "left",
+      "toNode": "lifeline_tracker-sync-ingest_uploader",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_10",
+      "fromNode": "lifeline_tracker-sync-ingest_uploader",
+      "fromSide": "left",
+      "toNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_11",
+      "fromNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "fromSide": "right",
+      "toNode": "lifeline_tracker-sync-ingest_edge",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_tracker-sync-ingest_12",
+      "fromNode": "lifeline_tracker-sync-ingest_tracker-sync",
+      "fromSide": "left",
+      "toNode": "lifeline_tracker-sync-ingest_cli-user",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_link-code-exchange_1",
+      "fromNode": "lifeline_link-code-exchange_cli-user",
+      "fromSide": "right",
+      "toNode": "lifeline_link-code-exchange_tracker-init",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_link-code-exchange_2",
+      "fromNode": "lifeline_link-code-exchange_tracker-init",
+      "fromSide": "right",
+      "toNode": "lifeline_link-code-exchange_edge",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_link-code-exchange_3",
+      "fromNode": "lifeline_link-code-exchange_edge",
+      "fromSide": "right",
+      "toNode": "lifeline_link-code-exchange_db",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_link-code-exchange_4",
+      "fromNode": "lifeline_link-code-exchange_db",
+      "fromSide": "left",
+      "toNode": "lifeline_link-code-exchange_edge",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_link-code-exchange_5",
+      "fromNode": "lifeline_link-code-exchange_edge",
+      "fromSide": "left",
+      "toNode": "lifeline_link-code-exchange_tracker-init",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_link-code-exchange_6",
+      "fromNode": "lifeline_link-code-exchange_tracker-init",
+      "fromSide": "right",
+      "toNode": "lifeline_link-code-exchange_edge",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_link-code-exchange_7",
+      "fromNode": "lifeline_link-code-exchange_edge",
+      "fromSide": "right",
+      "toNode": "lifeline_link-code-exchange_db",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_link-code-exchange_8",
+      "fromNode": "lifeline_link-code-exchange_db",
+      "fromSide": "left",
+      "toNode": "lifeline_link-code-exchange_edge",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_link-code-exchange_9",
+      "fromNode": "lifeline_link-code-exchange_edge",
+      "fromSide": "left",
+      "toNode": "lifeline_link-code-exchange_tracker-init",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_link-code-exchange_10",
+      "fromNode": "lifeline_link-code-exchange_tracker-init",
+      "fromSide": "left",
+      "toNode": "lifeline_link-code-exchange_cli-user",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_usage-summary-query_1",
+      "fromNode": "lifeline_usage-summary-query_dashboard-ui",
+      "fromSide": "right",
+      "toNode": "lifeline_usage-summary-query_dashboard-api",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_usage-summary-query_2",
+      "fromNode": "lifeline_usage-summary-query_dashboard-api",
+      "fromSide": "right",
+      "toNode": "lifeline_usage-summary-query_edge",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_usage-summary-query_3",
+      "fromNode": "lifeline_usage-summary-query_edge",
+      "fromSide": "right",
+      "toNode": "lifeline_usage-summary-query_db",
+      "toSide": "left"
+    },
+    {
+      "id": "edge_usage-summary-query_4",
+      "fromNode": "lifeline_usage-summary-query_db",
+      "fromSide": "left",
+      "toNode": "lifeline_usage-summary-query_edge",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_usage-summary-query_5",
+      "fromNode": "lifeline_usage-summary-query_edge",
+      "fromSide": "left",
+      "toNode": "lifeline_usage-summary-query_dashboard-api",
+      "toSide": "right"
+    },
+    {
+      "id": "edge_usage-summary-query_6",
+      "fromNode": "lifeline_usage-summary-query_dashboard-api",
+      "fromSide": "left",
+      "toNode": "lifeline_usage-summary-query_dashboard-ui",
+      "toSide": "right"
+    }
+  ]
+}
