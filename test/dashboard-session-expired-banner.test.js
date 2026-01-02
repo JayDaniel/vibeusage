@@ -24,9 +24,13 @@ test("useAuth tracks sessionExpired and gates signedIn", () => {
   assert.match(src, /!sessionExpired/);
 });
 
-test("App gates LandingPage on sessionExpired", () => {
+test("App routes LandingPage when signed out", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /!signedIn\s*&&\s*!mockEnabled\s*&&\s*!sessionExpired/);
+  assert.match(src, /!signedIn\s*&&\s*!mockEnabled/);
+  assert.doesNotMatch(
+    src,
+    /!signedIn\s*&&\s*!mockEnabled\s*&&\s*!sessionExpired/
+  );
 });
 
 test("DashboardPage shows session expired banner and bypasses auth gate", () => {
