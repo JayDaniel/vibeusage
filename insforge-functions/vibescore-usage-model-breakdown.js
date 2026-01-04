@@ -489,7 +489,7 @@ var require_date = __commonJS({
       return days;
     }
     function getUsageMaxDays2() {
-      const raw = readEnvValue("VIBESCORE_USAGE_MAX_DAYS");
+      const raw = readEnvValue("VIBEUSAGE_USAGE_MAX_DAYS") ?? readEnvValue("VIBESCORE_USAGE_MAX_DAYS");
       if (raw == null || raw === "") return 800;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 800;
@@ -684,9 +684,13 @@ var require_pricing = __commonJS({
       return normalized;
     }
     function getPricingDefaults() {
+      const primaryModel = normalizeModelValue(getEnvValue("VIBEUSAGE_PRICING_MODEL"));
+      const legacyModel = normalizeModelValue(getEnvValue("VIBESCORE_PRICING_MODEL"));
+      const primarySource = normalizeSource2(getEnvValue("VIBEUSAGE_PRICING_SOURCE"));
+      const legacySource = normalizeSource2(getEnvValue("VIBESCORE_PRICING_SOURCE"));
       return {
-        model: normalizeModelValue(getEnvValue("VIBESCORE_PRICING_MODEL")) || DEFAULT_PROFILE.model,
-        source: normalizeSource2(getEnvValue("VIBESCORE_PRICING_SOURCE")) || DEFAULT_PROFILE.source
+        model: primaryModel || legacyModel || DEFAULT_PROFILE.model,
+        source: primarySource || legacySource || DEFAULT_PROFILE.source
       };
     }
     async function resolvePricingProfile2({ edgeClient, effectiveDate, model, source } = {}) {
@@ -829,6 +833,7 @@ var require_pricing = __commonJS({
       computeUsageCost: computeUsageCost2,
       formatUsdFromMicros: formatUsdFromMicros2,
       getDefaultPricingProfile,
+      _getPricingDefaults: getPricingDefaults,
       resolvePricingProfile: resolvePricingProfile2
     };
   }
@@ -925,7 +930,7 @@ var require_logging = __commonJS({
       });
     }
     function getSlowQueryThresholdMs() {
-      const raw = readEnvValue("VIBESCORE_SLOW_QUERY_MS");
+      const raw = readEnvValue("VIBEUSAGE_SLOW_QUERY_MS") ?? readEnvValue("VIBESCORE_SLOW_QUERY_MS");
       if (raw == null || raw === "") return 2e3;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 2e3;
@@ -1084,7 +1089,7 @@ module.exports = withRequestLogging("vibescore-usage-model-breakdown", async fun
       ).eq("user_id", auth.userId);
       if (sourceFilter) query = query.eq("source", sourceFilter);
       query = applyCanaryFilter(query, { source: sourceFilter, model: null });
-      return query.gte("hour_start", startIso).lt("hour_start", endIso).order("hour_start", { ascending: true });
+      return query.gte("hour_start", startIso).lt("hour_start", endIso).order("hour_start", { ascending: true }).order("device_id", { ascending: true }).order("source", { ascending: true }).order("model", { ascending: true });
     },
     onPage: (rows) => {
       const pageRows = Array.isArray(rows) ? rows : [];

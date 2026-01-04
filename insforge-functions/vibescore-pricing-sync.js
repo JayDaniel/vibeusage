@@ -411,7 +411,7 @@ var require_date = __commonJS({
       return days;
     }
     function getUsageMaxDays() {
-      const raw = readEnvValue("VIBESCORE_USAGE_MAX_DAYS");
+      const raw = readEnvValue("VIBEUSAGE_USAGE_MAX_DAYS") ?? readEnvValue("VIBESCORE_USAGE_MAX_DAYS");
       if (raw == null || raw === "") return 800;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 800;
@@ -725,7 +725,7 @@ var require_logging = __commonJS({
       });
     }
     function getSlowQueryThresholdMs() {
-      const raw = readEnvValue("VIBESCORE_SLOW_QUERY_MS");
+      const raw = readEnvValue("VIBEUSAGE_SLOW_QUERY_MS") ?? readEnvValue("VIBESCORE_SLOW_QUERY_MS");
       if (raw == null || raw === "") return 2e3;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 2e3;
@@ -955,10 +955,11 @@ async function listUsageModels({ serviceClient, windowDays }) {
   cutoff.setUTCDate(cutoff.getUTCDate() - windowDays);
   const since = cutoff.toISOString();
   const { error } = await forEachPage({
-    createQuery: () => applyCanaryFilter(
-      serviceClient.database.from("vibescore_tracker_hourly").select("model").gte("hour_start", since),
-      { source: null, model: null }
-    ),
+    createQuery: () => {
+      let query = serviceClient.database.from("vibescore_tracker_hourly").select("model").gte("hour_start", since);
+      query = applyCanaryFilter(query, { source: null, model: null });
+      return query.order("hour_start", { ascending: true }).order("user_id", { ascending: true }).order("device_id", { ascending: true }).order("source", { ascending: true }).order("model", { ascending: true });
+    },
     onPage: (rows) => {
       for (const row of rows || []) {
         const normalized = normalizeUsageModel(row?.model);

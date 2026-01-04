@@ -2959,6 +2959,40 @@
         "layerIndex": 4
       },
       "externalService": "OpenAI"
+    },
+    {
+      "id": "edge-function_vibeusage-aliases_proposed_8f5b1b4a",
+      "type": "text",
+      "text": "**vibeusage-* aliases**\n`insforge-src/functions/vibeusage-*.js`\n\nEdge function alias handlers.\n\nRole: Endpoint rename shim\nStatus: Implemented\nNotes: Map vibeusage-* to existing logic.",
+      "x": 820,
+      "y": 5220,
+      "width": 280,
+      "height": 232,
+      "color": "3",
+      "meta": {
+        "relPath": "insforge-src/functions/vibeusage-*.js",
+        "category": "edge-function",
+        "group": "controller",
+        "side": "right",
+        "layerIndex": 2
+      }
+    },
+    {
+      "id": "edge-function_vibescore-legacy-proxy_proposed_20a0f9a2",
+      "type": "text",
+      "text": "**vibescore-* legacy proxy**\n`insforge-src/functions/vibescore-*.js`\n\nLegacy compatibility layer.\n\nRole: Backward compatible proxy\nStatus: Implemented\nNotes: Forward to vibeusage-* handlers for 90 days.",
+      "x": 1180,
+      "y": 5220,
+      "width": 280,
+      "height": 232,
+      "color": "3",
+      "meta": {
+        "relPath": "insforge-src/functions/vibescore-*.js",
+        "category": "edge-function",
+        "group": "controller",
+        "side": "right",
+        "layerIndex": 2
+      }
     }
   ],
   "edges": [

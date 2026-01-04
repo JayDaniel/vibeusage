@@ -98,7 +98,9 @@ function logSlowQuery(logger, fields) {
 }
 
 function getSlowQueryThresholdMs() {
-  const raw = readEnvValue('VIBESCORE_SLOW_QUERY_MS');
+  const raw =
+    readEnvValue('VIBEUSAGE_SLOW_QUERY_MS') ??
+    readEnvValue('VIBESCORE_SLOW_QUERY_MS');
   if (raw == null || raw === '') return 2000;
   const n = Number(raw);
   if (!Number.isFinite(n)) return 2000;

@@ -147,7 +147,7 @@ var require_logging = __commonJS({
       });
     }
     function getSlowQueryThresholdMs() {
-      const raw = readEnvValue("VIBESCORE_SLOW_QUERY_MS");
+      const raw = readEnvValue("VIBEUSAGE_SLOW_QUERY_MS") ?? readEnvValue("VIBESCORE_SLOW_QUERY_MS");
       if (raw == null || raw === "") return 2e3;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 2e3;
@@ -232,11 +232,16 @@ var require_concurrency = __commonJS({
     }
     function readEnvInt(key, fallback) {
       if (!key) return fallback;
-      const raw = readEnvValue(key);
-      if (raw == null || raw === "") return fallback;
-      const n = Number(raw);
-      if (!Number.isFinite(n)) return fallback;
-      return Math.floor(n);
+      const keys = Array.isArray(key) ? key : [key];
+      for (const candidate of keys) {
+        if (!candidate) continue;
+        const raw = readEnvValue(candidate);
+        if (raw == null || raw === "") continue;
+        const n = Number(raw);
+        if (!Number.isFinite(n)) continue;
+        return Math.floor(n);
+      }
+      return fallback;
     }
     function readEnvValue(key) {
       try {
@@ -460,9 +465,9 @@ var MAX_BUCKETS = 500;
 var DEFAULT_MODEL = "unknown";
 var ingestGuard = createConcurrencyGuard({
   name: "vibescore-ingest",
-  envKey: "VIBESCORE_INGEST_MAX_INFLIGHT",
+  envKey: ["VIBEUSAGE_INGEST_MAX_INFLIGHT", "VIBESCORE_INGEST_MAX_INFLIGHT"],
   defaultMax: 0,
-  retryAfterEnvKey: "VIBESCORE_INGEST_RETRY_AFTER_MS",
+  retryAfterEnvKey: ["VIBEUSAGE_INGEST_RETRY_AFTER_MS", "VIBESCORE_INGEST_RETRY_AFTER_MS"],
   defaultRetryAfterMs: 1e3
 });
 module.exports = withRequestLogging("vibescore-ingest", async function(request, logger) {
@@ -760,7 +765,7 @@ function buildAnonHeaders({ anonKey, tokenHash }) {
   return {
     apikey: anonKey,
     Authorization: `Bearer ${anonKey}`,
-    "x-vibescore-device-token-hash": tokenHash
+    "x-vibeusage-device-token-hash": tokenHash
   };
 }
 async function recordsUpsert({ url, anonKey, tokenHash, rows, onConflict, prefer, resolution, select, fetcher }) {

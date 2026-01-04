@@ -147,7 +147,7 @@ var require_logging = __commonJS({
       });
     }
     function getSlowQueryThresholdMs() {
-      const raw = readEnvValue("VIBESCORE_SLOW_QUERY_MS");
+      const raw = readEnvValue("VIBEUSAGE_SLOW_QUERY_MS") ?? readEnvValue("VIBESCORE_SLOW_QUERY_MS");
       if (raw == null || raw === "") return 2e3;
       const n = Number(raw);
       if (!Number.isFinite(n)) return 2e3;
@@ -386,7 +386,7 @@ async function touchSyncWithAnonKey({ baseUrl, anonKey, tokenHash, fetcher }) {
     headers: {
       apikey: anonKey,
       Authorization: `Bearer ${anonKey}`,
-      "x-vibescore-device-token-hash": tokenHash,
+      "x-vibeusage-device-token-hash": tokenHash,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ min_interval_minutes: MIN_INTERVAL_MINUTES })
