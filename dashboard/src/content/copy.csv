@@ -28,6 +28,20 @@ landing.nav.login,landing,LandingPage,LandingPage,nav_login,"LOGIN",,active
 landing.nav.signup,landing,LandingPage,LandingPage,nav_signup,"SIGN UP",,active
 landing.seo.title,landing,LandingPage,LandingPage,seo_title,"Quantify Codex, Claude Code & Gemini CLI Usage",,active
 landing.seo.summary,landing,LandingPage,LandingPage,seo_summary,"VibeUsage is a token usage tracker built for AI CLI users (Codex, Claude, Gemini) who want a fast, reliable view of token spend.",,active
+landing.meta.title,landing,LandingPage,Meta,title,"VibeUsage",,active
+landing.meta.description,landing,LandingPage,Meta,description,"Track Codex, Claude Code & Gemini CLI usage in real time.",,active
+landing.meta.og_site_name,landing,LandingPage,Meta,og_site_name,"VibeUsage",,active
+landing.meta.og_type,landing,LandingPage,Meta,og_type,"website",,active
+landing.meta.og_image,landing,LandingPage,Meta,og_image,"https://www.vibeusage.cc/og-image.png",,active
+landing.meta.og_url,landing,LandingPage,Meta,og_url,"https://www.vibeusage.cc/",,active
+landing.meta.twitter_card,landing,LandingPage,Meta,twitter_card,"summary_large_image",,active
+share.meta.title,share,SharePage,Meta,title,"VibeUsage Share",,active
+share.meta.description,share,SharePage,Meta,description,"Shareable VibeUsage dashboard snapshot.",,active
+share.meta.og_site_name,share,SharePage,Meta,og_site_name,"VibeUsage",,active
+share.meta.og_type,share,SharePage,Meta,og_type,"website",,active
+share.meta.og_image,share,SharePage,Meta,og_image,"https://www.vibeusage.cc/og-image.png",,active
+share.meta.og_url,share,SharePage,Meta,og_url,"https://www.vibeusage.cc/share",,active
+share.meta.twitter_card,share,SharePage,Meta,twitter_card,"summary_large_image",,active
 landing.seo.point1,landing,LandingPage,LandingPage,seo_point_1,"Auto-track AI CLI token usage with zero manual steps.",,active
 landing.seo.point2,landing,LandingPage,LandingPage,seo_point_2,"Matrix-style interface that highlights the signals you care about.",,active
 landing.seo.point3,landing,LandingPage,LandingPage,seo_point_3,"Universal AI CLI leaderboard to compare usage and rank.",,active
