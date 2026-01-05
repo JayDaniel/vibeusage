@@ -235,6 +235,7 @@ function printHelp() {
       "  --out <path>    Output path (default: <root>/architecture.canvas)",
       "  --focus <module>  Only include target module and its direct neighbors",
       "  --module <module> Alias for --focus",
+      "  --list-modules   List available module keys for --focus",
       "  --help          Show help",
       "",
     ].join("\n")
@@ -242,7 +243,7 @@ function printHelp() {
 }
 
 function parseArgs(argv) {
-  const opts = { root: null, out: null, focus: null, help: false };
+  const opts = { root: null, out: null, focus: null, listModules: false, help: false };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") {
@@ -259,6 +260,10 @@ function parseArgs(argv) {
     }
     if (arg === "--focus" || arg === "--module") {
       opts.focus = argv[++i] || null;
+      continue;
+    }
+    if (arg === "--list-modules") {
+      opts.listModules = true;
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);
@@ -405,6 +410,27 @@ function detectExternalServices(content) {
     if (regex.test(content)) hits.add(name);
   }
   return hits;
+}
+
+async function listAvailableModules(rootDir) {
+  const warnings = [];
+  const files = await scanSourceFiles(rootDir, warnings);
+  const modules = new Set();
+  let hasExternal = false;
+
+  for (const absPath of files) {
+    const relPath = path.relative(rootDir, absPath) || absPath;
+    const moduleKey = getModuleKeyFromRelPath(relPath);
+    if (moduleKey) modules.add(moduleKey);
+    const content = await readFileSafe(absPath, warnings);
+    if (!hasExternal && detectExternalServices(content || "").size > 0) {
+      hasExternal = true;
+    }
+  }
+
+  if (hasExternal) modules.add("external");
+
+  return Array.from(modules).sort();
 }
 
 function resolveRelativeImport(importPath, fromDir, fileIndex) {
@@ -1551,6 +1577,19 @@ async function main() {
 
   let canvas;
   try {
+    if (opts.listModules) {
+      const modules = await listAvailableModules(rootDir);
+      if (modules.length === 0) {
+        process.stdout.write("Available modules: (none)\n");
+      } else {
+        process.stdout.write("Available modules:\n");
+        for (const moduleName of modules) {
+          process.stdout.write(`- ${moduleName}\n`);
+        }
+      }
+      return;
+    }
+
     canvas = await buildCanvasModel({ rootDir, focusModule: opts.focus });
     try {
       await writeCanvasFile(outputPath, canvas);

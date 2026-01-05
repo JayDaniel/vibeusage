@@ -3,6 +3,10 @@ const { test } = require("node:test");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
+const { execFile } = require("node:child_process");
+const { promisify } = require("node:util");
+
+const execFileAsync = promisify(execFile);
 
 const {
   classifyFile,
@@ -80,4 +84,28 @@ test("buildCanvasModel supports focus module filtering", async () => {
   assert.ok(relPaths.some((p) => p.startsWith("src/")));
   assert.ok(relPaths.includes("external"));
   assert.ok(!relPaths.some((p) => p.startsWith("dashboard/")));
+});
+
+test("architecture canvas lists available modules", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "vibescore-canvas-modules-"));
+  await fs.mkdir(path.join(dir, "src"), { recursive: true });
+  await fs.mkdir(path.join(dir, "dashboard"), { recursive: true });
+  await fs.writeFile(
+    path.join(dir, "src", "index.js"),
+    "import OpenAI from 'openai';\nexport function main() {}\n"
+  );
+  await fs.writeFile(path.join(dir, "dashboard", "app.jsx"), "export const App = () => null;\n");
+
+  const scriptPath = path.join(__dirname, "..", "scripts", "ops", "architecture-canvas.cjs");
+  const { stdout } = await execFileAsync("node", [scriptPath, "--root", dir, "--list-modules"]);
+  const lines = stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => line !== "Available modules:");
+  const modules = new Set(lines.map((line) => line.replace(/^-\s*/, "")));
+
+  assert.ok(modules.has("src"));
+  assert.ok(modules.has("dashboard"));
+  assert.ok(modules.has("external"));
 });

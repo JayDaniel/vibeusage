@@ -83,7 +83,7 @@
     {
       "id": "test_architecture-canvas_test_5f2ee083",
       "type": "text",
-      "text": "**architecture-canvas.test**\n`test/architecture-canvas.test.js`\n\nTest module.\n\n包含：\n- UserController (84 行)\n- helper (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
+      "text": "**architecture-canvas.test**\n`test/architecture-canvas.test.js`\n\nTest module.\n\n包含：\n- UserController (112 行)\n- helper (0 个参数)\n\n依赖：1 个模块\n被依赖：0 次",
       "x": 100,
       "y": 9772,
       "width": 280,
