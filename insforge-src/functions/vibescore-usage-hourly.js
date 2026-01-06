@@ -244,7 +244,9 @@ module.exports = withRequestLogging('vibescore-usage-hourly', async function(req
     createQuery: () => {
         let query = auth.edgeClient.database
           .from('vibescore_tracker_hourly')
-          .select('hour_start,source,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens')
+          .select(
+            'hour_start,source,billable_total_tokens,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens'
+          )
           .eq('user_id', auth.userId);
         if (source) query = query.eq('source', source);
         if (model) query = query.eq('model', model);
@@ -276,10 +278,16 @@ module.exports = withRequestLogging('vibescore-usage-hourly', async function(req
 
         const bucket = buckets[slot];
         bucket.total += toBigInt(row?.total_tokens);
-        const billable = computeBillableTotalTokens({
-          source: row?.source || source,
-          totals: row
-        });
+        const hasStoredBillable =
+          row &&
+          Object.prototype.hasOwnProperty.call(row, 'billable_total_tokens') &&
+          row.billable_total_tokens != null;
+        const billable = hasStoredBillable
+          ? toBigInt(row.billable_total_tokens)
+          : computeBillableTotalTokens({
+              source: row?.source || source,
+              totals: row
+            });
         bucket.billable += billable;
         bucket.input += toBigInt(row?.input_tokens);
         bucket.cached += toBigInt(row?.cached_input_tokens);

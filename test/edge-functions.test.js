@@ -1465,6 +1465,65 @@ test('vibeusage-usage-hourly aggregates half-hour buckets into half-hour totals'
   assert.equal(body.data[26].billable_total_tokens, '4');
 });
 
+test('vibeusage-usage-hourly local timezone prefers stored billable_total_tokens', async () => {
+  const fn = require('../insforge-functions/vibeusage-usage-hourly');
+
+  const userId = '77777777-7777-7777-7777-777777777777';
+  const userJwt = 'user_jwt_test';
+  let selectColumns = '';
+
+  const rows = [
+    {
+      hour_start: '2025-12-20T16:00:00.000Z',
+      source: 'codex',
+      total_tokens: '10',
+      input_tokens: '1',
+      cached_input_tokens: '0',
+      output_tokens: '1',
+      reasoning_output_tokens: '1',
+      billable_total_tokens: '9'
+    }
+  ];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      assert.equal(args.anonKey, ANON_KEY);
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_tracker_hourly');
+            return {
+              select: (columns) => {
+                selectColumns = String(columns || '');
+                const query = createQueryMock({ rows });
+                return query;
+              }
+            };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request(
+    'http://localhost/functions/vibeusage-usage-hourly?day=2025-12-21&tz_offset_minutes=480',
+    {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${userJwt}` }
+    }
+  );
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.ok(selectColumns.includes('billable_total_tokens'));
+  assert.equal(body.data[0].billable_total_tokens, '9');
+});
+
 test('vibeusage-usage-hourly computes billable totals from aggregated rows', async () => {
   const fn = require('../insforge-functions/vibeusage-usage-hourly');
 
