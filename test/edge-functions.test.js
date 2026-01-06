@@ -858,7 +858,16 @@ test('vibeusage-usage-heatmap returns a week-aligned grid with derived fields', 
   const orders = [];
 
   const rows = [
-    { hour_start: '2025-12-10T00:00:00.000Z', total_tokens: '10' },
+    {
+      hour_start: '2025-12-10T00:00:00.000Z',
+      source: 'codex',
+      total_tokens: '10',
+      input_tokens: '4',
+      cached_input_tokens: '1',
+      output_tokens: '3',
+      reasoning_output_tokens: '1',
+      billable_total_tokens: '9'
+    },
     { hour_start: '2025-12-11T00:00:00.000Z', total_tokens: '10' },
     { hour_start: '2025-12-12T00:00:00.000Z', total_tokens: '60' },
     { hour_start: '2025-12-12T01:00:00.000Z', total_tokens: '40' },
@@ -925,7 +934,7 @@ test('vibeusage-usage-heatmap returns a week-aligned grid with derived fields', 
   assert.equal(body.weeks[1][6], null);
 
   const cell1210 = body.weeks[0][3];
-  assert.deepEqual(cell1210, { day: '2025-12-10', value: '10', level: 1 });
+  assert.deepEqual(cell1210, { day: '2025-12-10', value: '9', level: 1 });
 
   const cell1212 = body.weeks[0][5];
   assert.deepEqual(cell1212, { day: '2025-12-12', value: '100', level: 2 });
@@ -1301,6 +1310,58 @@ test('vibeusage-usage-daily includes billable_total_tokens in summary', async ()
   assert.equal(body.summary.totals.billable_total_tokens, '13');
 });
 
+test('vibeusage-usage-daily prefers stored billable_total_tokens', async () => {
+  const fn = require('../insforge-functions/vibeusage-usage-daily');
+
+  const userId = '66666666-6666-6666-6666-666666666666';
+  const userJwt = 'user_jwt_test';
+
+  const rows = [
+    {
+      hour_start: '2025-12-20T01:00:00.000Z',
+      source: 'codex',
+      model: 'gpt-4o',
+      total_tokens: '10',
+      input_tokens: '4',
+      cached_input_tokens: '1',
+      output_tokens: '3',
+      reasoning_output_tokens: '2',
+      billable_total_tokens: '7'
+    }
+  ];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_tracker_hourly');
+            const query = createQueryMock({ rows });
+            return { select: () => query };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request(
+    'http://localhost/functions/vibeusage-usage-daily?from=2025-12-20&to=2025-12-20',
+    {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${userJwt}` }
+    }
+  );
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.summary.totals.billable_total_tokens, '7');
+});
+
 test('vibeusage-usage-hourly aggregates half-hour buckets into half-hour totals', async () => {
   const fn = require('../insforge-functions/vibeusage-usage-hourly');
 
@@ -1474,27 +1535,33 @@ test('vibeusage-usage-monthly aggregates hourly rows into months', async () => {
   const rows = [
     {
       hour_start: '2025-11-05T00:00:00.000Z',
+      source: 'codex',
       total_tokens: '10',
       input_tokens: '4',
       cached_input_tokens: '1',
       output_tokens: '3',
-      reasoning_output_tokens: '2'
+      reasoning_output_tokens: '2',
+      billable_total_tokens: '9'
     },
     {
       hour_start: '2025-11-20T00:00:00.000Z',
+      source: 'codex',
       total_tokens: '5',
       input_tokens: '2',
       cached_input_tokens: '1',
       output_tokens: '1',
-      reasoning_output_tokens: '1'
+      reasoning_output_tokens: '1',
+      billable_total_tokens: '4'
     },
     {
       hour_start: '2025-12-01T00:00:00.000Z',
+      source: 'codex',
       total_tokens: '7',
       input_tokens: '3',
       cached_input_tokens: '1',
       output_tokens: '2',
-      reasoning_output_tokens: '1'
+      reasoning_output_tokens: '1',
+      billable_total_tokens: '6'
     }
   ];
 
@@ -1678,6 +1745,61 @@ test('vibeusage-usage-summary returns total_cost_usd and pricing metadata', () =
     assert.equal(body.pricing.model, 'gpt-5.2-codex');
     assert.equal(body.pricing.pricing_mode, 'overlap');
     assert.equal(body.pricing.rates_per_million_usd.cached_input, '0.175000');
+  }));
+
+test('vibeusage-usage-summary prefers stored billable_total_tokens', () =>
+  withRollupEnabled(async () => {
+    const fn = require('../insforge-functions/vibeusage-usage-summary');
+
+    const userId = '99999999-9999-9999-9999-999999999999';
+    const userJwt = 'user_jwt_test';
+
+    const rows = [
+      {
+        hour_start: '2025-12-21T00:00:00.000Z',
+        source: 'codex',
+        model: 'gpt-4o',
+        total_tokens: '10',
+        input_tokens: '4',
+        cached_input_tokens: '1',
+        output_tokens: '3',
+        reasoning_output_tokens: '2',
+        billable_total_tokens: '7'
+      }
+    ];
+
+    globalThis.createClient = (args) => {
+      if (args && args.edgeFunctionToken === userJwt) {
+        return {
+          auth: {
+            getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+          },
+          database: {
+            from: (table) => {
+              assert.equal(table, 'vibescore_tracker_hourly');
+              const query = createQueryMock({ rows });
+              return {
+                select: () => query
+              };
+            }
+          }
+        };
+      }
+      throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+    };
+
+    const req = new Request(
+      'http://localhost/functions/vibeusage-usage-summary?from=2025-12-21&to=2025-12-21',
+      {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${userJwt}` }
+      }
+    );
+
+    const res = await fn(req);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.totals.billable_total_tokens, '7');
   }));
 
 test('vibeusage-usage-summary emits debug payload when requested', () =>
@@ -2076,6 +2198,73 @@ test('vibeusage-usage-model-breakdown includes billable_total_tokens per source'
   const claudeModel = bySource.get('claude')?.models?.find((entry) => entry.model === 'claude-3-5-sonnet');
   assert.equal(codexModel?.totals?.billable_total_tokens, '9');
   assert.equal(claudeModel?.totals?.billable_total_tokens, '5');
+});
+
+test('vibeusage-usage-model-breakdown prefers stored billable_total_tokens', async () => {
+  const fn = require('../insforge-functions/vibeusage-usage-model-breakdown');
+
+  const userId = '55555555-5555-5555-5555-555555555555';
+  const userJwt = 'user_jwt_test';
+
+  const rows = [
+    {
+      source: 'codex',
+      model: 'gpt-4o',
+      total_tokens: '10',
+      input_tokens: '4',
+      cached_input_tokens: '1',
+      output_tokens: '3',
+      reasoning_output_tokens: '2',
+      billable_total_tokens: '7'
+    },
+    {
+      source: 'claude',
+      model: 'claude-3-5-sonnet',
+      total_tokens: '5',
+      input_tokens: '2',
+      cached_input_tokens: '1',
+      output_tokens: '1',
+      reasoning_output_tokens: '1',
+      billable_total_tokens: '6'
+    }
+  ];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null })
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, 'vibescore_tracker_hourly');
+            const query = createQueryMock({ rows });
+            return { select: () => query };
+          }
+        }
+      };
+    }
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request(
+    'http://localhost/functions/vibeusage-usage-model-breakdown?from=2025-12-20&to=2025-12-20',
+    {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${userJwt}` }
+    }
+  );
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  const bySource = new Map(body.sources.map((entry) => [entry.source, entry]));
+  assert.equal(bySource.get('codex')?.totals?.billable_total_tokens, '7');
+  assert.equal(bySource.get('claude')?.totals?.billable_total_tokens, '6');
+  const codexModel = bySource.get('codex')?.models?.find((entry) => entry.model === 'gpt-4o');
+  const claudeModel = bySource.get('claude')?.models?.find((entry) => entry.model === 'claude-3-5-sonnet');
+  assert.equal(codexModel?.totals?.billable_total_tokens, '7');
+  assert.equal(claudeModel?.totals?.billable_total_tokens, '6');
 });
 
 test('vibeusage-usage-model-breakdown rejects oversized ranges', { concurrency: 1 }, async () => {
