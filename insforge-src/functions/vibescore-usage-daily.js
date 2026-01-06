@@ -41,6 +41,12 @@ const {
 } = require('../shared/usage-rollup');
 const { logSlowQuery, withRequestLogging } = require('../shared/logging');
 const { isDebugEnabled, withSlowQueryDebugPayload } = require('../shared/debug');
+const {
+  buildAliasTimeline,
+  extractDateKey,
+  fetchAliasRows,
+  resolveIdentityAtDate
+} = require('../shared/model-alias-timeline');
 
 const DEFAULT_MODEL = 'unknown';
 
@@ -99,6 +105,15 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
   const canonicalModel = modelFilter.canonical;
   const usageModels = modelFilter.usageModels;
   const hasModelFilter = Array.isArray(usageModels) && usageModels.length > 0;
+  let aliasTimeline = null;
+  if (hasModelFilter) {
+    const aliasRows = await fetchAliasRows({
+      edgeClient: auth.edgeClient,
+      usageModels,
+      effectiveDate: to
+    });
+    aliasTimeline = buildAliasTimeline({ usageModels, aliasRows });
+  }
 
   const buckets = new Map(
     dayKeys.map((day) => [
@@ -126,6 +141,12 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
   };
 
   const ingestRow = (row) => {
+    if (hasModelFilter) {
+      const rawModel = normalizeModel(row?.model);
+      const dateKey = extractDateKey(row?.hour_start || row?.day) || to;
+      const identity = resolveIdentityAtDate({ rawModel, dateKey, timeline: aliasTimeline });
+      if (identity.model_id !== canonicalModel) return;
+    }
     addRowTotals(totals, row);
     const sourceKey = normalizeSource(row?.source) || 'codex';
     const sourceEntry = getSourceEntry(sourcesMap, sourceKey);
@@ -168,6 +189,12 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
           if (!ts) continue;
           const dt = new Date(ts);
           if (!Number.isFinite(dt.getTime())) continue;
+          if (hasModelFilter) {
+            const rawModel = normalizeModel(row?.model);
+            const dateKey = extractDateKey(ts) || to;
+            const identity = resolveIdentityAtDate({ rawModel, dateKey, timeline: aliasTimeline });
+            if (identity.model_id !== canonicalModel) continue;
+          }
           const day = formatLocalDateKey(dt, tzContext);
           const bucket = buckets.get(day);
           if (!bucket) continue;

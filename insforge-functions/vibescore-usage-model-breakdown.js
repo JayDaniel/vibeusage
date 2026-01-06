@@ -341,6 +341,87 @@ var require_model_identity = __commonJS({
   }
 });
 
+// insforge-src/shared/model-alias-timeline.js
+var require_model_alias_timeline = __commonJS({
+  "insforge-src/shared/model-alias-timeline.js"(exports2, module2) {
+    "use strict";
+    var { normalizeModel: normalizeModel2 } = require_model();
+    var { normalizeUsageModelKey: normalizeUsageModelKey2 } = require_model_identity();
+    var DEFAULT_MODEL2 = "unknown";
+    function extractDateKey2(value) {
+      if (value instanceof Date) return value.toISOString().slice(0, 10);
+      if (typeof value === "string" && value.length >= 10) return value.slice(0, 10);
+      return null;
+    }
+    function resolveIdentityAtDate2({ rawModel, usageKey, dateKey, timeline } = {}) {
+      const normalized = usageKey || normalizeUsageModelKey2(rawModel) || DEFAULT_MODEL2;
+      const entries = timeline && typeof timeline.get === "function" ? timeline.get(normalized) : null;
+      if (Array.isArray(entries)) {
+        let match = null;
+        for (const entry of entries) {
+          if (entry.effective_from && entry.effective_from <= dateKey) {
+            match = entry;
+          } else if (entry.effective_from && entry.effective_from > dateKey) {
+            break;
+          }
+        }
+        if (match) {
+          return { model_id: match.model_id, model: match.model };
+        }
+      }
+      const display = normalizeModel2(rawModel) || DEFAULT_MODEL2;
+      return { model_id: normalized, model: display };
+    }
+    function buildAliasTimeline2({ usageModels, aliasRows } = {}) {
+      const normalized = new Set(
+        Array.isArray(usageModels) ? usageModels.map((model) => normalizeUsageModelKey2(model)).filter(Boolean) : []
+      );
+      const timeline = /* @__PURE__ */ new Map();
+      const rows = Array.isArray(aliasRows) ? aliasRows : [];
+      for (const row of rows) {
+        const usageKey = normalizeUsageModelKey2(row?.usage_model);
+        const canonical = normalizeUsageModelKey2(row?.canonical_model);
+        if (!usageKey || !canonical) continue;
+        if (normalized.size && !normalized.has(usageKey)) continue;
+        const display = normalizeModel2(row?.display_name) || canonical;
+        const effective = String(row?.effective_from || "");
+        if (!effective) continue;
+        const entry = {
+          model_id: canonical,
+          model: display,
+          effective_from: effective
+        };
+        const list = timeline.get(usageKey);
+        if (list) {
+          list.push(entry);
+        } else {
+          timeline.set(usageKey, [entry]);
+        }
+      }
+      for (const list of timeline.values()) {
+        list.sort((a, b) => String(a.effective_from).localeCompare(String(b.effective_from)));
+      }
+      return timeline;
+    }
+    async function fetchAliasRows2({ edgeClient, usageModels, effectiveDate } = {}) {
+      const models = Array.isArray(usageModels) ? usageModels.map((model) => normalizeUsageModelKey2(model)).filter(Boolean) : [];
+      if (!models.length || !edgeClient || !edgeClient.database) return [];
+      const dateKey = typeof effectiveDate === "string" && effectiveDate.trim() ? effectiveDate.trim() : (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,display_name,effective_from").eq("active", true).in("usage_model", models).lte("effective_from", dateKey).order("effective_from", { ascending: true });
+      const result = await query;
+      const data = Array.isArray(result?.data) ? result.data : Array.isArray(query?.data) ? query.data : null;
+      if (!Array.isArray(data) || result?.error || query?.error) return [];
+      return data;
+    }
+    module2.exports = {
+      extractDateKey: extractDateKey2,
+      resolveIdentityAtDate: resolveIdentityAtDate2,
+      buildAliasTimeline: buildAliasTimeline2,
+      fetchAliasRows: fetchAliasRows2
+    };
+  }
+});
+
 // insforge-src/shared/canary.js
 var require_canary = __commonJS({
   "insforge-src/shared/canary.js"(exports2, module2) {
@@ -1146,6 +1227,12 @@ var { getBaseUrl } = require_env();
 var { getSourceParam, normalizeSource } = require_source();
 var { normalizeModel } = require_model();
 var { normalizeUsageModelKey } = require_model_identity();
+var {
+  buildAliasTimeline,
+  extractDateKey,
+  fetchAliasRows,
+  resolveIdentityAtDate
+} = require_model_alias_timeline();
 var { applyCanaryFilter } = require_canary();
 var {
   addDatePartsDays,
@@ -1347,71 +1434,6 @@ function getCanonicalEntry(map, identity) {
   };
   map.set(key, entry);
   return entry;
-}
-function extractDateKey(value) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  if (typeof value === "string" && value.length >= 10) return value.slice(0, 10);
-  return null;
-}
-function resolveIdentityAtDate({ rawModel, usageKey, dateKey, timeline } = {}) {
-  const normalized = usageKey || normalizeUsageModelKey(rawModel) || DEFAULT_MODEL;
-  const entries = timeline && typeof timeline.get === "function" ? timeline.get(normalized) : null;
-  if (Array.isArray(entries)) {
-    let match = null;
-    for (const entry of entries) {
-      if (entry.effective_from && entry.effective_from <= dateKey) {
-        match = entry;
-      } else if (entry.effective_from && entry.effective_from > dateKey) {
-        break;
-      }
-    }
-    if (match) {
-      return { model_id: match.model_id, model: match.model };
-    }
-  }
-  const display = normalizeModel(rawModel) || DEFAULT_MODEL;
-  return { model_id: normalized, model: display };
-}
-function buildAliasTimeline({ usageModels, aliasRows } = {}) {
-  const normalized = new Set(
-    Array.isArray(usageModels) ? usageModels.map((model) => normalizeUsageModelKey(model)).filter(Boolean) : []
-  );
-  const timeline = /* @__PURE__ */ new Map();
-  const rows = Array.isArray(aliasRows) ? aliasRows : [];
-  for (const row of rows) {
-    const usageKey = normalizeUsageModelKey(row?.usage_model);
-    const canonical = normalizeUsageModelKey(row?.canonical_model);
-    if (!usageKey || !canonical) continue;
-    if (normalized.size && !normalized.has(usageKey)) continue;
-    const display = normalizeModel(row?.display_name) || canonical;
-    const effective = String(row?.effective_from || "");
-    if (!effective) continue;
-    const entry = {
-      model_id: canonical,
-      model: display,
-      effective_from: effective
-    };
-    const list = timeline.get(usageKey);
-    if (list) {
-      list.push(entry);
-    } else {
-      timeline.set(usageKey, [entry]);
-    }
-  }
-  for (const list of timeline.values()) {
-    list.sort((a, b) => String(a.effective_from).localeCompare(String(b.effective_from)));
-  }
-  return timeline;
-}
-async function fetchAliasRows({ edgeClient, usageModels, effectiveDate } = {}) {
-  const models = Array.isArray(usageModels) ? usageModels.map((model) => normalizeUsageModelKey(model)).filter(Boolean) : [];
-  if (!models.length || !edgeClient || !edgeClient.database) return [];
-  const dateKey = typeof effectiveDate === "string" && effectiveDate.trim() ? effectiveDate.trim() : (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-  const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,display_name,effective_from").eq("active", true).in("usage_model", models).lte("effective_from", dateKey).order("effective_from", { ascending: true });
-  const result = await query;
-  const data = Array.isArray(result?.data) ? result.data : Array.isArray(query?.data) ? query.data : null;
-  if (!Array.isArray(data) || result?.error || query?.error) return [];
-  return data;
 }
 function formatTotals(entry, pricingProfile) {
   const totals = entry.totals;
