@@ -746,7 +746,7 @@
     {
       "id": "test_model-identity_test_a4a6eb27",
       "type": "text",
-      "text": "**model-identity.test**\n`test/model-identity.test.js`\n\nTest module.\n\n包含：\n- model-identity.test (41 行)\n- exports (0 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**model-identity.test**\n`test/model-identity.test.js`\n\nTest module.\n\n包含：\n- model-identity.test (139 行)\n- createEdgeClient (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 2620,
       "y": 11572,
       "width": 280,
@@ -1573,7 +1573,7 @@
     {
       "id": "utils_model-identity_7888b24d",
       "type": "text",
-      "text": "**model-identity**\n`insforge-src/shared/model-identity.js`\n\nShared utilities.\n\n包含：\n- model-identity (166 行)\n- normalizeUsageModelKey (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**model-identity**\n`insforge-src/shared/model-identity.js`\n\nShared utilities.\n\n包含：\n- model-identity (179 行)\n- normalizeDateKey (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 820,
       "y": 6736,
       "width": 280,

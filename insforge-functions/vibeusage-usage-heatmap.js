@@ -233,6 +233,19 @@ var require_model_identity = __commonJS({
   "insforge-src/shared/model-identity.js"(exports2, module2) {
     "use strict";
     var DEFAULT_MODEL = "unknown";
+    function normalizeDateKey(value) {
+      if (typeof value !== "string") return null;
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      return trimmed.length >= 10 ? trimmed.slice(0, 10) : trimmed;
+    }
+    function nextDateKey(dateKey) {
+      if (!dateKey) return null;
+      const date = /* @__PURE__ */ new Date(`${dateKey}T00:00:00Z`);
+      if (Number.isNaN(date.getTime())) return null;
+      date.setUTCDate(date.getUTCDate() + 1);
+      return date.toISOString().slice(0, 10);
+    }
     function normalizeUsageModelKey(value) {
       if (typeof value !== "string") return null;
       const trimmed = value.trim();
@@ -293,8 +306,9 @@ var require_model_identity = __commonJS({
       if (!edgeClient || !edgeClient.database) {
         return buildIdentityMap({ usageModels: models, aliasRows: [] });
       }
-      const dateKey = typeof effectiveDate === "string" && effectiveDate.trim() ? effectiveDate.trim() : (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-      const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,display_name,effective_from").eq("active", true).in("usage_model", models).lte("effective_from", dateKey).order("effective_from", { ascending: false });
+      const dateKey = normalizeDateKey(effectiveDate) || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      const dateKeyNext = nextDateKey(dateKey) || dateKey;
+      const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,display_name,effective_from").eq("active", true).in("usage_model", models).lt("effective_from", dateKeyNext).order("effective_from", { ascending: false });
       const result = await query;
       const data = Array.isArray(result?.data) ? result.data : Array.isArray(query?.data) ? query.data : null;
       const error = result?.error || query?.error || null;
@@ -309,8 +323,9 @@ var require_model_identity = __commonJS({
       if (!edgeClient || !edgeClient.database) {
         return { canonical, usageModels: [canonical] };
       }
-      const dateKey = typeof effectiveDate === "string" && effectiveDate.trim() ? effectiveDate.trim() : (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-      const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,effective_from").eq("active", true).eq("canonical_model", canonical).lte("effective_from", dateKey).order("effective_from", { ascending: false });
+      const dateKey = normalizeDateKey(effectiveDate) || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      const dateKeyNext = nextDateKey(dateKey) || dateKey;
+      const query = edgeClient.database.from("vibescore_model_aliases").select("usage_model,canonical_model,effective_from").eq("active", true).eq("canonical_model", canonical).lt("effective_from", dateKeyNext).order("effective_from", { ascending: false });
       const result = await query;
       const data = Array.isArray(result?.data) ? result.data : Array.isArray(query?.data) ? query.data : null;
       const error = result?.error || query?.error || null;

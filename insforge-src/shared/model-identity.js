@@ -2,6 +2,21 @@
 
 const DEFAULT_MODEL = 'unknown';
 
+function normalizeDateKey(value) {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.length >= 10 ? trimmed.slice(0, 10) : trimmed;
+}
+
+function nextDateKey(dateKey) {
+  if (!dateKey) return null;
+  const date = new Date(`${dateKey}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
 function normalizeUsageModelKey(value) {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
@@ -79,16 +94,15 @@ async function resolveModelIdentity({ edgeClient, usageModels, effectiveDate } =
   }
 
   const dateKey =
-    typeof effectiveDate === 'string' && effectiveDate.trim()
-      ? effectiveDate.trim()
-      : new Date().toISOString().slice(0, 10);
+    normalizeDateKey(effectiveDate) || new Date().toISOString().slice(0, 10);
+  const dateKeyNext = nextDateKey(dateKey) || dateKey;
 
   const query = edgeClient.database
     .from('vibescore_model_aliases')
     .select('usage_model,canonical_model,display_name,effective_from')
     .eq('active', true)
     .in('usage_model', models)
-    .lte('effective_from', dateKey)
+    .lt('effective_from', dateKeyNext)
     .order('effective_from', { ascending: false });
 
   const result = await query;
@@ -115,16 +129,15 @@ async function resolveUsageModelsForCanonical({ edgeClient, canonicalModel, effe
   }
 
   const dateKey =
-    typeof effectiveDate === 'string' && effectiveDate.trim()
-      ? effectiveDate.trim()
-      : new Date().toISOString().slice(0, 10);
+    normalizeDateKey(effectiveDate) || new Date().toISOString().slice(0, 10);
+  const dateKeyNext = nextDateKey(dateKey) || dateKey;
 
   const query = edgeClient.database
     .from('vibescore_model_aliases')
     .select('usage_model,canonical_model,effective_from')
     .eq('active', true)
     .eq('canonical_model', canonical)
-    .lte('effective_from', dateKey)
+    .lt('effective_from', dateKeyNext)
     .order('effective_from', { ascending: false });
 
   const result = await query;
