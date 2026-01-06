@@ -24,10 +24,10 @@ const {
   parseDateParts,
   parseUtcDateString
 } = require('../shared/date');
-const { toBigInt } = require('../shared/numbers');
 const { forEachPage } = require('../shared/pagination');
 const { logSlowQuery, withRequestLogging } = require('../shared/logging');
 const { isDebugEnabled, withSlowQueryDebugPayload } = require('../shared/debug');
+const { computeBillableTotalTokens } = require('../shared/usage-billable');
 
 module.exports = withRequestLogging('vibescore-usage-heatmap', async function(request, logger) {
   const opt = handleOptions(request);
@@ -88,7 +88,7 @@ module.exports = withRequestLogging('vibescore-usage-heatmap', async function(re
       createQuery: () => {
         let query = auth.edgeClient.database
           .from('vibescore_tracker_hourly')
-          .select('hour_start,total_tokens')
+          .select('hour_start,source,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens')
           .eq('user_id', auth.userId);
         if (source) query = query.eq('source', source);
         if (model) query = query.eq('model', model);
@@ -111,7 +111,11 @@ module.exports = withRequestLogging('vibescore-usage-heatmap', async function(re
           if (!Number.isFinite(dt.getTime())) continue;
           const day = formatDateUTC(dt);
           const prev = valuesByDay.get(day) || 0n;
-          valuesByDay.set(day, prev + toBigInt(row?.total_tokens));
+          const billable = computeBillableTotalTokens({
+            source: row?.source || source,
+            totals: row
+          });
+          valuesByDay.set(day, prev + billable);
         }
       }
     });
@@ -228,7 +232,7 @@ module.exports = withRequestLogging('vibescore-usage-heatmap', async function(re
     createQuery: () => {
       let query = auth.edgeClient.database
         .from('vibescore_tracker_hourly')
-        .select('hour_start,total_tokens')
+        .select('hour_start,source,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens')
         .eq('user_id', auth.userId);
       if (source) query = query.eq('source', source);
       if (model) query = query.eq('model', model);
@@ -251,7 +255,11 @@ module.exports = withRequestLogging('vibescore-usage-heatmap', async function(re
         if (!Number.isFinite(dt.getTime())) continue;
         const key = formatLocalDateKey(dt, tzContext);
         const prev = valuesByDay.get(key) || 0n;
-        valuesByDay.set(key, prev + toBigInt(row?.total_tokens));
+        const billable = computeBillableTotalTokens({
+          source: row?.source || source,
+          totals: row
+        });
+        valuesByDay.set(key, prev + billable);
       }
     }
   });

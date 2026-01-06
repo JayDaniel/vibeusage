@@ -644,6 +644,7 @@ var require_usage_rollup = __commonJS({
     function createTotals2() {
       return {
         total_tokens: 0n,
+        billable_total_tokens: 0n,
         input_tokens: 0n,
         cached_input_tokens: 0n,
         output_tokens: 0n,
@@ -653,6 +654,7 @@ var require_usage_rollup = __commonJS({
     function addRowTotals2(target, row) {
       if (!target || !row) return;
       target.total_tokens += toBigInt(row?.total_tokens);
+      target.billable_total_tokens += toBigInt(row?.billable_total_tokens);
       target.input_tokens += toBigInt(row?.input_tokens);
       target.cached_input_tokens += toBigInt(row?.cached_input_tokens);
       target.output_tokens += toBigInt(row?.output_tokens);
@@ -692,6 +694,35 @@ var require_usage_rollup = __commonJS({
       fetchRollupRows: fetchRollupRows2,
       sumRollupRows,
       isRollupEnabled: isRollupEnabled2
+    };
+  }
+});
+
+// insforge-src/shared/usage-billable.js
+var require_usage_billable = __commonJS({
+  "insforge-src/shared/usage-billable.js"(exports2, module2) {
+    "use strict";
+    var { toBigInt } = require_numbers();
+    var { normalizeSource: normalizeSource2 } = require_source();
+    var BILLABLE_INPUT_OUTPUT_REASONING = /* @__PURE__ */ new Set(["codex", "every-code"]);
+    var BILLABLE_ADD_ALL = /* @__PURE__ */ new Set(["claude", "opencode"]);
+    var BILLABLE_TOTAL = /* @__PURE__ */ new Set(["gemini"]);
+    function computeBillableTotalTokens2({ source, totals } = {}) {
+      const normalizedSource = normalizeSource2(source) || "unknown";
+      const input = toBigInt(totals?.input_tokens);
+      const cached = toBigInt(totals?.cached_input_tokens);
+      const output = toBigInt(totals?.output_tokens);
+      const reasoning = toBigInt(totals?.reasoning_output_tokens);
+      const total = toBigInt(totals?.total_tokens);
+      const hasTotal = Boolean(totals && Object.prototype.hasOwnProperty.call(totals, "total_tokens"));
+      if (BILLABLE_TOTAL.has(normalizedSource)) return total;
+      if (BILLABLE_ADD_ALL.has(normalizedSource)) return input + cached + output + reasoning;
+      if (BILLABLE_INPUT_OUTPUT_REASONING.has(normalizedSource)) return input + output + reasoning;
+      if (hasTotal) return total;
+      return input + output + reasoning;
+    }
+    module2.exports = {
+      computeBillableTotalTokens: computeBillableTotalTokens2
     };
   }
 });
@@ -1113,6 +1144,7 @@ var {
   fetchRollupRows,
   isRollupEnabled
 } = require_usage_rollup();
+var { computeBillableTotalTokens } = require_usage_billable();
 var {
   buildPricingMetadata,
   computeUsageCost,
@@ -1176,10 +1208,13 @@ module.exports = withRequestLogging("vibescore-usage-summary", async function(re
     rollupHit = false;
   };
   const ingestRow = (row) => {
-    addRowTotals(totals, row);
     const sourceKey = normalizeSource(row?.source) || DEFAULT_SOURCE;
+    const billable = computeBillableTotalTokens({ source: sourceKey, totals: row });
+    addRowTotals(totals, row);
+    totals.billable_total_tokens += billable;
     const sourceEntry = getSourceEntry(sourcesMap, sourceKey);
     addRowTotals(sourceEntry.totals, row);
+    sourceEntry.totals.billable_total_tokens += billable;
     const normalizedModel = normalizeModel(row?.model);
     if (normalizedModel && normalizedModel.toLowerCase() !== "unknown") {
       distinctModels.add(normalizedModel);
@@ -1337,6 +1372,7 @@ module.exports = withRequestLogging("vibescore-usage-summary", async function(re
   }
   const totalsPayload = {
     total_tokens: totals.total_tokens.toString(),
+    billable_total_tokens: totals.billable_total_tokens.toString(),
     input_tokens: totals.input_tokens.toString(),
     cached_input_tokens: totals.cached_input_tokens.toString(),
     output_tokens: totals.output_tokens.toString(),

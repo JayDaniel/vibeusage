@@ -34,6 +34,7 @@ const {
   fetchRollupRows,
   isRollupEnabled
 } = require('../shared/usage-rollup');
+const { computeBillableTotalTokens } = require('../shared/usage-billable');
 const { logSlowQuery, withRequestLogging } = require('../shared/logging');
 const { isDebugEnabled, withSlowQueryDebugPayload } = require('../shared/debug');
 
@@ -90,6 +91,7 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
       day,
       {
         total: 0n,
+        billable: 0n,
         input: 0n,
         cached: 0n,
         output: 0n,
@@ -111,14 +113,18 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
   };
 
   const ingestRow = (row) => {
-    addRowTotals(totals, row);
     const sourceKey = normalizeSource(row?.source) || 'codex';
+    const billable = computeBillableTotalTokens({ source: sourceKey, totals: row });
+    addRowTotals(totals, row);
+    totals.billable_total_tokens += billable;
     const sourceEntry = getSourceEntry(sourcesMap, sourceKey);
     addRowTotals(sourceEntry.totals, row);
+    sourceEntry.totals.billable_total_tokens += billable;
     const normalizedModel = normalizeModel(row?.model);
     if (normalizedModel && normalizedModel.toLowerCase() !== 'unknown') {
       distinctModels.add(normalizedModel);
     }
+    return billable;
   };
 
   const queryStartMs = Date.now();
@@ -157,11 +163,12 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
           const bucket = buckets.get(day);
           if (!bucket) continue;
           bucket.total += toBigInt(row?.total_tokens);
+          const billable = ingestRow(row);
+          bucket.billable += billable;
           bucket.input += toBigInt(row?.input_tokens);
           bucket.cached += toBigInt(row?.cached_input_tokens);
           bucket.output += toBigInt(row?.output_tokens);
           bucket.reasoning += toBigInt(row?.reasoning_output_tokens);
-          ingestRow(row);
         }
       }
     });
@@ -204,11 +211,12 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
         const bucket = buckets.get(day);
         if (!bucket) continue;
         bucket.total += toBigInt(row?.total_tokens);
+        const billable = ingestRow(row);
+        bucket.billable += billable;
         bucket.input += toBigInt(row?.input_tokens);
         bucket.cached += toBigInt(row?.cached_input_tokens);
         bucket.output += toBigInt(row?.output_tokens);
         bucket.reasoning += toBigInt(row?.reasoning_output_tokens);
-        ingestRow(row);
       }
 
       if (rows.length === 0) {
@@ -251,6 +259,7 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
     return {
       day,
       total_tokens: bucket.total.toString(),
+      billable_total_tokens: bucket.billable.toString(),
       input_tokens: bucket.input.toString(),
       cached_input_tokens: bucket.cached.toString(),
       output_tokens: bucket.output.toString(),
@@ -285,6 +294,7 @@ module.exports = withRequestLogging('vibescore-usage-daily', async function(requ
   const summary = {
     totals: {
       total_tokens: totals.total_tokens.toString(),
+      billable_total_tokens: totals.billable_total_tokens.toString(),
       input_tokens: totals.input_tokens.toString(),
       cached_input_tokens: totals.cached_input_tokens.toString(),
       output_tokens: totals.output_tokens.toString(),

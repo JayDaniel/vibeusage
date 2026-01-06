@@ -27,6 +27,7 @@ const {
   fetchRollupRows,
   isRollupEnabled
 } = require('../shared/usage-rollup');
+const { computeBillableTotalTokens } = require('../shared/usage-billable');
 const {
   buildPricingMetadata,
   computeUsageCost,
@@ -104,10 +105,13 @@ module.exports = withRequestLogging('vibescore-usage-summary', async function(re
   };
 
   const ingestRow = (row) => {
-    addRowTotals(totals, row);
     const sourceKey = normalizeSource(row?.source) || DEFAULT_SOURCE;
+    const billable = computeBillableTotalTokens({ source: sourceKey, totals: row });
+    addRowTotals(totals, row);
+    totals.billable_total_tokens += billable;
     const sourceEntry = getSourceEntry(sourcesMap, sourceKey);
     addRowTotals(sourceEntry.totals, row);
+    sourceEntry.totals.billable_total_tokens += billable;
     const normalizedModel = normalizeModel(row?.model);
     if (normalizedModel && normalizedModel.toLowerCase() !== 'unknown') {
       distinctModels.add(normalizedModel);
@@ -299,6 +303,7 @@ module.exports = withRequestLogging('vibescore-usage-summary', async function(re
 
   const totalsPayload = {
     total_tokens: totals.total_tokens.toString(),
+    billable_total_tokens: totals.billable_total_tokens.toString(),
     input_tokens: totals.input_tokens.toString(),
     cached_input_tokens: totals.cached_input_tokens.toString(),
     output_tokens: totals.output_tokens.toString(),

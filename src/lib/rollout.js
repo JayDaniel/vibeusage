@@ -1158,10 +1158,12 @@ function normalizeOpencodeTokens(tokens) {
   const output = toNonNegativeInt(tokens.output);
   const reasoning = toNonNegativeInt(tokens.reasoning);
   const cached = toNonNegativeInt(tokens.cache?.read);
-  const total = input + output + reasoning;
+  const cacheWrite = toNonNegativeInt(tokens.cache?.write);
+  const inputTokens = input + cacheWrite;
+  const total = inputTokens + output + reasoning;
 
   return {
-    input_tokens: input,
+    input_tokens: inputTokens,
     cached_input_tokens: cached,
     output_tokens: output,
     reasoning_output_tokens: reasoning,
@@ -1261,7 +1263,7 @@ function normalizeUsage(u) {
 }
 
 function normalizeClaudeUsage(u) {
-  const inputTokens = toNonNegativeInt(u?.input_tokens);
+  const inputTokens = toNonNegativeInt(u?.input_tokens) + toNonNegativeInt(u?.cache_creation_input_tokens);
   const outputTokens = toNonNegativeInt(u?.output_tokens);
   const hasTotal = u && Object.prototype.hasOwnProperty.call(u, 'total_tokens');
   const totalTokens = hasTotal ? toNonNegativeInt(u?.total_tokens) : inputTokens + outputTokens;

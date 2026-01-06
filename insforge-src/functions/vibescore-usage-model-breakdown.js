@@ -26,6 +26,7 @@ const {
   formatUsdFromMicros,
   resolvePricingProfile
 } = require('../shared/pricing');
+const { computeBillableTotalTokens } = require('../shared/usage-billable');
 const { logSlowQuery, withRequestLogging } = require('../shared/logging');
 const { isDebugEnabled, withSlowQueryDebugPayload } = require('../shared/debug');
 
@@ -106,6 +107,8 @@ module.exports = withRequestLogging('vibescore-usage-model-breakdown', async fun
       for (const row of pageRows) {
         const source = normalizeSource(row?.source) || DEFAULT_SOURCE;
         const model = normalizeModel(row?.model) || DEFAULT_MODEL;
+        const billable = computeBillableTotalTokens({ source, totals: row });
+        row.billable_total_tokens = billable;
         const entry = getSourceEntry(sourcesMap, source);
         const modelEntry = getModelEntry(entry.models, model);
         addTotals(entry.totals, row);
@@ -173,6 +176,7 @@ module.exports = withRequestLogging('vibescore-usage-model-breakdown', async fun
 function createTotals() {
   return {
     total_tokens: 0n,
+    billable_total_tokens: 0n,
     input_tokens: 0n,
     cached_input_tokens: 0n,
     output_tokens: 0n,
@@ -183,6 +187,7 @@ function createTotals() {
 function addTotals(target, row) {
   if (!target || !row) return;
   target.total_tokens = toBigInt(target.total_tokens) + toBigInt(row.total_tokens);
+  target.billable_total_tokens = toBigInt(target.billable_total_tokens) + toBigInt(row.billable_total_tokens);
   target.input_tokens = toBigInt(target.input_tokens) + toBigInt(row.input_tokens);
   target.cached_input_tokens =
     toBigInt(target.cached_input_tokens) + toBigInt(row.cached_input_tokens);
@@ -219,6 +224,7 @@ function formatTotals(entry, pricingProfile) {
     ...entry,
     totals: {
       total_tokens: totals.total_tokens.toString(),
+      billable_total_tokens: totals.billable_total_tokens.toString(),
       input_tokens: totals.input_tokens.toString(),
       cached_input_tokens: totals.cached_input_tokens.toString(),
       output_tokens: totals.output_tokens.toString(),

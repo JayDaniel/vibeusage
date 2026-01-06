@@ -394,7 +394,7 @@ test('parseOpencodeIncremental aggregates message tokens and model', async () =>
       modelID: 'gpt-4o',
       created: '2025-12-29T10:14:00.000Z',
       completed: '2025-12-29T10:15:00.000Z',
-      tokens: { input: 10, output: 2, reasoning: 1, cached: 3 }
+      tokens: { input: 10, output: 2, reasoning: 1, cached: 3, cacheWrite: 5 }
     });
 
     await fs.writeFile(messagePath, JSON.stringify(message), 'utf8');
@@ -409,11 +409,11 @@ test('parseOpencodeIncremental aggregates message tokens and model', async () =>
     assert.equal(queued[0].source, 'opencode');
     assert.equal(queued[0].model, 'gpt-4o');
     assert.equal(queued[0].hour_start, '2025-12-29T10:00:00.000Z');
-    assert.equal(queued[0].input_tokens, 10);
+    assert.equal(queued[0].input_tokens, 15);
     assert.equal(queued[0].cached_input_tokens, 3);
     assert.equal(queued[0].output_tokens, 2);
     assert.equal(queued[0].reasoning_output_tokens, 1);
-    assert.equal(queued[0].total_tokens, 13);
+    assert.equal(queued[0].total_tokens, 18);
     assert.equal(typeof queued[0].content, 'undefined');
 
     const resAgain = await parseOpencodeIncremental({ messageFiles: [messagePath], cursors, queuePath });
@@ -1121,6 +1121,44 @@ test('parseClaudeIncremental aggregates usage into half-hour buckets', async () 
   }
 });
 
+test('parseClaudeIncremental counts cache creation as input and cache read separately', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibescore-claude-'));
+  try {
+    const claudePath = path.join(tmp, 'agent-claude.jsonl');
+    const queuePath = path.join(tmp, 'queue.jsonl');
+    const cursors = { version: 1, files: {}, updatedAt: null };
+
+    const lines = [
+      buildClaudeUsageLine({
+        ts: '2025-12-25T03:10:00.000Z',
+        input: 5,
+        output: 2,
+        cacheCreation: 3,
+        cacheRead: 4
+      })
+    ];
+
+    await fs.writeFile(claudePath, lines.join('\n') + '\n', 'utf8');
+
+    const res = await parseClaudeIncremental({
+      projectFiles: [{ path: claudePath, source: 'claude' }],
+      cursors,
+      queuePath
+    });
+    assert.equal(res.filesProcessed, 1);
+    assert.equal(res.bucketsQueued, 1);
+
+    const queued = await readJsonLines(queuePath);
+    assert.equal(queued.length, 1);
+    assert.equal(queued[0].input_tokens, 8);
+    assert.equal(queued[0].cached_input_tokens, 4);
+    assert.equal(queued[0].output_tokens, 2);
+    assert.equal(queued[0].total_tokens, 10);
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
 test('parseClaudeIncremental honors total_tokens when present', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibescore-claude-'));
   try {
@@ -1214,7 +1252,7 @@ function buildEveryCodeTokenCountLine({ ts, last, total }) {
   });
 }
 
-function buildClaudeUsageLine({ ts, input, output, model, total }) {
+function buildClaudeUsageLine({ ts, input, output, model, total, cacheCreation, cacheRead }) {
   return JSON.stringify({
     timestamp: ts,
     message: {
@@ -1222,6 +1260,8 @@ function buildClaudeUsageLine({ ts, input, output, model, total }) {
       usage: {
         input_tokens: input,
         output_tokens: output,
+        cache_creation_input_tokens: typeof cacheCreation === 'number' ? cacheCreation : undefined,
+        cache_read_input_tokens: typeof cacheRead === 'number' ? cacheRead : undefined,
         total_tokens: typeof total === 'number' ? total : undefined
       }
     }
@@ -1256,7 +1296,10 @@ function buildOpencodeMessage({ modelID, model, modelId, created, completed, tok
           input: tokens.input,
           output: tokens.output,
           reasoning: tokens.reasoning,
-          cache: { read: tokens.cached }
+          cache: {
+            read: tokens.cached,
+            write: tokens.cacheWrite
+          }
         }
       : undefined
   };
