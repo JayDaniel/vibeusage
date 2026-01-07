@@ -1005,10 +1005,17 @@ var require_model_alias_timeline = __commonJS({
       return date.toISOString().slice(0, 10);
     }
     function resolveIdentityAtDate2({ rawModel, usageKey, dateKey, timeline } = {}) {
-      const normalized = usageKey || normalizeUsageModelKey(rawModel) || DEFAULT_MODEL;
+      const normalizedKey = usageKey || normalizeUsageModelKey(rawModel) || DEFAULT_MODEL;
       const normalizedDateKey = extractDateKey2(dateKey) || dateKey || null;
-      const entries = timeline && typeof timeline.get === "function" ? timeline.get(normalized) : null;
-      if (Array.isArray(entries)) {
+      const candidates = [];
+      if (normalizedKey) candidates.push(normalizedKey);
+      if (!usageKey && normalizedKey && normalizedKey.includes("/")) {
+        const suffix = normalizedKey.split("/").pop();
+        if (suffix && suffix !== normalizedKey) candidates.push(suffix);
+      }
+      for (const key of candidates) {
+        const entries = timeline && typeof timeline.get === "function" ? timeline.get(key) : null;
+        if (!Array.isArray(entries)) continue;
         let match = null;
         for (const entry of entries) {
           if (entry.effective_from && normalizedDateKey && entry.effective_from <= normalizedDateKey) {
@@ -1022,7 +1029,7 @@ var require_model_alias_timeline = __commonJS({
         }
       }
       const display = normalizeModel(rawModel) || DEFAULT_MODEL;
-      return { model_id: normalized, model: display };
+      return { model_id: normalizedKey, model: display };
     }
     function buildAliasTimeline2({ usageModels, aliasRows } = {}) {
       const normalized = new Set(
@@ -1260,7 +1267,7 @@ module.exports = withRequestLogging("vibescore-usage-hourly", async function(req
     let rowCount2 = 0;
     const { error: error2 } = await forEachPage({
       createQuery: () => {
-        let query = auth.edgeClient.database.from("vibescore_tracker_hourly").select("hour_start,source,billable_total_tokens,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens").eq("user_id", auth.userId);
+        let query = auth.edgeClient.database.from("vibescore_tracker_hourly").select("hour_start,model,source,billable_total_tokens,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens").eq("user_id", auth.userId);
         if (source) query = query.eq("source", source);
         if (hasModelFilter2) query = applyUsageModelFilter(query, usageModels2);
         query = applyCanaryFilter(query, { source, model: canonicalModel2 });
@@ -1361,7 +1368,7 @@ module.exports = withRequestLogging("vibescore-usage-hourly", async function(req
   const { error } = await forEachPage({
     createQuery: () => {
       let query = auth.edgeClient.database.from("vibescore_tracker_hourly").select(
-        "hour_start,source,billable_total_tokens,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens"
+        "hour_start,model,source,billable_total_tokens,total_tokens,input_tokens,cached_input_tokens,output_tokens,reasoning_output_tokens"
       ).eq("user_id", auth.userId);
       if (source) query = query.eq("source", source);
       if (hasModelFilter) query = applyUsageModelFilter(query, usageModels);
