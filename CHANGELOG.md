@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-01-07
+### Fixed
+- Count Opencode cache write tokens in input totals.
+- Include Claude cache creation input tokens in input totals.
+- Avoid cross-message fallback totals when Opencode message index is missing.
+- Surface a clear error when @insforge/sdk is missing at runtime.
+
 ## [0.2.10] - 2026-01-06
 ### Added
 - Local Opencode usage audit CLI for comparing local usage with server totals.
