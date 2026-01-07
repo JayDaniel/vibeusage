@@ -1038,7 +1038,7 @@ test('vibeusage-usage-heatmap normalizes model for non-UTC alias filtering', asy
   const rows = [
     {
       hour_start: '2025-01-07T10:00:00.000Z',
-      model: 'openai/gpt-4o-mini',
+      model: 'OpenAI/GPT-4o-mini',
       billable_total_tokens: '10',
       total_tokens: '10'
     }
@@ -1046,7 +1046,7 @@ test('vibeusage-usage-heatmap normalizes model for non-UTC alias filtering', asy
 
   const aliasRows = [
     {
-      usage_model: 'gpt-4o-mini',
+      usage_model: 'openai/gpt-4o-mini',
       canonical_model: 'gpt-4o',
       display_name: 'GPT-4o',
       effective_from: '2025-01-01',
@@ -1375,7 +1375,9 @@ test('vibeusage-usage-daily applies optional model filter', () =>
   const res = await fn(req);
   assert.equal(res.status, 200);
   assert.ok(filters.some((f) => f.op === 'eq' && f.col === 'user_id' && f.value === userId));
-  assert.ok(filters.some((f) => f.op === 'or' && f.value?.includes?.('model.ilike.claude-3-5-sonnet')));
+  const modelFilter = filters.find((f) => f.op === 'or' && f.value?.includes?.('model.ilike.claude-3-5-sonnet'));
+  assert.ok(modelFilter);
+  assert.ok(!modelFilter.value?.includes?.('model.ilike.%/claude-3-5-sonnet'));
   assert.ok(filters.some((f) => f.op === 'gte' && f.col === 'hour_start' && f.value === '2025-12-20T00:00:00.000Z'));
   assert.ok(filters.some((f) => f.op === 'lt' && f.col === 'hour_start' && f.value === '2025-12-22T00:00:00.000Z'));
   assert.ok(orders.some((o) => o.col === 'hour_start'));
