@@ -55,9 +55,13 @@ export default function App() {
   }, []);
 
   const pageUrl = new URL(window.location.href);
+  const pathname = pageUrl.pathname.replace(/\/+$/, "");
+  const shareMatch = pathname.match(/^\/share\/([^/]+)$/i);
+  const publicToken = shareMatch ? shareMatch[1] : null;
+  const publicMode = Boolean(publicToken) || pathname.startsWith("/share");
   const safeRedirect = getSafeRedirect(pageUrl.searchParams);
   const posterYear = pageUrl.searchParams.get("poster") || "";
-  const showPoster = posterYear === "2025";
+  const showPoster = posterYear === "2025" && !publicMode;
   const baseUrlOverride =
     safeRedirect && pageUrl.searchParams.get("base_url")
       ? pageUrl.searchParams.get("base_url")
@@ -89,8 +93,7 @@ export default function App() {
 
   const loadingShell = <div className="min-h-screen bg-[#050505]" />;
   let content = null;
-  const accessEnabled = signedIn || mockEnabled || sessionExpired;
-  if (!signedIn && !mockEnabled) {
+  if (!publicMode && !signedIn && !mockEnabled) {
     content = <LandingPage signInUrl={signInUrl} signUpUrl={signUpUrl} />;
   } else if (showPoster) {
     content = (
@@ -112,6 +115,8 @@ export default function App() {
           signedIn={signedIn}
           sessionExpired={sessionExpired}
           signOut={signOut}
+          publicMode={publicMode}
+          publicToken={publicToken}
         />
       </Suspense>
     );

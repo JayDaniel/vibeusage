@@ -104,6 +104,8 @@ export function DashboardPage({
   signedIn,
   sessionExpired,
   signOut,
+  publicMode = false,
+  publicToken = null,
 }) {
   const [booted, setBooted] = useState(false);
   const [costModalOpen, setCostModalOpen] = useState(false);
@@ -138,14 +140,15 @@ export function DashboardPage({
   const [installCopied, setInstallCopied] = useState(false);
   const [sessionExpiredCopied, setSessionExpiredCopied] = useState(false);
   const mockEnabled = isMockEnabled();
-  const accessEnabled = signedIn || mockEnabled;
+  const accessToken = publicMode ? publicToken : auth?.accessToken || null;
+  const accessEnabled = signedIn || mockEnabled || publicMode;
   useEffect(() => {
     const t = window.setTimeout(() => setBooted(true), 900);
     return () => window.clearTimeout(t);
   }, []);
 
   useEffect(() => {
-    if (!signedIn || mockEnabled) {
+    if (!signedIn || mockEnabled || publicMode) {
       setLinkCode(null);
       setLinkCodeExpiresAt(null);
       setLinkCodeLoading(false);
@@ -176,7 +179,14 @@ export function DashboardPage({
     return () => {
       active = false;
     };
-  }, [baseUrl, mockEnabled, signedIn, auth?.accessToken, linkCodeRefreshToken]);
+  }, [
+    baseUrl,
+    mockEnabled,
+    signedIn,
+    publicMode,
+    auth?.accessToken,
+    linkCodeRefreshToken,
+  ]);
 
   const linkCodeExpired = useMemo(() => {
     if (!linkCodeExpiresAt) return false;
@@ -187,7 +197,7 @@ export function DashboardPage({
   }, [linkCodeExpiresAt, linkCodeExpiryTick]);
 
   useEffect(() => {
-    if (!signedIn || mockEnabled) return;
+    if (!signedIn || mockEnabled || publicMode) return;
     if (!linkCodeExpiresAt || !linkCodeExpired) return;
     if (linkCodeLoading) return;
     setLinkCode(null);
@@ -203,7 +213,7 @@ export function DashboardPage({
   ]);
 
   useEffect(() => {
-    if (!linkCodeExpiresAt) return;
+    if (!linkCodeExpiresAt || publicMode) return;
     const ts = Date.parse(linkCodeExpiresAt);
     if (!Number.isFinite(ts)) return;
     const now = Date.now();
@@ -247,6 +257,9 @@ export function DashboardPage({
   const timeZone = useMemo(() => getBrowserTimeZone(), []);
   const tzOffsetMinutes = useMemo(() => getBrowserTimeZoneOffsetMinutes(), []);
   const mockNow = useMemo(() => getMockNow(), []);
+  const cacheKey = publicMode
+    ? null
+    : auth?.userId || auth?.email || "default";
   const [selectedPeriod, setSelectedPeriod] = useState("week");
   const period = screenshotMode ? "total" : selectedPeriod;
   const range = useMemo(
@@ -295,11 +308,11 @@ export function DashboardPage({
     refresh: refreshUsage,
   } = useUsageData({
     baseUrl,
-    accessToken: auth?.accessToken || null,
+    accessToken,
     from,
     to,
     includeDaily: period !== "total",
-    cacheKey: auth?.userId || auth?.email || "default",
+    cacheKey,
     timeZone,
     tzOffsetMinutes,
     now: mockNow,
@@ -311,10 +324,10 @@ export function DashboardPage({
     refresh: refreshModelBreakdown,
   } = useUsageModelBreakdown({
     baseUrl,
-    accessToken: auth?.accessToken || null,
+    accessToken,
     from,
     to,
-    cacheKey: auth?.userId || auth?.email || "default",
+    cacheKey,
     timeZone,
     tzOffsetMinutes,
   });
@@ -336,12 +349,12 @@ export function DashboardPage({
     refresh: refreshTrend,
   } = useTrendData({
     baseUrl,
-    accessToken: auth?.accessToken || null,
+    accessToken,
     period,
     from,
     to,
     months: 24,
-    cacheKey: auth?.userId || auth?.email || "default",
+    cacheKey,
     timeZone: trendTimeZone,
     tzOffsetMinutes: trendTzOffsetMinutes,
     now: mockNow,
@@ -356,9 +369,9 @@ export function DashboardPage({
     refresh: refreshHeatmap,
   } = useActivityHeatmap({
     baseUrl,
-    accessToken: auth?.accessToken || null,
+    accessToken,
     weeks: 52,
-    cacheKey: auth?.userId || auth?.email || "default",
+    cacheKey,
     timeZone,
     tzOffsetMinutes,
     now: mockNow,
@@ -483,7 +496,7 @@ export function DashboardPage({
   }
 
   const activeDays = useMemo(() => {
-    if (!signedIn && !mockEnabled) return 0;
+    if (!signedIn && !mockEnabled && !publicMode) return 0;
     const serverActive = Number(heatmap?.active_days);
     if (Number.isFinite(serverActive)) return serverActive;
 
@@ -858,6 +871,7 @@ export function DashboardPage({
   const sessionExpiredCopyLabel = copy("dashboard.session_expired.copy_label");
   const sessionExpiredCopiedLabel = copy("dashboard.session_expired.copied");
   const shouldShowInstall =
+    !publicMode &&
     !screenshotMode &&
     (forceInstall || (accessEnabled && !heatmapLoading && activeDays === 0));
   const installPrompt = copy("dashboard.install.prompt");
@@ -922,7 +936,7 @@ export function DashboardPage({
       ) : null}
       <GithubStar isFixed={false} size="header" />
 
-      {signedIn ? (
+      {signedIn && !publicMode ? (
         <>
           <MatrixButton onClick={signOut} size="header">
             {copy("dashboard.sign_out")}
@@ -940,7 +954,8 @@ export function DashboardPage({
     return <BootScreen onSkip={() => setBooted(true)} />;
   }
 
-  const requireAuthGate = !signedIn && !mockEnabled && !sessionExpired;
+  const requireAuthGate =
+    !publicMode && !signedIn && !mockEnabled && !sessionExpired;
 
   return (
     <>
@@ -949,7 +964,7 @@ export function DashboardPage({
         headerStatus={
           <BackendStatus
             baseUrl={baseUrl}
-            accessToken={auth?.accessToken || null}
+            accessToken={accessToken}
           />
         }
         headerRight={headerRight}
@@ -962,7 +977,7 @@ export function DashboardPage({
         contentClassName=""
         rootClassName={screenshotMode ? "screenshot-mode" : ""}
       >
-        {sessionExpired ? (
+        {sessionExpired && !publicMode ? (
           <div className="mb-6">
             <AsciiBox
               title={copy("dashboard.session_expired.title")}
@@ -1046,7 +1061,7 @@ export function DashboardPage({
 
               <TopModelsPanel rows={topModels} />
 
-              {!screenshotMode && !signedIn ? (
+              {!screenshotMode && !signedIn && !publicMode ? (
                 <AsciiBox
                   title={copy("dashboard.auth_optional.title")}
                   subtitle={copy("dashboard.auth_optional.subtitle")}
