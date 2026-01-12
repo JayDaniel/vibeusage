@@ -19,3 +19,26 @@ test("DashboardPage disables auth gate in public mode", () => {
   assert.match(src, /publicMode/);
   assert.match(src, /requireAuthGate/);
 });
+
+test("copy registry includes public view copy keys", () => {
+  const src = read("dashboard/src/content/copy.csv");
+  assert.ok(src.includes("dashboard.public_view.title"));
+  assert.ok(src.includes("dashboard.public_view.subtitle"));
+  assert.ok(src.includes("dashboard.public_view.status.enabled"));
+  assert.ok(src.includes("dashboard.public_view.status.disabled"));
+  assert.ok(src.includes("dashboard.public_view.action.copy"));
+  assert.ok(src.includes("dashboard.public_view.action.rotate"));
+  assert.ok(src.includes("dashboard.public_view.action.revoke"));
+  assert.ok(src.includes("dashboard.public_view.invalid.title"));
+  assert.ok(src.includes("dashboard.public_view.invalid.body"));
+});
+
+test("share routes rewrite to share.html", () => {
+  const raw = read("dashboard/vercel.json");
+  const parsed = JSON.parse(raw);
+  const rewrites = Array.isArray(parsed.rewrites) ? parsed.rewrites : [];
+  const hasShare = rewrites.some((rule) =>
+    String(rule.source || "").includes("/share")
+  );
+  assert.ok(hasShare);
+});

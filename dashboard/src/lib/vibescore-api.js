@@ -22,6 +22,9 @@ const PATHS = {
   usageHeatmap: "vibeusage-usage-heatmap",
   usageModelBreakdown: "vibeusage-usage-model-breakdown",
   linkCodeInit: "vibeusage-link-code-init",
+  publicViewStatus: "vibeusage-public-view-status",
+  publicViewIssue: "vibeusage-public-view-issue",
+  publicViewRevoke: "vibeusage-public-view-revoke",
 };
 
 const FUNCTION_PREFIX = "/functions";
@@ -204,6 +207,32 @@ export async function requestInstallLinkCode({ baseUrl, accessToken } = {}) {
     baseUrl,
     accessToken,
     slug: PATHS.linkCodeInit,
+    body: {},
+  });
+}
+
+export async function getPublicViewStatus({ baseUrl, accessToken } = {}) {
+  return requestJson({
+    baseUrl,
+    accessToken,
+    slug: PATHS.publicViewStatus,
+  });
+}
+
+export async function issuePublicViewToken({ baseUrl, accessToken } = {}) {
+  return requestPostJson({
+    baseUrl,
+    accessToken,
+    slug: PATHS.publicViewIssue,
+    body: {},
+  });
+}
+
+export async function revokePublicViewToken({ baseUrl, accessToken } = {}) {
+  return requestPostJson({
+    baseUrl,
+    accessToken,
+    slug: PATHS.publicViewRevoke,
     body: {},
   });
 }
