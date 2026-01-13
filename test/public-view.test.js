@@ -91,6 +91,13 @@ test("public view profile does not select user_metadata", () => {
   assert.doesNotMatch(profileSrc, /user_metadata/);
 });
 
+test("public view profile selects public users fields", () => {
+  const profileSrc = read(
+    "insforge-src/functions/vibescore-public-view-profile.js"
+  );
+  assert.match(profileSrc, /select\(['"]nickname,avatar_url,profile,metadata['"]\)/);
+});
+
 test("public view panel does not render share link text", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
   assert.doesNotMatch(

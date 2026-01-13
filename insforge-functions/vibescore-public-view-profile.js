@@ -394,19 +394,21 @@ module.exports = withRequestLogging("vibescore-public-view-profile", async funct
   const baseUrl = getBaseUrl();
   const publicView = await resolvePublicView({ baseUrl, shareToken: bearer });
   if (!publicView.ok) return json({ error: "Unauthorized" }, 401);
-  const { data, error } = await publicView.edgeClient.database.from("users").select("raw_user_meta_data").eq("id", publicView.userId).maybeSingle();
+  const { data, error } = await publicView.edgeClient.database.from("users").select("nickname,avatar_url,profile,metadata").eq("id", publicView.userId).maybeSingle();
   if (error) return json({ error: "Failed to fetch public profile" }, 500);
   const displayName = resolveDisplayName(data);
   const avatarUrl = resolveAvatarUrl(data);
   return json({ display_name: displayName, avatar_url: avatarUrl }, 200);
 });
 function resolveDisplayName(row) {
-  const rawMeta = isObject(row?.raw_user_meta_data) ? row.raw_user_meta_data : null;
-  return sanitizeName(rawMeta?.full_name) || sanitizeName(rawMeta?.name) || null;
+  const profile = isObject(row?.profile) ? row.profile : null;
+  const metadata = isObject(row?.metadata) ? row.metadata : null;
+  return sanitizeName(row?.nickname) || sanitizeName(profile?.name) || sanitizeName(profile?.full_name) || sanitizeName(metadata?.full_name) || sanitizeName(metadata?.name) || null;
 }
 function resolveAvatarUrl(row) {
-  const rawMeta = isObject(row?.raw_user_meta_data) ? row.raw_user_meta_data : null;
-  return sanitizeAvatarUrl(rawMeta?.avatar_url) || sanitizeAvatarUrl(rawMeta?.picture) || null;
+  const profile = isObject(row?.profile) ? row.profile : null;
+  const metadata = isObject(row?.metadata) ? row.metadata : null;
+  return sanitizeAvatarUrl(row?.avatar_url) || sanitizeAvatarUrl(profile?.avatar_url) || sanitizeAvatarUrl(metadata?.avatar_url) || sanitizeAvatarUrl(metadata?.picture) || null;
 }
 function sanitizeName(value) {
   if (typeof value !== "string") return null;

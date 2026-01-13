@@ -25,7 +25,7 @@ module.exports = withRequestLogging('vibescore-public-view-profile', async funct
 
   const { data, error } = await publicView.edgeClient.database
     .from('users')
-    .select('raw_user_meta_data')
+    .select('nickname,avatar_url,profile,metadata')
     .eq('id', publicView.userId)
     .maybeSingle();
 
@@ -37,21 +37,28 @@ module.exports = withRequestLogging('vibescore-public-view-profile', async funct
 });
 
 function resolveDisplayName(row) {
-  const rawMeta = isObject(row?.raw_user_meta_data) ? row.raw_user_meta_data : null;
+  const profile = isObject(row?.profile) ? row.profile : null;
+  const metadata = isObject(row?.metadata) ? row.metadata : null;
 
   return (
-    sanitizeName(rawMeta?.full_name) ||
-    sanitizeName(rawMeta?.name) ||
+    sanitizeName(row?.nickname) ||
+    sanitizeName(profile?.name) ||
+    sanitizeName(profile?.full_name) ||
+    sanitizeName(metadata?.full_name) ||
+    sanitizeName(metadata?.name) ||
     null
   );
 }
 
 function resolveAvatarUrl(row) {
-  const rawMeta = isObject(row?.raw_user_meta_data) ? row.raw_user_meta_data : null;
+  const profile = isObject(row?.profile) ? row.profile : null;
+  const metadata = isObject(row?.metadata) ? row.metadata : null;
 
   return (
-    sanitizeAvatarUrl(rawMeta?.avatar_url) ||
-    sanitizeAvatarUrl(rawMeta?.picture) ||
+    sanitizeAvatarUrl(row?.avatar_url) ||
+    sanitizeAvatarUrl(profile?.avatar_url) ||
+    sanitizeAvatarUrl(metadata?.avatar_url) ||
+    sanitizeAvatarUrl(metadata?.picture) ||
     null
   );
 }
