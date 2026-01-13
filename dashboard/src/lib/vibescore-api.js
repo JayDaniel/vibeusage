@@ -283,7 +283,7 @@ async function requestJson({
       });
     } catch (e) {
       if (e?.name === "AbortError") throw e;
-      const err = normalizeSdkError(e, { errorPrefix, hadAccessToken });
+      const err = normalizeSdkError(e, { errorPrefix, hadAccessToken, accessToken });
       if (!shouldRetry({ err, attempt, retryOptions })) throw err;
       const delayMs = computeRetryDelayMs({ retryOptions, attempt });
       await sleep(delayMs);
@@ -319,7 +319,7 @@ async function requestPostJson({
       });
     } catch (e) {
       if (e?.name === "AbortError") throw e;
-      const err = normalizeSdkError(e, { errorPrefix, hadAccessToken });
+      const err = normalizeSdkError(e, { errorPrefix, hadAccessToken, accessToken });
       if (!shouldRetry({ err, attempt, retryOptions })) throw err;
       const delayMs = computeRetryDelayMs({ retryOptions, attempt });
       await sleep(delayMs);
@@ -402,13 +402,13 @@ function shouldFallbackToLegacy(error, primaryPath) {
   return status === 404;
 }
 
-function normalizeSdkError(error, { errorPrefix, hadAccessToken } = {}) {
+function normalizeSdkError(error, { errorPrefix, hadAccessToken, accessToken } = {}) {
   const raw = error?.message || String(error || "Unknown error");
   const msg = normalizeBackendErrorMessage(raw);
   const err = new Error(errorPrefix ? `${errorPrefix}: ${msg}` : msg);
   err.cause = error;
   const status = error?.statusCode ?? error?.status;
-  if (status === 401 && hadAccessToken) {
+  if (shouldMarkSessionExpired({ status, hadAccessToken, accessToken })) {
     markSessionExpired();
   }
   if (typeof status === "number") {
@@ -420,6 +420,13 @@ function normalizeSdkError(error, { errorPrefix, hadAccessToken } = {}) {
   if (error?.nextActions) err.nextActions = error.nextActions;
   if (error?.error) err.error = error.error;
   return err;
+}
+
+function shouldMarkSessionExpired({ status, hadAccessToken, accessToken } = {}) {
+  if (status !== 401) return false;
+  if (!hadAccessToken) return false;
+  if (!hasAccessTokenValue(accessToken)) return false;
+  return isJwtAccessToken(accessToken);
 }
 
 function normalizeBackendErrorMessage(message) {
@@ -481,6 +488,13 @@ function normalizeRetryOptions(retry, method) {
 function hasAccessTokenValue(accessToken) {
   if (typeof accessToken !== "string") return false;
   return accessToken.trim().length > 0;
+}
+
+function isJwtAccessToken(accessToken) {
+  if (!hasAccessTokenValue(accessToken)) return false;
+  const parts = accessToken.split(".");
+  if (parts.length !== 3) return false;
+  return parts.every((part) => /^[A-Za-z0-9_-]+$/.test(part));
 }
 
 function shouldRetry({ err, attempt, retryOptions }) {

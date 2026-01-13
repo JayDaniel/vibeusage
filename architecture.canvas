@@ -406,7 +406,7 @@
     {
       "id": "test_dashboard-session-expired-banner_test_12598be7",
       "type": "text",
-      "text": "**dashboard-session-expired-banner.test**\n`test/dashboard-session-expired-banner.test.js`\n\nTest module.\n\n包含：\n- dashboard-session-expired-banner.test (103 行)\n- read (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**dashboard-session-expired-banner.test**\n`test/dashboard-session-expired-banner.test.js`\n\nTest module.\n\n包含：\n- dashboard-session-expired-banner.test (107 行)\n- read (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1180,
       "y": 10852,
       "width": 280,
@@ -899,7 +899,7 @@
     {
       "id": "test_public-view_test_b400e512",
       "type": "text",
-      "text": "**public-view.test**\n`test/public-view.test.js`\n\nTest module.\n\n包含：\n- public-view.test (89 行)\n- read (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**public-view.test**\n`test/public-view.test.js`\n\nTest module.\n\n包含：\n- public-view.test (100 行)\n- read (1 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 100,
       "y": 12292,
       "width": 280,
@@ -3324,7 +3324,7 @@
     {
       "id": "frontend_DashboardPage_9ebda834",
       "type": "text",
-      "text": "**DashboardPage**\n`dashboard/src/pages/DashboardPage.jsx`\n\nUI component layer.\n\n包含：\n- DashboardPage (1530 行)\n- hasUsageValue (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**DashboardPage**\n`dashboard/src/pages/DashboardPage.jsx`\n\nUI component layer.\n\n包含：\n- DashboardPage (1536 行)\n- hasUsageValue (2 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 1540,
       "y": 1712,
       "width": 280,
@@ -3698,7 +3698,7 @@
     {
       "id": "utils_vibescore-api_4e9bf839",
       "type": "text",
-      "text": "**vibescore-api**\n`dashboard/src/lib/vibescore-api.js`\n\nShared utilities.\n\n包含：\n- vibescore-api (510 行)\n- probeBackend (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
+      "text": "**vibescore-api**\n`dashboard/src/lib/vibescore-api.js`\n\nShared utilities.\n\n包含：\n- vibescore-api (524 行)\n- probeBackend (3 个参数)\n\n依赖：0 个模块\n被依赖：0 次",
       "x": 820,
       "y": 1712,
       "width": 280,
