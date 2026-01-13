@@ -102,6 +102,18 @@ test("public view invalid check handles string errors", () => {
   assert.match(src, /usageError\?\.message\s*\|\|\s*usageError/);
 });
 
+test("public view uses raw identity name", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  const block = sliceBetween(
+    src,
+    "const identityRawName",
+    "const identityStartDate"
+  );
+  assert.ok(block, "identity display block not found");
+  assert.match(block, /publicMode/);
+  assert.match(block, /auth\?\.name/);
+});
+
 test("public view copy issues a token when missing", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
   const block = sliceBetween(

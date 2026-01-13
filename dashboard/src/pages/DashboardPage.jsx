@@ -588,15 +588,26 @@ export function DashboardPage({
         : String(usageError?.message || usageError || "");
     return /unauthorized|invalid|token|revoked|401/i.test(message);
   }, [publicMode, usageError]);
-  const identityLabel = useMemo(() => {
-    const raw = auth?.name?.trim();
-    if (!raw || raw.includes("@")) return copy("dashboard.identity.fallback");
-    return raw;
+  const identityRawName = useMemo(() => {
+    if (typeof auth?.name !== "string") return "";
+    return auth.name.trim();
   }, [auth?.name]);
+
+  const identityLabel = useMemo(() => {
+    if (!identityRawName || identityRawName.includes("@")) {
+      return copy("dashboard.identity.fallback");
+    }
+    return identityRawName;
+  }, [identityRawName]);
 
   const identityHandle = useMemo(() => {
     return identityLabel.replace(/[^a-zA-Z0-9._-]/g, "_");
   }, [identityLabel]);
+
+  const identityDisplayName = useMemo(() => {
+    if (publicMode) return identityRawName || copy("dashboard.identity.fallback");
+    return identityHandle;
+  }, [identityHandle, identityRawName, publicMode]);
   const identityStartDate = useMemo(() => {
     let earliest = null;
 
@@ -1190,7 +1201,7 @@ export function DashboardPage({
               <IdentityCard
                 title={copy("dashboard.identity.title")}
                 subtitle={copy("dashboard.identity.subtitle")}
-                name={identityHandle}
+                name={identityDisplayName}
                 isPublic
                 rankLabel={identityStartDate ?? copy("identity_card.rank_placeholder")}
                 streakDays={activeDays}
