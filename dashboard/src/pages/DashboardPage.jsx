@@ -234,6 +234,8 @@ export function DashboardPage({
       setPublicProfileAvatarUrl(null);
       return;
     }
+    setPublicProfileName(null);
+    setPublicProfileAvatarUrl(null);
     let active = true;
     getPublicViewProfile({ baseUrl, accessToken: publicToken })
       .then((data) => {

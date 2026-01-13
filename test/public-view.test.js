@@ -147,6 +147,14 @@ test("public view fetches profile avatar url", () => {
   assert.match(src, /avatar_url/);
 });
 
+test("public view clears profile state before fetching new token", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  assert.match(
+    src,
+    /if\s*\(!publicToken\)\s*\{[\s\S]*?\}\s*setPublicProfileName\(null\);\s*setPublicProfileAvatarUrl\(null\);\s*let active = true;\s*getPublicViewProfile/s
+  );
+});
+
 test("identity card supports avatar fallback", () => {
   const src = read("dashboard/src/ui/matrix-a/components/IdentityCard.jsx");
   assert.match(src, /avatarUrl/);
