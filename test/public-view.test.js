@@ -77,6 +77,13 @@ test("public view profile edge function is defined", () => {
   assert.match(profileSrc, /public[- ]view[- ]profile/i);
 });
 
+test("public view profile returns avatar url", () => {
+  const profileSrc = read(
+    "insforge-src/functions/vibescore-public-view-profile.js"
+  );
+  assert.match(profileSrc, /avatar_url/);
+});
+
 test("public view panel does not render share link text", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
   assert.doesNotMatch(
@@ -125,6 +132,18 @@ test("public view fetches profile display name", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
   assert.match(src, /getPublicViewProfile/);
   assert.match(src, /publicProfileName/);
+});
+
+test("public view fetches profile avatar url", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  assert.match(src, /publicProfileAvatarUrl/);
+  assert.match(src, /avatar_url/);
+});
+
+test("identity card supports avatar fallback", () => {
+  const src = read("dashboard/src/ui/matrix-a/components/IdentityCard.jsx");
+  assert.match(src, /avatarUrl/);
+  assert.match(src, /onError/);
 });
 
 test("public view copy issues a token when missing", () => {

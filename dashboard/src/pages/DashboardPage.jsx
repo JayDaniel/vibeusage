@@ -127,6 +127,7 @@ export function DashboardPage({
   const [publicViewActionLoading, setPublicViewActionLoading] = useState(false);
   const [publicViewCopied, setPublicViewCopied] = useState(false);
   const [publicProfileName, setPublicProfileName] = useState(null);
+  const [publicProfileAvatarUrl, setPublicProfileAvatarUrl] = useState(null);
   const [compactSummary, setCompactSummary] = useState(() => {
     if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(max-width: 640px)").matches;
@@ -225,10 +226,12 @@ export function DashboardPage({
   useEffect(() => {
     if (!publicMode) {
       setPublicProfileName(null);
+      setPublicProfileAvatarUrl(null);
       return;
     }
     if (!publicToken) {
       setPublicProfileName(null);
+      setPublicProfileAvatarUrl(null);
       return;
     }
     let active = true;
@@ -238,10 +241,14 @@ export function DashboardPage({
         setPublicProfileName(
           typeof data?.display_name === "string" ? data.display_name : null
         );
+        setPublicProfileAvatarUrl(
+          typeof data?.avatar_url === "string" ? data.avatar_url : null
+        );
       })
       .catch(() => {
         if (!active) return;
         setPublicProfileName(null);
+        setPublicProfileAvatarUrl(null);
       });
     return () => {
       active = false;
@@ -1235,6 +1242,7 @@ export function DashboardPage({
                 title={copy("dashboard.identity.title")}
                 subtitle={copy("dashboard.identity.subtitle")}
                 name={identityDisplayName}
+                avatarUrl={publicMode ? publicProfileAvatarUrl : null}
                 isPublic
                 rankLabel={identityStartDate ?? copy("identity_card.rank_placeholder")}
                 streakDays={activeDays}
