@@ -8,9 +8,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
 import { LandingPage } from "./pages/LandingPage.jsx";
 import { isMockEnabled } from "./lib/mock-data.js";
 import { fetchLatestTrackerVersion } from "./lib/npm-version.js";
-import { clearSessionExpired } from "./lib/auth-storage.js";
+import { clearAuthStorage, clearSessionExpired } from "./lib/auth-storage.js";
 import { insforgeAuthClient } from "./lib/insforge-auth-client.js";
-import { useAuth as useLegacyAuth } from "./hooks/use-auth.js";
 
 import { UpgradeAlertModal } from "./ui/matrix-a/components/UpgradeAlertModal.jsx";
 
@@ -38,9 +37,6 @@ function getSafeRedirect(searchParams) {
 
 export default function App() {
   const baseUrl = useMemo(() => getInsforgeBaseUrl(), []);
-  const {
-    signOut: legacySignOut,
-  } = useLegacyAuth();
   const {
     isLoaded: insforgeLoaded,
     isSignedIn: insforgeSignedIn,
@@ -125,9 +121,10 @@ export default function App() {
       if (useInsforge) {
         await insforgeSignOut();
       }
-      legacySignOut();
+      clearAuthStorage();
+      clearSessionExpired();
     };
-  }, [insforgeSignOut, legacySignOut, useInsforge]);
+  }, [insforgeSignOut, useInsforge]);
 
   const pageUrl = new URL(window.location.href);
   const pathname = pageUrl.pathname.replace(/\/+$/, "");

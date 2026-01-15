@@ -18,26 +18,9 @@ test("auth storage exposes session expired helpers", () => {
   assert.match(src, /subscribeAuthStorage/);
 });
 
-test("useAuth tracks sessionExpired and gates signedIn", () => {
-  const src = read("dashboard/src/hooks/use-auth.js");
-  assert.match(src, /sessionExpired/);
-  assert.match(src, /signedIn/);
-  assert.match(src, /!sessionExpired/);
-});
-
-test("useAuth accepts auth callback on root and legacy paths", () => {
-  const src = read("dashboard/src/hooks/use-auth.js");
-  assert.match(src, /path\s*===\s*""/);
-  assert.match(src, /\/auth\/callback/);
-  assert.match(src, new RegExp('path\\s*===\\s*["\']\\/callback["\']'));
-});
-
-test("useAuth lists callback paths explicitly", () => {
-  const src = read("dashboard/src/hooks/use-auth.js");
-  assert.match(
-    src,
-    /const\s+isCallbackPath\s*=\s*[\s\S]*?path\s*===\s*\"\/auth\/callback\"[\s\S]*?path\s*===\s*\"\/callback\"[\s\S]*?path\s*===\s*\"\"/
-  );
+test("App does not use legacy auth hook", () => {
+  const src = read("dashboard/src/App.jsx");
+  assert.doesNotMatch(src, /useLegacyAuth/);
 });
 
 test("main wires InsForge hosted auth routes", () => {
