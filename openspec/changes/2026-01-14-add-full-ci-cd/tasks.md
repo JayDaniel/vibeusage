@@ -19,6 +19,6 @@
 - [x] Add MCP deploy runbook step for functions.
 
 ## 5. Verification
-- [ ] Run CI workflow on a PR and record results.
+- [x] Run CI workflow on a PR and record results.
 - [ ] Run release workflow on main (or workflow_dispatch) and record results.
-- [ ] Update verification report with evidence.
+- [x] Update verification report with evidence.
