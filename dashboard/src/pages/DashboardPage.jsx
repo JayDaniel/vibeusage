@@ -140,9 +140,9 @@ export function DashboardPage({
   const [installCopied, setInstallCopied] = useState(false);
   const [sessionExpiredCopied, setSessionExpiredCopied] = useState(false);
   const mockEnabled = isMockEnabled();
-  const authAccessToken = sessionExpired
-    ? null
-    : (auth?.getAccessToken ?? auth?.accessToken ?? null);
+  const authAccessToken = signedIn
+    ? auth?.getAccessToken ?? auth?.accessToken ?? null
+    : null;
   const accessToken = publicMode ? publicToken : authAccessToken;
   const accessEnabled = signedIn || mockEnabled || publicMode;
   useEffect(() => {
@@ -1109,9 +1109,9 @@ export function DashboardPage({
     return [parts[0], parts.slice(1).join("{{cmd}}")];
   }, [dailyEmptyTemplate]);
 
-  const headerStatus = (
-    <BackendStatus baseUrl={baseUrl} accessToken={accessToken} />
-  );
+  const headerStatus = signedIn ? (
+    <BackendStatus baseUrl={baseUrl} accessToken={authAccessToken} />
+  ) : null;
 
   const headerRight = (
     <div className="flex items-center gap-4">
@@ -1143,6 +1143,7 @@ export function DashboardPage({
     return <BootScreen onSkip={() => setBooted(true)} />;
   }
 
+  const showExpiredGate = sessionExpired && !publicMode;
   const requireAuthGate = !signedIn && !mockEnabled && !sessionExpired;
   const showAuthGate = requireAuthGate && !publicMode;
 
@@ -1173,7 +1174,7 @@ export function DashboardPage({
             </AsciiBox>
           </div>
         ) : null}
-        {sessionExpired && !publicMode ? (
+        {showExpiredGate ? (
           <div className="mb-6">
             <AsciiBox
               title={copy("dashboard.session_expired.title")}
@@ -1206,8 +1207,7 @@ export function DashboardPage({
               </div>
             </AsciiBox>
           </div>
-        ) : null}
-        {showAuthGate ? (
+        ) : showAuthGate ? (
           <div className="flex items-center justify-center">
             <AsciiBox
               title={copy("dashboard.auth_required.title")}

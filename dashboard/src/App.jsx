@@ -97,12 +97,22 @@ export default function App() {
       lastProbeTokenRef.current = null;
       return;
     }
-    if (!insforgeSignedIn) return;
-    const token = insforgeSession?.accessToken;
-    if (!token || token === lastProbeTokenRef.current) return;
-    lastProbeTokenRef.current = token;
-    probeBackend({ baseUrl, accessToken: token }).catch(() => {});
-  }, [baseUrl, insforgeSession, insforgeSignedIn, sessionExpired]);
+    if (!insforgeSignedIn) {
+      lastProbeTokenRef.current = null;
+      return;
+    }
+    let active = true;
+    (async () => {
+      const token = await getInsforgeAccessToken();
+      if (!active) return;
+      if (!token || token === lastProbeTokenRef.current) return;
+      lastProbeTokenRef.current = token;
+      probeBackend({ baseUrl, accessToken: token }).catch(() => {});
+    })();
+    return () => {
+      active = false;
+    };
+  }, [baseUrl, getInsforgeAccessToken, insforgeSignedIn, sessionExpired]);
 
   const getInsforgeAccessToken = useCallback(async () => {
     if (!insforgeSignedIn) return null;
@@ -133,8 +143,11 @@ export default function App() {
       name: user?.name ?? null,
     };
   }, [getInsforgeAccessToken, insforgeSession]);
-  const auth = insforgeLoaded ? insforgeAuth ?? insforgeAuthFallback : null;
-  const signedIn = useInsforge;
+  const signedIn = useInsforge && !sessionExpired;
+  const auth = useMemo(() => {
+    if (!useInsforge || sessionExpired) return null;
+    return insforgeAuth ?? insforgeAuthFallback;
+  }, [insforgeAuth, insforgeAuthFallback, sessionExpired, useInsforge]);
   const signOut = useMemo(() => {
     return async () => {
       if (useInsforge) {
@@ -177,7 +190,7 @@ export default function App() {
 
   const loadingShell = <div className="min-h-screen bg-[#050505]" />;
   let content = null;
-  if (!publicMode && !signedIn && !mockEnabled && !sessionExpired) {
+  if (!publicMode && !signedIn && !mockEnabled) {
     content = <LandingPage signInUrl={signInUrl} signUpUrl={signUpUrl} />;
   } else {
     content = (

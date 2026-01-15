@@ -50,13 +50,26 @@ test("App uses hosted auth routes for Landing login", () => {
 
 test("App routes LandingPage when signed out", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /!signedIn\s*&&\s*!mockEnabled\s*&&\s*!sessionExpired/);
+  assert.match(src, /!publicMode\s*&&\s*!signedIn\s*&&\s*!mockEnabled/);
 });
 
 test("App uses InsForge auth hook for signed-in gating", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /@insforge\/react-router/);
   assert.match(src, /useInsforgeAuth/);
+});
+
+test("App derives signedIn from sessionExpired gate", () => {
+  const src = read("dashboard/src/App.jsx");
+  assert.match(src, /const signedIn\s*=\s*useInsforge\s*&&\s*!sessionExpired/);
+});
+
+test("App disables auth when session expired", () => {
+  const src = read("dashboard/src/App.jsx");
+  const match = src.match(
+    /useMemo\([\s\S]*?\n\s*if\s*\([^)]+sessionExpired[^)]*\)\s*return\s*null;/
+  );
+  assert.ok(match, "expected auth guard for sessionExpired");
 });
 
 test("App provides InsForge access token resolver", () => {
@@ -75,6 +88,7 @@ test("App probes backend to revalidate expired sessions", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /probeBackend/);
   assert.match(src, /sessionExpired/);
+  assert.match(src, /getInsforgeAccessToken\(\)[\s\S]*probeBackend/);
 });
 
 test("vibescore-api resolves access token providers", () => {
@@ -97,7 +111,10 @@ test("DashboardPage shows session expired banner and bypasses auth gate", () => 
 
 test("DashboardPage disables auth access token when session expired", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
-  assert.match(src, /sessionExpired\s*\?\s*null\s*:\s*\(?\s*auth\?\.getAccessToken/);
+  assert.match(
+    src,
+    /const authAccessToken\s*=\s*signedIn\s*\?\s*\(?\s*auth\?\.getAccessToken/
+  );
 });
 
 test("vibescore-api marks session expired only for jwt access tokens", () => {
@@ -165,4 +182,15 @@ test("auth storage skips localStorage when window is undefined", async () => {
   if (hadWindow) globalThis.window = originalWindow;
   else delete globalThis.window;
   globalThis.localStorage = originalLocalStorage;
+});
+
+test("DashboardPage gates expired UI", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  assert.match(src, /const showExpiredGate\s*=\s*sessionExpired\s*&&\s*!publicMode/);
+  assert.match(src, /showExpiredGate\s*\?\s*\(/);
+});
+
+test("DashboardPage disables backend status when signed out or expired", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  assert.match(src, /const headerStatus\s*=\s*signedIn\s*\?\s*\(\s*<BackendStatus/);
 });
