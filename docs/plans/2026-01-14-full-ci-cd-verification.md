@@ -23,10 +23,11 @@
 - CI run (PR): failed on Node 18 with `crypto is not defined` in `insforge-functions/*`; fix applied via `test/edge-functions.test.js` polyfill
 - CI run (PR): failed on Node 18 during dashboard build with `crypto.hash is not a function` (Vite); CI updated to Node 20
 - CI run (PR): success (https://github.com/victorGPT/vibeusage/actions/runs/21016982572)
+- CI run (PR): success after latest push (https://github.com/victorGPT/vibeusage/actions/runs/21017059596)
 
 ## Evidence
 - Local run logs for commands above (2026-01-15).
-- GitHub Actions workflow logs (CI: https://github.com/victorGPT/vibeusage/actions/runs/21016982572).
+- GitHub Actions workflow logs (CI: https://github.com/victorGPT/vibeusage/actions/runs/21017059596).
 - Vercel deployment status checks.
 - npm publish logs (main only).
 - docs/deployment/freeze.md entry.
