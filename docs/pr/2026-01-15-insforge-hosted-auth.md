@@ -16,7 +16,7 @@ Adopt InsForge hosted auth routes and SDK-managed session gating for the dashboa
 
 ### Verification method (choose at least one)
 - [ ] Manual: hosted auth redirect flow (see below)
-- [ ] `node --test test/dashboard-session-expired-banner.test.js` => PASS
+- [x] `node --test test/dashboard-session-expired-banner.test.js` => PASS
 
 ### Manual hosted-auth flow (cold)
 1. Open `https://www.vibeusage.cc/` in an incognito window.
