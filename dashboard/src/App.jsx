@@ -92,6 +92,12 @@ export default function App() {
     });
   }, []);
 
+  const getInsforgeAccessToken = useCallback(async () => {
+    if (!insforgeSignedIn) return null;
+    const { data } = await insforgeAuthClient.auth.getCurrentSession();
+    return data?.session?.accessToken ?? null;
+  }, [insforgeSignedIn]);
+
   useEffect(() => {
     if (!sessionExpired) {
       lastProbeTokenRef.current = null;
@@ -113,12 +119,6 @@ export default function App() {
       active = false;
     };
   }, [baseUrl, getInsforgeAccessToken, insforgeSignedIn, sessionExpired]);
-
-  const getInsforgeAccessToken = useCallback(async () => {
-    if (!insforgeSignedIn) return null;
-    const { data } = await insforgeAuthClient.auth.getCurrentSession();
-    return data?.session?.accessToken ?? null;
-  }, [insforgeSignedIn]);
 
   const insforgeAuth = useMemo(() => {
     if (!insforgeSession?.accessToken) return null;

@@ -84,6 +84,15 @@ test("App subscribes to sessionExpired state", () => {
   assert.match(src, /subscribeSessionExpired/);
 });
 
+test("App declares getInsforgeAccessToken before revalidate effect", () => {
+  const src = read("dashboard/src/App.jsx");
+  const tokenIndex = src.indexOf("const getInsforgeAccessToken");
+  const probeIndex = src.indexOf("probeBackend({ baseUrl");
+  assert.ok(tokenIndex !== -1, "expected getInsforgeAccessToken declaration");
+  assert.ok(probeIndex !== -1, "expected probeBackend call");
+  assert.ok(tokenIndex < probeIndex);
+});
+
 test("App probes backend to revalidate expired sessions", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /probeBackend/);
