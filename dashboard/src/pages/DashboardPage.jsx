@@ -140,7 +140,9 @@ export function DashboardPage({
   const [installCopied, setInstallCopied] = useState(false);
   const [sessionExpiredCopied, setSessionExpiredCopied] = useState(false);
   const mockEnabled = isMockEnabled();
-  const authAccessToken = auth?.getAccessToken ?? auth?.accessToken ?? null;
+  const authAccessToken = sessionExpired
+    ? null
+    : (auth?.getAccessToken ?? auth?.accessToken ?? null);
   const accessToken = publicMode ? publicToken : authAccessToken;
   const accessEnabled = signedIn || mockEnabled || publicMode;
   useEffect(() => {

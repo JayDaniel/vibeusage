@@ -17,12 +17,14 @@ Adopt InsForge hosted auth routes and SDK-managed session gating for the dashboa
 - fix(auth): resolve insforge access token via provider
 - fix(auth): avoid legacy auth fallback before insforge ready
 - chore(auth): remove legacy auth hook
+- fix(auth): honor session-expired revalidation
 
 ## Regression Test Gate
 ### Most likely regression surface
 - Hosted auth redirect routing and session gating.
 - Legacy fallback avoidance when InsForge is loaded.
 - Legacy auth callback removal.
+- Session-expired gating and revalidation.
 
 ### Verification method (choose at least one)
 - [x] Manual: hosted auth redirect flow (see below)
@@ -32,6 +34,7 @@ Adopt InsForge hosted auth routes and SDK-managed session gating for the dashboa
   - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (compat note)
   - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (legacy fallback gate)
   - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (legacy hook removal)
+  - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (session revalidation)
 
 ### Manual hosted-auth flow (cold)
 1. Open `https://www.vibeusage.cc/` in an incognito window.

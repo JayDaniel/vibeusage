@@ -1,5 +1,5 @@
 import { createInsforgeClient } from "./insforge-client.js";
-import { markSessionExpired } from "./auth-storage.js";
+import { clearSessionExpired, markSessionExpired } from "./auth-storage.js";
 import { formatDateLocal } from "./date-range.js";
 import {
   getMockUsageDaily,
@@ -313,13 +313,18 @@ async function requestJson({
 
   while (true) {
     try {
-      return await requestWithFallback({
+      const result = await requestWithFallback({
         http,
         primaryPath,
         fallbackPath,
         params,
         fetchOptions,
       });
+      clearSessionExpiredIfNeeded({
+        hadAccessToken,
+        accessToken: resolvedAccessToken,
+      });
+      return result;
     } catch (e) {
       if (e?.name === "AbortError") throw e;
       const err = normalizeSdkError(e, {
@@ -357,13 +362,18 @@ async function requestPostJson({
 
   while (true) {
     try {
-      return await requestWithFallbackPost({
+      const result = await requestWithFallbackPost({
         http,
         primaryPath,
         fallbackPath,
         body,
         fetchOptions,
       });
+      clearSessionExpiredIfNeeded({
+        hadAccessToken,
+        accessToken: resolvedAccessToken,
+      });
+      return result;
     } catch (e) {
       if (e?.name === "AbortError") throw e;
       const err = normalizeSdkError(e, {
@@ -478,6 +488,17 @@ function shouldMarkSessionExpired({ status, hadAccessToken, accessToken } = {}) 
   if (!hadAccessToken) return false;
   if (!hasAccessTokenValue(accessToken)) return false;
   return isJwtAccessToken(accessToken);
+}
+
+function shouldClearSessionExpired({ hadAccessToken, accessToken } = {}) {
+  if (!hadAccessToken) return false;
+  if (!hasAccessTokenValue(accessToken)) return false;
+  return isJwtAccessToken(accessToken);
+}
+
+function clearSessionExpiredIfNeeded({ hadAccessToken, accessToken } = {}) {
+  if (!shouldClearSessionExpired({ hadAccessToken, accessToken })) return;
+  clearSessionExpired();
 }
 
 function normalizeBackendErrorMessage(message) {
