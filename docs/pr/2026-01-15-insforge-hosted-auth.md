@@ -3,6 +3,9 @@
 ## PR Goal (one sentence)
 Adopt InsForge hosted auth routes and SDK-managed session gating for the dashboard.
 
+## Backward compatibility
+- Not supported.
+
 ## Commit Narrative
 - test(auth): assert hosted auth router wiring
 - feat(auth): add insforge auth client wrapper
@@ -22,6 +25,7 @@ Adopt InsForge hosted auth routes and SDK-managed session gating for the dashboa
 - [x] `node --test test/dashboard-session-expired-banner.test.js` => PASS
   - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS
   - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (token provider)
+  - Re-run 2026-01-15: `node --test test/dashboard-session-expired-banner.test.js` => PASS (compat note)
 
 ### Manual hosted-auth flow (cold)
 1. Open `https://www.vibeusage.cc/` in an incognito window.
