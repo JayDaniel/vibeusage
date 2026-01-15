@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { buildAuthUrl } from "../lib/auth-url.js";
 import { copy } from "../lib/copy.js";
 import { getRangeForPeriod } from "../lib/date-range.js";
 import { getDetailsSortColumns, sortDailyRows } from "../lib/daily.js";
@@ -112,6 +111,8 @@ export function DashboardPage({
   signOut,
   publicMode = false,
   publicToken = null,
+  signInUrl = "/sign-in",
+  signUpUrl = "/sign-up",
 }) {
   const [booted, setBooted] = useState(false);
   const [costModalOpen, setCostModalOpen] = useState(false);
@@ -1085,19 +1086,6 @@ export function DashboardPage({
       setPublicViewActionLoading(false);
     }
   }, [authAccessToken, baseUrl, publicViewActionLoading, publicViewEnabled]);
-
-  const redirectUrl = useMemo(
-    () => `${window.location.origin}/auth/callback`,
-    []
-  );
-  const signInUrl = useMemo(
-    () => buildAuthUrl({ baseUrl, path: "/auth/sign-in", redirectUrl }),
-    [baseUrl, redirectUrl]
-  );
-  const signUpUrl = useMemo(
-    () => buildAuthUrl({ baseUrl, path: "/auth/sign-up", redirectUrl }),
-    [baseUrl, redirectUrl]
-  );
 
   const dailyEmptyTemplate = useMemo(
     () => copy("dashboard.daily.empty", { cmd: "{{cmd}}" }),

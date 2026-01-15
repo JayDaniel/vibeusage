@@ -204,6 +204,8 @@ export default function App() {
           signOut={signOut}
           publicMode={publicMode}
           publicToken={publicToken}
+          signInUrl={signInUrl}
+          signUpUrl={signUpUrl}
         />
       </Suspense>
     );

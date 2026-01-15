@@ -48,6 +48,12 @@ test("App uses hosted auth routes for Landing login", () => {
   assert.match(src, /hostedSignUpUrl/);
 });
 
+test("App passes hosted auth routes to DashboardPage", () => {
+  const src = read("dashboard/src/App.jsx");
+  assert.match(src, /<DashboardPage[\s\S]*signInUrl=/);
+  assert.match(src, /<DashboardPage[\s\S]*signUpUrl=/);
+});
+
 test("App routes LandingPage when signed out", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /!publicMode\s*&&\s*!signedIn\s*&&\s*!mockEnabled/);
@@ -124,6 +130,12 @@ test("DashboardPage disables auth access token when session expired", () => {
     src,
     /const authAccessToken\s*=\s*signedIn\s*\?\s*\(?\s*auth\?\.getAccessToken/
   );
+});
+
+test("DashboardPage uses hosted auth routes", () => {
+  const src = read("dashboard/src/pages/DashboardPage.jsx");
+  assert.doesNotMatch(src, /buildAuthUrl/);
+  assert.ok(!src.includes("/auth/callback"));
 });
 
 test("vibescore-api marks session expired only for jwt access tokens", () => {
