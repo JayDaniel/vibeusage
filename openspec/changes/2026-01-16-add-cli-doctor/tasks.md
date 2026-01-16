@@ -1,5 +1,5 @@
 ## 1. Implementation
-- [ ] 1.1 Add `resolveRuntimeConfig` and remove all `VIBESCORE_*` env usage (init/sync/debug/timeout/anon_key/auto-retry)
+- [ ] 1.1 Add `resolveRuntimeConfig` and remove all non-`VIBEUSAGE_*` env usage (VIBESCORE + INSFORGE_ANON_KEY)
 - [ ] 1.2 Add `doctor` command + lib checks (read-only, JSON schema)
 - [ ] 1.3 Ensure diagnostics supports no-migrate mode for doctor
 - [ ] 1.4 Update CLI help and docs (README/README.zh-CN/openspec project spec)

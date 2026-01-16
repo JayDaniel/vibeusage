@@ -1,8 +1,8 @@
 # Test Strategy
 
 ## Objectives
-- 验证 `doctor` 输出、JSON schema、退出码与关键检查判定。
-- 验证 `resolveRuntimeConfig` 仅接受 `VIBEUSAGE_*`，并覆盖全部字段。
+- 验证 `doctor` 输出、`--out` 行为、JSON schema、退出码与关键检查判定。
+- 验证 `resolveRuntimeConfig` 仅接受 `VIBEUSAGE_*`，CLI flags 优先级最高并覆盖全部字段。
 
 ## Test Levels
 - Unit:
@@ -18,6 +18,7 @@
 
 ## Test Matrix
 - Requirement: doctor output -> Unit + Integration -> CLI owner -> `test/doctor.test.js`
+- Requirement: doctor --out -> Unit + Integration -> CLI owner -> `test/doctor.test.js`
 - Requirement: runtime config single-source -> Unit -> CLI owner -> `test/runtime-config.test.js`
 - Requirement: read-only diagnostics -> Unit -> CLI owner -> `test/doctor.test.js`
 - Requirement: network reachability semantics -> Unit -> CLI owner -> `test/doctor.test.js`

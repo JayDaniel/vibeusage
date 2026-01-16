@@ -15,18 +15,29 @@
 - **THEN** the CLI SHALL write a JSON report to `doctor.json`
 - **AND** the JSON SHALL include `version`, `generated_at`, `summary`, and `checks`
 
+#### Scenario: --out implies JSON output
+- **WHEN** a user runs `npx vibeusage doctor --out doctor.json`
+- **THEN** the CLI SHALL write a JSON report to `doctor.json`
+- **AND** stdout SHALL be JSON (no human-readable report)
+
 ### Requirement: Runtime configuration is single-source and non-compatible
 - Rationale: 单一事实来源，禁止兼容路径。
 
-#### Scenario: Config overrides env
+#### Scenario: CLI flags override config and env
 - **GIVEN** `~/.vibeusage/tracker/config.json` has `baseUrl` and `deviceToken`
-- **WHEN** `doctor` runs
-- **THEN** it SHALL use config values as the active runtime configuration
+- **AND** `VIBEUSAGE_DEVICE_TOKEN` is set
+- **WHEN** `doctor --base-url https://override.example` runs
+- **THEN** it SHALL use CLI flags as the active runtime configuration
 
 #### Scenario: Legacy env vars are ignored
 - **GIVEN** only `VIBESCORE_*` environment variables are set
 - **WHEN** `doctor` runs
 - **THEN** it SHALL ignore them and fall back to `VIBEUSAGE_*` or defaults
+
+#### Scenario: Non-VIBEUSAGE env vars are ignored
+- **GIVEN** only `INSFORGE_ANON_KEY` is set
+- **WHEN** `doctor` runs
+- **THEN** it SHALL ignore it and fall back to `VIBEUSAGE_*` or defaults
 
 ### Requirement: Doctor is read-only and does not migrate state
 - Rationale: 诊断只读，避免“边诊断边改动”。

@@ -34,8 +34,10 @@
 - `doctor` 只读，不触发迁移、不写业务数据。
 - 网络可达性：任何 HTTP 响应视为“可达”。
 - 仅 critical 失败返回非 0 退出码。
-- 运行时配置优先级：`config.json` > `VIBEUSAGE_*` > 默认值。
-- 运行时配置字段：`base_url`、`device_token`、`dashboard_url`、`http_timeout_ms`、`debug`、`insforge_anon_key`、`auto_retry_no_spawn`。
+- `--out` 等价于 `--json`，只输出/写入 JSON。
+- 运行时配置优先级：`CLI flags` > `config.json` > `VIBEUSAGE_*` > 默认值。
+- 仅接受 `VIBEUSAGE_*` 作为环境变量来源（忽略 `INSFORGE_ANON_KEY`）。
+- 运行时配置字段（canonical camelCase）：`baseUrl`、`deviceToken`、`dashboardUrl`、`httpTimeoutMs`、`debug`、`insforgeAnonKey`、`autoRetryNoSpawn`。
 
 ## Assumptions
 - Node.js >= 18，`fetch` 可用。

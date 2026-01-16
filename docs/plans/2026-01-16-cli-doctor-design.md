@@ -20,18 +20,18 @@
   - `VIBESCORE_DEBUG`
   - `VIBESCORE_INSFORGE_ANON_KEY`
   - `VIBESCORE_AUTO_RETRY_NO_SPAWN`
-- 仅保留 `VIBEUSAGE_*` 作为运行时配置来源。
+- 仅保留 `VIBEUSAGE_*` 作为运行时配置来源（忽略 `INSFORGE_ANON_KEY`）。
 
 ## 命令体验
 - `npx vibeusage doctor`：人类可读输出。
 - `npx vibeusage doctor --json`：输出 JSON schema。
-- `npx vibeusage doctor --out doctor.json`：写文件并输出 JSON。
+- `npx vibeusage doctor --out doctor.json`：写文件并仅输出 JSON。
 
 ## 诊断检查（扩展版）
 1) Runtime 配置（单一事实来源）
-   - base_url（来源明确、值存在）
-   - device_token（是否已设置）
-   - dashboard_url / http_timeout_ms / debug / insforge_anon_key / auto_retry_no_spawn
+   - baseUrl（来源明确、值存在）
+   - deviceToken（是否已设置）
+   - dashboardUrl / httpTimeoutMs / debug / insforgeAnonKey / autoRetryNoSpawn
 2) 文件系统
    - tracker 目录可读写
    - config.json 可读（区分缺失与 JSON 解析失败）
@@ -49,7 +49,7 @@
 | --- | --- | --- | --- | --- |
 | runtime.base_url | 有 base_url | - | 缺失 | 否 |
 | runtime.device_token | 已设置 | 缺失 | - | 否 |
-| fs.tracker_dir | 可读写 | 不存在 | 权限/IO 错误 | 是（权限/IO 错误） |
+| fs.tracker_dir | 可读 | 不存在 | 权限/IO 错误 | 是（权限/IO 错误） |
 | fs.config_json | 读取成功 | 文件不存在 | JSON 无效/IO 错误 | 是（IO 错误） |
 | cli.entrypoint | 可读/可执行 | - | 不可读/不可执行 | 否 |
 | network.base_url | 有响应 | 缺少 base_url（跳过） | 超时/网络异常 | 否 |
@@ -95,8 +95,9 @@
 - 其他情况 => exit 0
 
 ## 单一事实来源
-- 新增 `resolveRuntimeConfig` 统一解析配置来源（config/env/default）。
+- 新增 `resolveRuntimeConfig` 统一解析配置来源（CLI flags > config/env/default）。
 - `init` / `sync` / `doctor` 复用该解析逻辑。
+- 仅接受 `VIBEUSAGE_*`，不再支持其他 env 入口。
 
 ## 严格读取
 - 新增严格 JSON 读取，用于区分“文件缺失”与“文件损坏”。

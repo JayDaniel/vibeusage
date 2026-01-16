@@ -8,6 +8,7 @@
 - 新增 `doctor` 命令，提供人类可读报告与 JSON 输出。
 - 统一运行时配置解析（`resolveRuntimeConfig`）。
 - **BREAKING**：移除 `VIBESCORE_*` 兼容环境变量（`VIBESCORE_INSFORGE_BASE_URL`、`VIBESCORE_DEVICE_TOKEN`、`VIBESCORE_DASHBOARD_URL`、`VIBESCORE_HTTP_TIMEOUT_MS`、`VIBESCORE_DEBUG`、`VIBESCORE_INSFORGE_ANON_KEY`、`VIBESCORE_AUTO_RETRY_NO_SPAWN`）。
+- **BREAKING**：仅接受 `VIBEUSAGE_*` 作为环境变量来源（忽略 `INSFORGE_ANON_KEY`）。
 
 ## Impact
 - Affected specs: `vibescore-tracker`

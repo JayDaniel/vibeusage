@@ -10,13 +10,22 @@ The CLI SHALL provide a `doctor` command that outputs a human-readable diagnosti
 - **WHEN** a user runs `npx vibeusage doctor --json`
 - **THEN** the CLI SHALL emit a JSON report with `version`, `generated_at`, `summary`, and `checks`
 
+#### Scenario: --out implies JSON output
+- **WHEN** a user runs `npx vibeusage doctor --out doctor.json`
+- **THEN** the CLI SHALL write a JSON report to `doctor.json`
+
 ### Requirement: Runtime configuration is single-source
-The CLI MUST resolve runtime configuration from `~/.vibeusage/tracker/config.json`, `VIBEUSAGE_*` environment variables, and defaults, and MUST NOT accept `VIBESCORE_*` compatibility inputs.
+The CLI MUST resolve runtime configuration from CLI flags, `~/.vibeusage/tracker/config.json`, `VIBEUSAGE_*` environment variables, and defaults (in that priority order), and MUST NOT accept any non-`VIBEUSAGE_*` compatibility inputs.
 
 #### Scenario: Legacy env is ignored
 - **GIVEN** only `VIBESCORE_*` environment variables are set
 - **WHEN** the CLI runs `doctor`
 - **THEN** it SHALL ignore them and fall back to `VIBEUSAGE_*` or defaults
+
+#### Scenario: Non-VIBEUSAGE env is ignored
+- **GIVEN** only `INSFORGE_ANON_KEY` is set
+- **WHEN** the CLI runs `doctor`
+- **THEN** it SHALL ignore it and fall back to `VIBEUSAGE_*` or defaults
 
 ### Requirement: Doctor is read-only
 The `doctor` command MUST NOT migrate or write tracker state.
