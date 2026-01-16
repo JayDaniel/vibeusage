@@ -24,18 +24,18 @@
 - **THEN** it SHALL use config values as the active runtime configuration
 
 #### Scenario: Legacy env vars are ignored
-- **GIVEN** only `VIBESCORE_INSFORGE_BASE_URL` and `VIBESCORE_DEVICE_TOKEN` are set
+- **GIVEN** only `VIBESCORE_*` environment variables are set
 - **WHEN** `doctor` runs
 - **THEN** it SHALL ignore them and fall back to `VIBEUSAGE_*` or defaults
 
 ### Requirement: Doctor is read-only and does not migrate state
 - Rationale: 诊断只读，避免“边诊断边改动”。
 
-#### Scenario: Legacy tracker directory is not migrated
-- **GIVEN** only `~/.vibescore/` exists and `~/.vibeusage/` does not
+#### Scenario: Tracker directory is missing
+- **GIVEN** `~/.vibeusage/` does not exist
 - **WHEN** `doctor` runs
-- **THEN** it SHALL NOT create or rename directories
-- **AND** it SHALL still report diagnostics against the legacy tracker path
+- **THEN** it SHALL NOT create directories
+- **AND** it SHALL report the tracker directory as missing
 
 ### Requirement: Network check uses reachability semantics
 - Rationale: 第一性原则，最小假设验证连通性。

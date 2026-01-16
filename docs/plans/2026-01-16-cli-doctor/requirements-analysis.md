@@ -34,6 +34,8 @@
 - `doctor` 只读，不触发迁移、不写业务数据。
 - 网络可达性：任何 HTTP 响应视为“可达”。
 - 仅 critical 失败返回非 0 退出码。
+- 运行时配置优先级：`config.json` > `VIBEUSAGE_*` > 默认值。
+- 运行时配置字段：`base_url`、`device_token`、`dashboard_url`、`http_timeout_ms`、`debug`、`insforge_anon_key`、`auto_retry_no_spawn`。
 
 ## Assumptions
 - Node.js >= 18，`fetch` 可用。

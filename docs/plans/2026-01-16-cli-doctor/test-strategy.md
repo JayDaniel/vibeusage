@@ -2,7 +2,7 @@
 
 ## Objectives
 - 验证 `doctor` 输出、JSON schema、退出码与关键检查判定。
-- 验证 `resolveRuntimeConfig` 仅接受 `VIBEUSAGE_*`。
+- 验证 `resolveRuntimeConfig` 仅接受 `VIBEUSAGE_*`，并覆盖全部字段。
 
 ## Test Levels
 - Unit:

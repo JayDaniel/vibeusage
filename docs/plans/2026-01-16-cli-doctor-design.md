@@ -15,6 +15,11 @@
 - 移除 `VIBESCORE_*` 兼容环境变量：
   - `VIBESCORE_INSFORGE_BASE_URL`
   - `VIBESCORE_DEVICE_TOKEN`
+  - `VIBESCORE_DASHBOARD_URL`
+  - `VIBESCORE_HTTP_TIMEOUT_MS`
+  - `VIBESCORE_DEBUG`
+  - `VIBESCORE_INSFORGE_ANON_KEY`
+  - `VIBESCORE_AUTO_RETRY_NO_SPAWN`
 - 仅保留 `VIBEUSAGE_*` 作为运行时配置来源。
 
 ## 命令体验
@@ -26,6 +31,7 @@
 1) Runtime 配置（单一事实来源）
    - base_url（来源明确、值存在）
    - device_token（是否已设置）
+   - dashboard_url / http_timeout_ms / debug / insforge_anon_key / auto_retry_no_spawn
 2) 文件系统
    - tracker 目录可读写
    - config.json 可读（区分缺失与 JSON 解析失败）

@@ -14,15 +14,15 @@ The CLI SHALL provide a `doctor` command that outputs a human-readable diagnosti
 The CLI MUST resolve runtime configuration from `~/.vibeusage/tracker/config.json`, `VIBEUSAGE_*` environment variables, and defaults, and MUST NOT accept `VIBESCORE_*` compatibility inputs.
 
 #### Scenario: Legacy env is ignored
-- **GIVEN** only `VIBESCORE_INSFORGE_BASE_URL` and `VIBESCORE_DEVICE_TOKEN` are set
+- **GIVEN** only `VIBESCORE_*` environment variables are set
 - **WHEN** the CLI runs `doctor`
 - **THEN** it SHALL ignore them and fall back to `VIBEUSAGE_*` or defaults
 
 ### Requirement: Doctor is read-only
 The `doctor` command MUST NOT migrate or write tracker state.
 
-#### Scenario: Legacy tracker exists
-- **GIVEN** only `~/.vibescore/` exists and `~/.vibeusage/` does not
+#### Scenario: Tracker directory missing
+- **GIVEN** `~/.vibeusage/` does not exist
 - **WHEN** `doctor` runs
 - **THEN** it SHALL not create or rename directories
 
