@@ -89,6 +89,9 @@ npx --yes vibeusage doctor
 
 # 输出 JSON 报告（同时写文件）
 npx --yes vibeusage doctor --json --out doctor.json
+
+# 覆盖 base URL（仅诊断）
+npx --yes vibeusage doctor --base-url https://example.invalid
 ```
 
 ### 日志来源

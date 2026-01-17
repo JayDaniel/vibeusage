@@ -5,6 +5,7 @@ const path = require('node:path');
 const { test } = require('node:test');
 
 const { buildDoctorReport } = require('../src/lib/doctor');
+const { cmdDoctor } = require('../src/commands/doctor');
 
 test('doctor treats any HTTP response as reachable', async () => {
   const report = await buildDoctorReport({
@@ -74,3 +75,131 @@ test('doctor marks invalid config.json as critical', async () => {
   assert.equal(configCheck.status, 'fail');
   assert.equal(configCheck.critical, true);
 });
+
+test('doctor --out writes json to file and stdout', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibeusage-doctor-'));
+  const prevHome = process.env.HOME;
+  const prevCwd = process.cwd();
+  const prevFetch = globalThis.fetch;
+  const prevWrite = process.stdout.write;
+  const prevErr = process.stderr.write;
+  const prevExit = process.exitCode;
+
+  try {
+    process.env.HOME = tmp;
+    process.chdir(tmp);
+    globalThis.fetch = async () => ({ status: 204 });
+    const outCapture = createWriteCapture();
+    const errCapture = createWriteCapture();
+    process.stdout.write = outCapture.write;
+    process.stderr.write = errCapture.write;
+    process.exitCode = undefined;
+
+    await cmdDoctor(['--out', 'doctor.json']);
+
+    const out = outCapture.read();
+    assert.ok(out.trim().startsWith('{'));
+    const payload = JSON.parse(out);
+    assert.equal(payload.version, 1);
+
+    const filePayload = JSON.parse(await fs.readFile(path.join(tmp, 'doctor.json'), 'utf8'));
+    assert.equal(filePayload.version, 1);
+  } finally {
+    process.stdout.write = prevWrite;
+    process.stderr.write = prevErr;
+    if (prevHome === undefined) delete process.env.HOME;
+    else process.env.HOME = prevHome;
+    process.chdir(prevCwd);
+    globalThis.fetch = prevFetch;
+    process.exitCode = prevExit;
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('doctor sets exitCode on critical failures', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibeusage-doctor-'));
+  const prevHome = process.env.HOME;
+  const prevFetch = globalThis.fetch;
+  const prevWrite = process.stdout.write;
+  const prevErr = process.stderr.write;
+  const prevExit = process.exitCode;
+
+  try {
+    process.env.HOME = tmp;
+    const trackerDir = path.join(tmp, '.vibeusage', 'tracker');
+    await fs.mkdir(trackerDir, { recursive: true });
+    await fs.writeFile(path.join(trackerDir, 'config.json'), '{bad', 'utf8');
+    globalThis.fetch = async () => ({ status: 200 });
+    const outCapture = createWriteCapture();
+    const errCapture = createWriteCapture();
+    process.stdout.write = outCapture.write;
+    process.stderr.write = errCapture.write;
+    process.exitCode = 0;
+
+    await cmdDoctor(['--json']);
+
+    assert.equal(process.exitCode, 1);
+  } finally {
+    process.stdout.write = prevWrite;
+    process.stderr.write = prevErr;
+    if (prevHome === undefined) delete process.env.HOME;
+    else process.env.HOME = prevHome;
+    globalThis.fetch = prevFetch;
+    process.exitCode = prevExit;
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('doctor supports CLI base-url override', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibeusage-doctor-'));
+  const prevHome = process.env.HOME;
+  const prevFetch = globalThis.fetch;
+  const prevWrite = process.stdout.write;
+  const prevErr = process.stderr.write;
+  const prevExit = process.exitCode;
+
+  try {
+    process.env.HOME = tmp;
+    const trackerDir = path.join(tmp, '.vibeusage', 'tracker');
+    await fs.mkdir(trackerDir, { recursive: true });
+    await fs.writeFile(
+      path.join(trackerDir, 'config.json'),
+      JSON.stringify({ baseUrl: 'https://config.example', deviceToken: 't' }),
+      'utf8'
+    );
+    globalThis.fetch = async () => ({ status: 200 });
+    const outCapture = createWriteCapture();
+    const errCapture = createWriteCapture();
+    process.stdout.write = outCapture.write;
+    process.stderr.write = errCapture.write;
+    process.exitCode = 0;
+
+    await cmdDoctor(['--json', '--base-url', 'https://override.example']);
+
+    const payload = JSON.parse(outCapture.read());
+    const baseCheck = payload.checks.find((c) => c.id === 'runtime.base_url');
+    assert.equal(baseCheck.meta.base_url, 'https://override.example');
+  } finally {
+    process.stdout.write = prevWrite;
+    process.stderr.write = prevErr;
+    if (prevHome === undefined) delete process.env.HOME;
+    else process.env.HOME = prevHome;
+    globalThis.fetch = prevFetch;
+    process.exitCode = prevExit;
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+function createWriteCapture() {
+  let out = '';
+  return {
+    write(chunk, enc, cb) {
+      out += typeof chunk === 'string' ? chunk : chunk.toString(enc || 'utf8');
+      if (typeof cb === 'function') cb();
+      return true;
+    },
+    read() {
+      return out;
+    }
+  };
+}

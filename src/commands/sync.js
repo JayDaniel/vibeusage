@@ -30,7 +30,7 @@ const { resolveRuntimeConfig } = require('../lib/runtime-config');
 async function cmdSync(argv) {
   const opts = parseArgs(argv);
   const home = os.homedir();
-  const { trackerDir } = await resolveTrackerPaths({ home, migrate: true });
+  const { trackerDir } = await resolveTrackerPaths({ home });
 
   await ensureDir(trackerDir);
 

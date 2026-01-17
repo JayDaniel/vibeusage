@@ -89,6 +89,9 @@ npx --yes vibeusage doctor
 
 # Emit JSON report (and write to file)
 npx --yes vibeusage doctor --json --out doctor.json
+
+# Override base URL (diagnostics only)
+npx --yes vibeusage doctor --base-url https://example.invalid
 ```
 
 ### Sources

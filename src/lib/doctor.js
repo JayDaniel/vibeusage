@@ -46,6 +46,12 @@ function buildRuntimeChecks(runtime = {}) {
   const checks = [];
   const baseUrl = typeof runtime.baseUrl === 'string' && runtime.baseUrl.trim() ? runtime.baseUrl.trim() : null;
   const deviceToken = typeof runtime.deviceToken === 'string' && runtime.deviceToken.trim() ? 'set' : 'unset';
+  const dashboardUrl =
+    typeof runtime.dashboardUrl === 'string' && runtime.dashboardUrl.trim() ? runtime.dashboardUrl.trim() : null;
+  const httpTimeoutMs = Number.isFinite(Number(runtime.httpTimeoutMs)) ? Number(runtime.httpTimeoutMs) : null;
+  const debug = Boolean(runtime.debug);
+  const insforgeAnonKey = typeof runtime.insforgeAnonKey === 'string' && runtime.insforgeAnonKey.trim() ? 'set' : 'unset';
+  const autoRetryNoSpawn = Boolean(runtime.autoRetryNoSpawn);
 
   checks.push({
     id: 'runtime.base_url',
@@ -66,6 +72,61 @@ function buildRuntimeChecks(runtime = {}) {
     meta: {
       device_token: deviceToken,
       source: runtime?.sources?.deviceToken || null
+    }
+  });
+
+  checks.push({
+    id: 'runtime.dashboard_url',
+    status: 'ok',
+    detail: dashboardUrl ? 'dashboard_url set' : 'dashboard_url unset',
+    critical: false,
+    meta: {
+      dashboard_url: dashboardUrl,
+      source: runtime?.sources?.dashboardUrl || null
+    }
+  });
+
+  checks.push({
+    id: 'runtime.http_timeout_ms',
+    status: 'ok',
+    detail: 'http timeout resolved',
+    critical: false,
+    meta: {
+      http_timeout_ms: httpTimeoutMs,
+      source: runtime?.sources?.httpTimeoutMs || null
+    }
+  });
+
+  checks.push({
+    id: 'runtime.debug',
+    status: 'ok',
+    detail: debug ? 'debug enabled' : 'debug disabled',
+    critical: false,
+    meta: {
+      debug,
+      source: runtime?.sources?.debug || null
+    }
+  });
+
+  checks.push({
+    id: 'runtime.insforge_anon_key',
+    status: 'ok',
+    detail: insforgeAnonKey === 'set' ? 'anon key set' : 'anon key unset',
+    critical: false,
+    meta: {
+      anon_key: insforgeAnonKey,
+      source: runtime?.sources?.insforgeAnonKey || null
+    }
+  });
+
+  checks.push({
+    id: 'runtime.auto_retry_no_spawn',
+    status: 'ok',
+    detail: autoRetryNoSpawn ? 'auto retry spawn disabled' : 'auto retry spawn enabled',
+    critical: false,
+    meta: {
+      auto_retry_no_spawn: autoRetryNoSpawn,
+      source: runtime?.sources?.autoRetryNoSpawn || null
     }
   });
 

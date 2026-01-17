@@ -4,13 +4,13 @@
 - CLI doctor 模式 + runtime config 统一 + 兼容环境变量移除
 
 ## Tests Run
-- `node --test test/runtime-config.test.js test/doctor.test.js test/cli-help.test.js test/diagnostics.test.js test/insforge-client.test.js test/debug-flags.test.js test/init-flow-copy.test.js test/init-spawn-error.test.js test/auto-retry.test.js`
+- `node --test test/doctor.test.js test/status.test.js test/diagnostics.test.js test/cli-help.test.js test/auto-retry.test.js test/init-uninstall.test.js`
 
 ## Results
 - PASS
 
 ## Evidence
-- `18` tests passed, `0` failed
+- `28` tests passed, `0` failed
 
 ## Remaining Risks
 - 兼容环境变量移除可能影响旧用户配置

@@ -58,7 +58,7 @@ async function cmdInit(argv) {
   const opts = parseArgs(argv);
   const home = os.homedir();
 
-  const { rootDir, trackerDir, binDir } = await resolveTrackerPaths({ home, migrate: true });
+  const { rootDir, trackerDir, binDir } = await resolveTrackerPaths({ home });
 
   const configPath = path.join(trackerDir, 'config.json');
   const notifyOriginalPath = path.join(trackerDir, 'codex_notify_original.json');

@@ -48,7 +48,7 @@ function printHelp() {
       '  npx vibeusage [--debug] sync [--auto] [--drain]',
       '  npx vibeusage [--debug] status',
       '  npx vibeusage [--debug] diagnostics [--out diagnostics.json]',
-      '  npx vibeusage [--debug] doctor [--json] [--out doctor.json]',
+      '  npx vibeusage [--debug] doctor [--json] [--out doctor.json] [--base-url <url>]',
       '  npx vibeusage [--debug] uninstall [--purge]',
       '',
       'Notes:',

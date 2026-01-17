@@ -91,14 +91,14 @@ test('diagnostics redacts device token and home paths', async () => {
   }
 });
 
-test('diagnostics with migrate=false does not move legacy root', async () => {
+test('diagnostics does not migrate legacy root', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'vibeusage-diagnostics-'));
   const home = path.join(tmp, 'home');
   await fs.mkdir(home, { recursive: true });
   const legacyRoot = path.join(home, '.vibescore');
   await fs.mkdir(path.join(legacyRoot, 'tracker'), { recursive: true });
 
-  await collectTrackerDiagnostics({ home, migrate: false });
+  await collectTrackerDiagnostics({ home });
 
   await fs.stat(legacyRoot);
   await assert.rejects(() => fs.stat(path.join(home, '.vibeusage')));
