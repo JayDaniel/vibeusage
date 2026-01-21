@@ -93,6 +93,7 @@ export function useAuth() {
     const accessToken = params.get("access_token") || "";
     if (!accessToken) return;
 
+    console.log("[useAuth] Callback detected, saving auth...");
     clearSessionExpired();
     const next = {
       accessToken,
@@ -105,7 +106,12 @@ export function useAuth() {
     saveAuthToStorage(next);
     setAuth(next);
     setSessionExpired(false);
-    window.history.replaceState({}, "", "/");
+
+    // Use setTimeout to ensure state is updated before navigation
+    setTimeout(() => {
+      window.history.replaceState({}, "", "/");
+      window.location.reload();
+    }, 100);
   }, []);
 
   const signOut = useCallback(() => {

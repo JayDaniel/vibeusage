@@ -1,17 +1,12 @@
 /**
  * Dashboard Configuration
  *
- * Supports both Supabase (new) and InsForge (legacy) backends.
- * Supabase configuration takes priority.
+ * Reads Supabase configuration from environment variables.
+ * No hardcoded defaults - must be configured via .env or environment.
  */
 
-// Default Supabase configuration
-const DEFAULT_SUPABASE_URL = "https://llzgqbytjhcizqixvhwm.supabase.co";
-const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_L3vp-LjqP0ajHkznn_q8PQ_RETKxR6Z";
-
 /**
- * Get backend base URL
- * Priority: Supabase URL > InsForge URL > Default Supabase
+ * Get backend base URL from environment variables
  */
 export function getInsforgeBaseUrl() {
   const env = typeof import.meta !== "undefined" ? import.meta.env : undefined;
@@ -20,7 +15,7 @@ export function getInsforgeBaseUrl() {
     env?.VITE_VIBEUSAGE_SUPABASE_URL ||
     env?.VITE_VIBEUSAGE_INSFORGE_BASE_URL ||
     env?.VITE_VIBESCORE_INSFORGE_BASE_URL ||
-    DEFAULT_SUPABASE_URL
+    ""
   );
 }
 
@@ -32,8 +27,7 @@ export function getSupabaseUrl() {
 }
 
 /**
- * Get anon key
- * Priority: Supabase anon key > InsForge anon key > Default
+ * Get anon key from environment variables
  */
 export function getInsforgeAnonKey() {
   const env = typeof import.meta !== "undefined" ? import.meta.env : undefined;
@@ -43,7 +37,7 @@ export function getInsforgeAnonKey() {
     env?.VITE_VIBEUSAGE_INSFORGE_ANON_KEY ||
     env?.VITE_VIBESCORE_INSFORGE_ANON_KEY ||
     env?.VITE_INSFORGE_ANON_KEY ||
-    DEFAULT_SUPABASE_ANON_KEY
+    ""
   );
 }
 

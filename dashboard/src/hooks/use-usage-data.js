@@ -174,7 +174,8 @@ export function useUsageData({
       setFetchedAt(cached.fetchedAt || null);
     }
     refresh();
-  }, [accessToken, mockEnabled, readCache, refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, mockEnabled, from, to, includeDaily]);
 
   const normalizedSource = mockEnabled ? "mock" : source;
 

@@ -273,7 +273,8 @@ export function useTrendData({
       setFetchedAt(cached.fetchedAt || null);
     }
     refresh();
-  }, [accessToken, mockEnabled, readCache, refresh, sharedEnabled, sharedFrom, sharedRows, sharedTo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, mockEnabled, period, from, to, sharedEnabled]);
 
   const normalizedSource = mockEnabled ? "mock" : source;
 

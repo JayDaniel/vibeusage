@@ -239,7 +239,8 @@ export function useActivityHeatmap({
       setSource("cache");
     }
     refresh();
-  }, [accessToken, mockEnabled, readCache, refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, mockEnabled, weeks, range.from, range.to]);
 
   const normalizedSource = mockEnabled
     ? "mock"

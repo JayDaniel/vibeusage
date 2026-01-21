@@ -99,7 +99,8 @@ export function useUsageModelBreakdown({
       setSource("cache");
     }
     refresh();
-  }, [accessToken, mockEnabled, readCache, refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, mockEnabled, from, to]);
 
   const normalizedSource = mockEnabled ? "mock" : source;
 

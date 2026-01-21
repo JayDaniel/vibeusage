@@ -141,8 +141,9 @@ export function DashboardPage({
   const [installCopied, setInstallCopied] = useState(false);
   const [sessionExpiredCopied, setSessionExpiredCopied] = useState(false);
   const mockEnabled = isMockEnabled();
+  // Use the string token directly, not the getAccessToken function
   const authAccessToken = signedIn
-    ? auth?.getAccessToken ?? auth?.accessToken ?? null
+    ? auth?.accessToken ?? null
     : null;
   const accessToken = publicMode ? publicToken : authAccessToken;
   const accessEnabled = signedIn || mockEnabled || publicMode;
