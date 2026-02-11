@@ -48,8 +48,8 @@ totals as (
     )::bigint as claude_tokens
   from public.vibeusage_tracker_hourly h
   join params p
-    on h.hour_start >= (p.from_day::timestamp at time zone 'utc')
-   and h.hour_start < ((p.to_day + 1)::timestamp at time zone 'utc')
+    on h.hour_start >= (timezone('utc', p.from_day::date + time '00:00'))
+   and h.hour_start < (timezone('utc', (p.to_day + 1)::date + time '00:00'))
   where h.source <> 'canary'
     and h.source in ('codex', 'every-code', 'claude', 'opencode')
     and h.model <> 'unknown'
@@ -230,8 +230,8 @@ begin
     v_to := '9999-12-31'::date;
   end if;
 
-  v_from_ts := (v_from::timestamp at time zone 'utc');
-  v_to_ts := ((v_to + 1)::timestamp at time zone 'utc');
+  v_from_ts := (timezone('utc', v_from::date + time '00:00'));
+  v_to_ts := (timezone('utc', (v_to + 1)::date + time '00:00'));
 
   return query
   with totals as (
@@ -371,8 +371,8 @@ begin
     v_to := '9999-12-31'::date;
   end if;
 
-  v_from_ts := (v_from::timestamp at time zone 'utc');
-  v_to_ts := ((v_to + 1)::timestamp at time zone 'utc');
+  v_from_ts := (timezone('utc', v_from::date + time '00:00'));
+  v_to_ts := (timezone('utc', (v_to + 1)::date + time '00:00'));
 
   return query
   with totals as (

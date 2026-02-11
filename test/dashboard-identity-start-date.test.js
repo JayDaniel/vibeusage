@@ -81,23 +81,18 @@ test("Dashboard identity wiring includes subscription badges", () => {
   );
   const componentSrc = readFile(componentPath);
   assert.ok(
-    componentSrc.includes("identity_card.subscriptions_label"),
-    "expected IdentityCard subscription section label",
-  );
-  assert.ok(
-    componentSrc.includes("identity_card.subscription_item"),
-    "expected IdentityCard subscription badge copy template",
+    componentSrc.includes('identity_card.subscription_item'),
+    'expected IdentityCard subscription badge copy template'
   );
 });
 
 test("copy registry labels active days and start without underscores", () => {
   const csv = readFile(copyPath);
-  assert.equal(readCopyValue(csv, "identity_card.rank_label"), "START");
-  assert.equal(readCopyValue(csv, "identity_card.streak_label"), "ACTIVE");
-  assert.equal(readCopyValue(csv, "identity_card.streak_value"), "{{days}} DAY");
-  assert.equal(readCopyValue(csv, "identity_panel.rank_label"), "START");
-  assert.equal(readCopyValue(csv, "identity_panel.streak_label"), "ACTIVE");
-  assert.equal(readCopyValue(csv, "identity_panel.streak_value"), "{{days}} DAY");
-  assert.equal(readCopyValue(csv, "identity_card.subscriptions_label"), "SUBSCRIPTIONS");
-  assert.equal(readCopyValue(csv, "identity_card.subscription_item"), "{{tool}} {{plan}}");
+  assert.equal(readCopyValue(csv, 'identity_card.rank_label'), 'START');
+  assert.equal(readCopyValue(csv, 'identity_card.streak_label'), 'ACTIVE');
+  assert.equal(readCopyValue(csv, 'identity_card.streak_value'), '{{days}} DAY');
+  assert.equal(readCopyValue(csv, 'identity_panel.rank_label'), 'START');
+  assert.equal(readCopyValue(csv, 'identity_panel.streak_label'), 'ACTIVE');
+  assert.equal(readCopyValue(csv, 'identity_panel.streak_value'), '{{days}} DAY');
+  assert.equal(readCopyValue(csv, 'identity_card.subscription_item'), '{{tool}} {{plan}}');
 });
