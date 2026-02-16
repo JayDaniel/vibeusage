@@ -48,9 +48,8 @@ export function LeaderboardProfilePage({
   const authAccessToken = useMemo(() => {
     if (!authTokenAllowed) return null;
     if (typeof auth === "function") return auth;
-    if (typeof auth?.getAccessToken === "function") {
-      return auth.getAccessToken.bind(auth);
-    }
+    if (typeof auth === "string") return auth;
+    if (auth && typeof auth === "object") return auth;
     return null;
   }, [auth, authTokenAllowed]);
   const effectiveAuthToken = authTokenAllowed ? authAccessToken : null;
