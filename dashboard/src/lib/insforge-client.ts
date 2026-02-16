@@ -96,9 +96,9 @@ function wrapTokenForStorage(token: string): string {
 
 function unwrapTokenFromStorage(
   raw: string | null
-): { token: string | null; expired: boolean; shouldMigrate: boolean } {
+): { token: string | null; shouldMigrate: boolean } {
   if (typeof raw !== "string" || raw.length === 0) {
-    return { token: null, expired: false, shouldMigrate: false };
+    return { token: null, shouldMigrate: false };
   }
   try {
     const parsed = JSON.parse(raw);
@@ -107,22 +107,14 @@ function unwrapTokenFromStorage(
       typeof parsed === "object" &&
       parsed.v === TOKEN_ENVELOPE_VERSION &&
       typeof parsed.token === "string" &&
-      parsed.token.length > 0 &&
-      typeof parsed.expiresAt === "number"
+      parsed.token.length > 0
     ) {
-      if (parsed.expiresAt <= Date.now()) {
-        return { token: null, expired: true, shouldMigrate: false };
-      }
-      return { token: parsed.token, expired: false, shouldMigrate: false };
+      return { token: parsed.token, shouldMigrate: false };
     }
   } catch (_e) {
     // fall through to legacy plain token format
   }
-  const expiresAt = decodeJwtExpiryMs(raw);
-  if (expiresAt && expiresAt <= Date.now()) {
-    return { token: null, expired: true, shouldMigrate: false };
-  }
-  return { token: raw, expired: false, shouldMigrate: true };
+  return { token: raw, shouldMigrate: true };
 }
 
 function getNamespacedStorageKey(key: string): string {
@@ -221,12 +213,6 @@ export function createPersistentStorage() {
         memoryStore.set(key, fromLocal);
         if (!tokenKey) return fromLocal;
         const parsed = unwrapTokenFromStorage(fromLocal);
-        if (parsed.expired) {
-          removeStorageValue(localStorage, key);
-          removeStorageValue(sessionStorage, key);
-          memoryStore.delete(key);
-          return null;
-        }
         if (!parsed.token) return null;
         if (parsed.shouldMigrate) migrateTokenIfNeeded(parsed.token);
         return parsed.token;
@@ -240,12 +226,6 @@ export function createPersistentStorage() {
           return fromSession;
         }
         const parsed = unwrapTokenFromStorage(fromSession);
-        if (parsed.expired) {
-          removeStorageValue(localStorage, key);
-          removeStorageValue(sessionStorage, key);
-          memoryStore.delete(key);
-          return null;
-        }
         if (!parsed.token) return null;
         if (parsed.shouldMigrate) {
           migrateTokenIfNeeded(parsed.token);
@@ -259,10 +239,6 @@ export function createPersistentStorage() {
       if (fromMemory === undefined) return null;
       if (!tokenKey) return fromMemory;
       const parsed = unwrapTokenFromStorage(fromMemory);
-      if (parsed.expired) {
-        memoryStore.delete(key);
-        return null;
-      }
       if (!parsed.token) return null;
       if (parsed.shouldMigrate) migrateTokenIfNeeded(parsed.token);
       return parsed.token;

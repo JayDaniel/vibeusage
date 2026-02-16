@@ -69,14 +69,14 @@ describe("createPersistentStorage", () => {
     expect(storage.getItem("insforge-auth-token")).toBe(token);
   });
 
-  it("drops expired token envelopes on read", () => {
+  it("keeps token envelope readable even after token exp", () => {
     const storage = createPersistentStorage();
     const expiredToken = buildJwt(Math.floor(Date.now() / 1000) - 10);
 
     storage.setItem("insforge-auth-token", expiredToken);
 
-    expect(storage.getItem("insforge-auth-token")).toBeNull();
-    expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+    expect(storage.getItem("insforge-auth-token")).toBe(expiredToken);
+    expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeTruthy();
   });
 
   it("restores token from sessionStorage and backfills localStorage", () => {
