@@ -26,13 +26,9 @@ const PATHS = {
   usageModelBreakdown: "vibeusage-usage-model-breakdown",
   projectUsageSummary: "vibeusage-project-usage-summary",
   leaderboard: "vibeusage-leaderboard",
-  leaderboardSettings: "vibeusage-leaderboard-settings",
   leaderboardProfile: "vibeusage-leaderboard-profile",
   userStatus: "vibeusage-user-status",
   linkCodeInit: "vibeusage-link-code-init",
-  publicViewStatus: "vibeusage-public-view-status",
-  publicViewIssue: "vibeusage-public-view-issue",
-  publicViewRevoke: "vibeusage-public-view-revoke",
   publicViewProfile: "vibeusage-public-view-profile",
   publicVisibility: "vibeusage-public-visibility",
 };
@@ -145,35 +141,6 @@ export async function getLeaderboard({
     accessToken: resolvedAccessToken,
     slug: PATHS.leaderboard,
     params,
-  });
-}
-
-export async function getLeaderboardSettings({ baseUrl, accessToken }: AnyRecord = {}) {
-  const resolvedAccessToken = await resolveAccessToken(accessToken);
-  if (isMockEnabled()) {
-    return { leaderboard_public: false, updated_at: null };
-  }
-  return requestJson({
-    baseUrl,
-    accessToken: resolvedAccessToken,
-    slug: PATHS.leaderboardSettings,
-  });
-}
-
-export async function setLeaderboardSettings({
-  baseUrl,
-  accessToken,
-  leaderboardPublic,
-}: AnyRecord = {}) {
-  const resolvedAccessToken = await resolveAccessToken(accessToken);
-  if (isMockEnabled()) {
-    return { leaderboard_public: Boolean(leaderboardPublic), updated_at: new Date().toISOString() };
-  }
-  return requestPostJson({
-    baseUrl,
-    accessToken: resolvedAccessToken,
-    slug: PATHS.leaderboardSettings,
-    body: { leaderboard_public: Boolean(leaderboardPublic) },
   });
 }
 
@@ -455,41 +422,12 @@ export async function requestInstallLinkCode({ baseUrl, accessToken }: AnyRecord
   });
 }
 
-export async function getPublicViewStatus({ baseUrl, accessToken }: AnyRecord = {}) {
-  const resolvedAccessToken = await resolveAccessToken(accessToken);
-  return requestJson({
-    baseUrl,
-    accessToken: resolvedAccessToken,
-    slug: PATHS.publicViewStatus,
-  });
-}
-
 export async function getPublicViewProfile({ baseUrl, accessToken }: AnyRecord = {}) {
   const resolvedAccessToken = await resolveAccessToken(accessToken);
   return requestJson({
     baseUrl,
     accessToken: resolvedAccessToken,
     slug: PATHS.publicViewProfile,
-  });
-}
-
-export async function issuePublicViewToken({ baseUrl, accessToken }: AnyRecord = {}) {
-  const resolvedAccessToken = await resolveAccessToken(accessToken);
-  return requestPostJson({
-    baseUrl,
-    accessToken: resolvedAccessToken,
-    slug: PATHS.publicViewIssue,
-    body: {},
-  });
-}
-
-export async function revokePublicViewToken({ baseUrl, accessToken }: AnyRecord = {}) {
-  const resolvedAccessToken = await resolveAccessToken(accessToken);
-  return requestPostJson({
-    baseUrl,
-    accessToken: resolvedAccessToken,
-    slug: PATHS.publicViewRevoke,
-    body: {},
   });
 }
 
