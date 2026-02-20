@@ -13,8 +13,8 @@ import {
 import { isMockEnabled } from "../lib/mock-data";
 import {
   getLeaderboard,
-  getLeaderboardSettings,
-  setLeaderboardSettings,
+  getPublicVisibility,
+  setPublicVisibility,
 } from "../lib/vibeusage-api";
 import { AsciiBox } from "../ui/foundation/AsciiBox.jsx";
 import { MatrixButton } from "../ui/foundation/MatrixButton.jsx";
@@ -170,13 +170,13 @@ export function LeaderboardPage({
     setProfileState((prev) => ({ ...prev, loading: true, error: null }));
     (async () => {
       const token = await resolveAuthAccessToken(effectiveAuthToken);
-      const data = await getLeaderboardSettings({ baseUrl, accessToken: token });
+      const data = await getPublicVisibility({ baseUrl, accessToken: token });
       if (!active) return;
       setProfileState((prev) => ({
         ...prev,
         loading: false,
         error: null,
-        leaderboardPublic: Boolean(data?.leaderboard_public),
+        leaderboardPublic: Boolean(data?.enabled),
       }));
     })().catch((err) => {
       if (!active) return;
@@ -194,11 +194,13 @@ export function LeaderboardPage({
 
   useEffect(() => {
     if (!baseUrl) return;
-    if (!mockEnabled && (!authTokenAllowed || !authTokenReady)) return;
+    if (!mockEnabled && authTokenAllowed && !authTokenReady) return;
     let active = true;
     setListState((prev) => ({ ...prev, loading: true, error: null }));
     (async () => {
-      const token = await resolveAuthAccessToken(effectiveAuthToken);
+      const token = authTokenAllowed
+        ? await resolveAuthAccessToken(effectiveAuthToken)
+        : null;
       const data = await getLeaderboard({
         baseUrl,
         accessToken: token,
@@ -274,16 +276,16 @@ export function LeaderboardPage({
     try {
       const token = await resolveAuthAccessToken(effectiveAuthToken);
       const nextValue = !publicProfileEnabled;
-      const data = await setLeaderboardSettings({
+      const data = await setPublicVisibility({
         baseUrl,
         accessToken: token,
-        leaderboardPublic: nextValue,
+        enabled: nextValue,
       });
       setProfileState((prev) => ({
         ...prev,
         saving: false,
         error: null,
-        leaderboardPublic: Boolean(data?.leaderboard_public),
+        leaderboardPublic: Boolean(data?.enabled),
       }));
       setListReloadToken((value) => value + 1);
     } catch (err) {

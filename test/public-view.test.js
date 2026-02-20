@@ -63,11 +63,11 @@ test("share html includes app entry script", () => {
   assert.match(src, /<script\s+type="module"\s+src="\/src\/main\.jsx"><\/script>/);
 });
 
-test("public view edge functions are defined", () => {
+test("legacy public view edge functions are retired", () => {
   const issueSrc = read("insforge-src/functions/vibeusage-public-view-issue.js");
   const revokeSrc = read("insforge-src/functions/vibeusage-public-view-revoke.js");
-  assert.match(issueSrc, /public view/i);
-  assert.match(revokeSrc, /public view/i);
+  assert.match(issueSrc, /retired/i);
+  assert.match(revokeSrc, /retired/i);
 });
 
 test("public view profile edge function is defined", () => {
@@ -182,7 +182,7 @@ test("identity card supports avatar fallback", () => {
   assert.match(src, /onError/);
 });
 
-test("public view copy issues a token when missing", () => {
+test("public view copy reloads visibility state when token missing", () => {
   const src = read("dashboard/src/pages/DashboardPage.jsx");
   const block = sliceBetween(
     src,
@@ -190,7 +190,7 @@ test("public view copy issues a token when missing", () => {
     "const handleTogglePublicView"
   );
   assert.ok(block, "handleCopyPublicView block not found");
-  assert.match(block, /issuePublicViewToken/);
+  assert.match(block, /getPublicVisibility/);
 });
 
 test("public view copy is not gated on existing url", () => {

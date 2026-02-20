@@ -15,13 +15,10 @@ import {
   toFiniteNumber,
 } from "../lib/format";
 import {
-  getLeaderboardSettings,
-  setLeaderboardSettings,
   getPublicVisibility,
   setPublicVisibility,
   getUserStatus,
   getPublicViewProfile,
-  issuePublicViewToken,
   requestInstallLinkCode,
 } from "../lib/vibeusage-api";
 import { buildFleetData, buildTopModels } from "../lib/model-breakdown";
@@ -1212,7 +1209,7 @@ export function DashboardPage({
           setPublicViewActionLoading(false);
           return;
         }
-        const data = await issuePublicViewToken({
+        const data = await getPublicVisibility({
           baseUrl,
           accessToken: resolvedToken,
         });
