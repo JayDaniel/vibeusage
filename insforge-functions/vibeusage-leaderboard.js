@@ -305,11 +305,7 @@ var require_auth = __commonJS({
     }
     async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
       const anonKey = getAnonKey2();
-      const edgeClient = createClient({
-        baseUrl,
-        anonKey: anonKey || void 0,
-        edgeFunctionToken: bearer
-      });
+      const edgeClient = createClient({ baseUrl, anonKey: anonKey || void 0, edgeFunctionToken: bearer });
       const local = await verifyUserJwtHs256({ token: bearer });
       const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
       if (!local.ok && !allowRemoteOnly) {
@@ -418,14 +414,7 @@ var require_auth = __commonJS({
       }
       const publicView = await resolvePublicView({ baseUrl, shareToken: bearer });
       if (!publicView.ok) {
-        return {
-          ok: false,
-          edgeClient: null,
-          userId: null,
-          accessType: null,
-          status: 401,
-          error: "Unauthorized"
-        };
+        return { ok: false, edgeClient: null, userId: null, accessType: null, status: 401, error: "Unauthorized" };
       }
       return {
         ok: true,
@@ -650,14 +639,7 @@ var require_date = __commonJS({
     }
     function getTimeZoneOffsetMinutes(date, timeZone) {
       const parts = getTimeZoneParts(date, timeZone);
-      const asUtc = Date.UTC(
-        parts.year,
-        parts.month - 1,
-        parts.day,
-        parts.hour,
-        parts.minute,
-        parts.second
-      );
+      const asUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
       return Math.round((asUtc - date.getTime()) / 6e4);
     }
     function getLocalParts(date, tzContext) {
@@ -845,10 +827,13 @@ module.exports = async function(request) {
   const methodErr = requireMethod(request, "GET");
   if (methodErr) return methodErr;
   const bearer = getBearerToken(request.headers.get("Authorization"));
-  if (!bearer) return json({ error: "Missing bearer token" }, 401);
   const baseUrl = getBaseUrl();
-  const auth = await getEdgeClientAndUserId({ baseUrl, bearer });
-  if (!auth.ok) return json({ error: auth.error || "Unauthorized" }, auth.status || 401);
+  let auth = { ok: false, edgeClient: null, userId: null };
+  if (bearer) {
+    auth = await getEdgeClientAndUserId({ baseUrl, bearer });
+    if (!auth.ok) return json({ error: auth.error || "Unauthorized" }, auth.status || 401);
+  }
+  const viewerUserId = auth.ok ? auth.userId : null;
   const url = new URL(request.url);
   const period = normalizePeriod(url.searchParams.get("period"));
   if (!period) return json({ error: "Invalid period" }, 400);
@@ -878,7 +863,7 @@ module.exports = async function(request) {
       metric,
       from,
       to,
-      userId: auth.userId,
+      userId: viewerUserId,
       limit,
       offset
     });
@@ -904,37 +889,25 @@ module.exports = async function(request) {
   }
   const entriesView = metric === "all" ? `vibeusage_leaderboard_${period}_current` : `vibeusage_leaderboard_${metric}_${period}_current`;
   const meView = metric === "all" ? `vibeusage_leaderboard_me_${period}_current` : `vibeusage_leaderboard_me_${metric}_${period}_current`;
-  const singleQuery = metric === "all" ? await tryLoadSingleQuery({
-    edgeClient: auth.edgeClient,
-    entriesView,
-    limit,
-    offset
-  }) : null;
-  if (singleQuery) {
-    return json(
-      {
-        period,
-        metric,
-        from,
-        to,
-        generated_at: (/* @__PURE__ */ new Date()).toISOString(),
-        page,
-        limit,
-        offset,
-        total_entries: null,
-        total_pages: null,
-        entries: singleQuery.entries,
-        me: singleQuery.me
-      },
-      200
-    );
-  }
-  const { data: rawEntries, error: entriesErr } = await auth.edgeClient.database.from(entriesView).select("rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens").order("rank", { ascending: true }).range(offset, offset + limit - 1);
+  const readClient = auth.ok ? auth.edgeClient : createClient({
+    baseUrl,
+    anonKey: anonKey || void 0,
+    edgeFunctionToken: anonKey || void 0
+  });
+  if (!readClient) return json({ error: "Service unavailable" }, 503);
+  const { data: rawEntries, error: entriesErr } = await readClient.database.from(entriesView).select(
+    "user_id,rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens,is_public"
+  ).order("rank", { ascending: true }).range(offset, offset + limit - 1);
   if (entriesErr) return json({ error: entriesErr.message }, 500);
-  const { data: rawMe, error: meErr } = await auth.edgeClient.database.from(meView).select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens").maybeSingle();
-  if (meErr) return json({ error: meErr.message }, 500);
-  const entries = (rawEntries || []).slice(0, limit).map(normalizeEntry);
-  const me = normalizeMe(rawMe);
+  let rawMe = null;
+  if (viewerUserId) {
+    const meRes = await auth.edgeClient.database.from(meView).select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens").maybeSingle();
+    if (meRes.error) return json({ error: meRes.error.message }, 500);
+    rawMe = meRes.data;
+  }
+  const publicUserSet = await loadActivePublicUserIds({ serviceClient, rows: rawEntries });
+  const entries = (rawEntries || []).slice(0, limit).map((row) => normalizeEntry(row, { userId: viewerUserId, publicUserSet }));
+  const me = viewerUserId ? normalizeMe(rawMe) : null;
   return json(
     {
       period,
@@ -957,28 +930,6 @@ function toSafeCount(value) {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
   return Math.floor(n);
-}
-async function tryLoadSingleQuery({ edgeClient, entriesView, limit, offset }) {
-  try {
-    const startRank = offset + 1;
-    const endRank = offset + limit;
-    const { data, error } = await edgeClient.database.from(entriesView).select(
-      "rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens,is_public"
-    ).or(`and(rank.gte.${startRank},rank.lte.${endRank}),is_me.eq.true`).order("rank", { ascending: true });
-    if (error) return null;
-    const rows = Array.isArray(data) ? data : [];
-    const entries = [];
-    for (const row of rows) {
-      const rank = toPositiveInt(row?.rank);
-      if (rank < startRank || rank > endRank) continue;
-      entries.push(normalizeEntry(row));
-    }
-    const meRow = rows.find((row) => Boolean(row?.is_me));
-    const me = normalizeMe(meRow);
-    return { entries: entries.slice(0, limit), me };
-  } catch (_e) {
-    return null;
-  }
 }
 function normalizePeriod(raw) {
   if (typeof raw !== "string") return null;
@@ -1053,44 +1004,28 @@ async function loadSnapshot({ serviceClient, period, metric, from, to, userId, l
     console.error("snapshot entries error", entriesErr);
     return { ok: false };
   }
-  const { data: meRow, error: meErr } = await serviceClient.database.from("vibeusage_leaderboard_snapshots").select(
-    "rank,rank_gpt,rank_claude,rank_other,gpt_tokens,claude_tokens,other_tokens,total_tokens,generated_at"
-  ).eq("period", period).eq("from_day", from).eq("to_day", to).eq("user_id", userId).maybeSingle();
-  if (meErr) {
-    console.error("snapshot me error", meErr);
-    return { ok: false };
+  const publicUserSet = await loadActivePublicUserIds({ serviceClient, rows: entryRows });
+  let meRow = null;
+  if (userId) {
+    const meRes = await serviceClient.database.from("vibeusage_leaderboard_snapshots").select(
+      "rank,rank_gpt,rank_claude,rank_other,gpt_tokens,claude_tokens,other_tokens,total_tokens,generated_at"
+    ).eq("period", period).eq("from_day", from).eq("to_day", to).eq("user_id", userId).maybeSingle();
+    if (meRes.error) {
+      console.error("snapshot me error", meRes.error);
+      return { ok: false };
+    }
+    meRow = meRes.data;
   }
   const entries = (entryRows || []).map((row) => {
-    const displayName = normalizeDisplayName(row?.display_name);
-    const avatarUrl = normalizeAvatarUrl(row?.avatar_url);
-    const rawUserId = typeof row?.user_id === "string" ? row.user_id : null;
-    const isPublic = Boolean(row?.is_public);
-    const exposedUserId = isPublic ? rawUserId : null;
-    const gptTokens = toBigInt(row?.gpt_tokens);
-    const claudeTokens = toBigInt(row?.claude_tokens);
-    const totalTokens = toBigInt(row?.total_tokens);
-    const otherTokens = resolveOtherTokens({
-      row,
-      totalTokens,
-      gptTokens,
-      claudeTokens
-    });
     const metricRank = toPositiveInt(row?.[rankColumn]);
     const resolvedRank = metricRank > 0 ? metricRank : toPositiveInt(row?.rank);
+    const normalized = normalizeEntry(row, { userId, publicUserSet });
     return {
-      user_id: exposedUserId,
-      rank: resolvedRank,
-      is_me: rawUserId === userId,
-      display_name: displayName,
-      avatar_url: avatarUrl,
-      gpt_tokens: gptTokens.toString(),
-      claude_tokens: claudeTokens.toString(),
-      other_tokens: otherTokens.toString(),
-      total_tokens: totalTokens.toString(),
-      is_public: isPublic
+      ...normalized,
+      rank: resolvedRank
     };
   });
-  const me = normalizeMetricMe(meRow, metric);
+  const me = userId ? normalizeMetricMe(meRow, metric) : null;
   const generatedAt = normalizeGeneratedAt(entryRows, meRow);
   if (entries.length === 0 && !meRow) return { ok: false };
   return {
@@ -1148,7 +1083,9 @@ async function computeWindow({ period }) {
   }
   throw new Error(`Unsupported period: ${String(period)}`);
 }
-function normalizeEntry(row) {
+function normalizeEntry(row, options = {}) {
+  const userId = typeof options?.userId === "string" ? options.userId : null;
+  const publicUserSet = options?.publicUserSet;
   const gptTokens = toBigInt(row?.gpt_tokens);
   const claudeTokens = toBigInt(row?.claude_tokens);
   const totalTokens = toBigInt(row?.total_tokens);
@@ -1158,17 +1095,20 @@ function normalizeEntry(row) {
     gptTokens,
     claudeTokens
   });
+  const rawUserId = typeof row?.user_id === "string" ? row.user_id : null;
+  const isPublic = resolveIsPublic({ row, rawUserId, publicUserSet });
+  const isMe = userId ? rawUserId ? rawUserId === userId : Boolean(row?.is_me) : false;
   return {
-    user_id: null,
+    user_id: isPublic ? rawUserId : null,
     rank: toPositiveInt(row?.rank),
-    is_me: Boolean(row?.is_me),
-    display_name: normalizeDisplayName(row?.display_name),
-    avatar_url: normalizeAvatarUrl(row?.avatar_url),
+    is_me: isMe,
+    display_name: isPublic ? normalizeDisplayName(row?.display_name) : "Anonymous",
+    avatar_url: isPublic ? normalizeAvatarUrl(row?.avatar_url) : null,
     gpt_tokens: gptTokens.toString(),
     claude_tokens: claudeTokens.toString(),
     other_tokens: otherTokens.toString(),
     total_tokens: totalTokens.toString(),
-    is_public: Boolean(row?.is_public)
+    is_public: isPublic
   };
 }
 function normalizeMe(row) {
@@ -1195,6 +1135,25 @@ function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
   if (explicit != null) return toBigInt(explicit);
   const derived = totalTokens - gptTokens - claudeTokens;
   return derived > 0n ? derived : 0n;
+}
+function resolveIsPublic({ row, rawUserId, publicUserSet }) {
+  if (publicUserSet instanceof Set) {
+    if (!rawUserId) return false;
+    return publicUserSet.has(rawUserId);
+  }
+  return Boolean(row?.is_public);
+}
+async function loadActivePublicUserIds({ serviceClient, rows }) {
+  if (!serviceClient) return null;
+  if (!Array.isArray(rows) || rows.length === 0) return /* @__PURE__ */ new Set();
+  const ids = [...new Set(rows.map((row) => typeof row?.user_id === "string" ? row.user_id : null).filter(Boolean))];
+  if (ids.length === 0) return /* @__PURE__ */ new Set();
+  const { data, error } = await serviceClient.database.from("vibeusage_public_views").select("user_id").in("user_id", ids).is("revoked_at", null);
+  if (error) {
+    console.error("public visibility lookup error", error);
+    return null;
+  }
+  return new Set((data || []).map((row) => typeof row?.user_id === "string" ? row.user_id : null).filter(Boolean));
 }
 function normalizeGeneratedAt(entryRows, meRow) {
   const candidate = entryRows?.[0]?.generated_at || meRow?.generated_at;

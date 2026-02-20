@@ -1,5 +1,5 @@
 // Edge function: vibeusage-leaderboard
-// Returns token usage leaderboard for the current UTC period window for authenticated users.
+// Returns token usage leaderboard for the current UTC period window (auth optional; public read supported).
 // Periods:
 // - week: current UTC calendar week (Sunday start)
 // - month: current UTC calendar month
@@ -26,11 +26,15 @@ module.exports = async function (request) {
   if (methodErr) return methodErr;
 
   const bearer = getBearerToken(request.headers.get("Authorization"));
-  if (!bearer) return json({ error: "Missing bearer token" }, 401);
-
   const baseUrl = getBaseUrl();
-  const auth = await getEdgeClientAndUserId({ baseUrl, bearer });
-  if (!auth.ok) return json({ error: auth.error || "Unauthorized" }, auth.status || 401);
+
+  let auth = { ok: false, edgeClient: null, userId: null };
+  if (bearer) {
+    auth = await getEdgeClientAndUserId({ baseUrl, bearer });
+    if (!auth.ok) return json({ error: auth.error || "Unauthorized" }, auth.status || 401);
+  }
+
+  const viewerUserId = auth.ok ? auth.userId : null;
 
   const url = new URL(request.url);
   const period = normalizePeriod(url.searchParams.get("period"));
@@ -68,7 +72,7 @@ module.exports = async function (request) {
       metric,
       from,
       to,
-      userId: auth.userId,
+      userId: viewerUserId,
       limit,
       offset,
     });
@@ -103,53 +107,42 @@ module.exports = async function (request) {
       ? `vibeusage_leaderboard_me_${period}_current`
       : `vibeusage_leaderboard_me_${metric}_${period}_current`;
 
-  const singleQuery =
-    metric === "all"
-      ? await tryLoadSingleQuery({
-          edgeClient: auth.edgeClient,
-          entriesView,
-          limit,
-          offset,
-        })
-      : null;
+  const readClient = auth.ok
+    ? auth.edgeClient
+    : createClient({
+        baseUrl,
+        anonKey: anonKey || undefined,
+        edgeFunctionToken: anonKey || undefined,
+      });
 
-  if (singleQuery) {
-    return json(
-      {
-        period,
-        metric,
-        from,
-        to,
-        generated_at: new Date().toISOString(),
-        page,
-        limit,
-        offset,
-        total_entries: null,
-        total_pages: null,
-        entries: singleQuery.entries,
-        me: singleQuery.me,
-      },
-      200,
-    );
-  }
+  if (!readClient) return json({ error: "Service unavailable" }, 503);
 
-  const { data: rawEntries, error: entriesErr } = await auth.edgeClient.database
+  const { data: rawEntries, error: entriesErr } = await readClient.database
     .from(entriesView)
-    .select("rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens")
+    .select(
+      "user_id,rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens,is_public",
+    )
     .order("rank", { ascending: true })
     .range(offset, offset + limit - 1);
 
   if (entriesErr) return json({ error: entriesErr.message }, 500);
 
-  const { data: rawMe, error: meErr } = await auth.edgeClient.database
-    .from(meView)
-    .select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens")
-    .maybeSingle();
+  let rawMe = null;
+  if (viewerUserId) {
+    const meRes = await auth.edgeClient.database
+      .from(meView)
+      .select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens")
+      .maybeSingle();
 
-  if (meErr) return json({ error: meErr.message }, 500);
+    if (meRes.error) return json({ error: meRes.error.message }, 500);
+    rawMe = meRes.data;
+  }
 
-  const entries = (rawEntries || []).slice(0, limit).map(normalizeEntry);
-  const me = normalizeMe(rawMe);
+  const publicUserSet = await loadActivePublicUserIds({ serviceClient, rows: rawEntries });
+  const entries = (rawEntries || [])
+    .slice(0, limit)
+    .map((row) => normalizeEntry(row, { userId: viewerUserId, publicUserSet }));
+  const me = viewerUserId ? normalizeMe(rawMe) : null;
 
   return json(
     {
@@ -308,60 +301,40 @@ async function loadSnapshot({ serviceClient, period, metric, from, to, userId, l
     return { ok: false };
   }
 
-  const { data: meRow, error: meErr } = await serviceClient.database
-    .from("vibeusage_leaderboard_snapshots")
-    .select(
-      "rank,rank_gpt,rank_claude,rank_other,gpt_tokens,claude_tokens,other_tokens,total_tokens,generated_at",
-    )
-    .eq("period", period)
-    .eq("from_day", from)
-    .eq("to_day", to)
-    .eq("user_id", userId)
-    .maybeSingle();
+  const publicUserSet = await loadActivePublicUserIds({ serviceClient, rows: entryRows });
 
-  if (meErr) {
-    console.error("snapshot me error", meErr);
-    return { ok: false };
+  let meRow = null;
+  if (userId) {
+    const meRes = await serviceClient.database
+      .from("vibeusage_leaderboard_snapshots")
+      .select(
+        "rank,rank_gpt,rank_claude,rank_other,gpt_tokens,claude_tokens,other_tokens,total_tokens,generated_at",
+      )
+      .eq("period", period)
+      .eq("from_day", from)
+      .eq("to_day", to)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (meRes.error) {
+      console.error("snapshot me error", meRes.error);
+      return { ok: false };
+    }
+
+    meRow = meRes.data;
   }
 
   const entries = (entryRows || []).map((row) => {
-    const displayName = normalizeDisplayName(row?.display_name);
-    const avatarUrl = normalizeAvatarUrl(row?.avatar_url);
-    const rawUserId = typeof row?.user_id === "string" ? row.user_id : null;
-    const isPublic = Boolean(row?.is_public);
-
-    // Only expose user_id when is_public=true.
-    // Public name/avatar and stable id exposure are controlled independently.
-    const exposedUserId = isPublic ? rawUserId : null;
-
-    const gptTokens = toBigInt(row?.gpt_tokens);
-    const claudeTokens = toBigInt(row?.claude_tokens);
-    const totalTokens = toBigInt(row?.total_tokens);
-    const otherTokens = resolveOtherTokens({
-      row,
-      totalTokens,
-      gptTokens,
-      claudeTokens,
-    });
-
     const metricRank = toPositiveInt(row?.[rankColumn]);
     const resolvedRank = metricRank > 0 ? metricRank : toPositiveInt(row?.rank);
-
+    const normalized = normalizeEntry(row, { userId, publicUserSet });
     return {
-      user_id: exposedUserId,
+      ...normalized,
       rank: resolvedRank,
-      is_me: rawUserId === userId,
-      display_name: displayName,
-      avatar_url: avatarUrl,
-      gpt_tokens: gptTokens.toString(),
-      claude_tokens: claudeTokens.toString(),
-      other_tokens: otherTokens.toString(),
-      total_tokens: totalTokens.toString(),
-      is_public: isPublic,
     };
   });
 
-  const me = normalizeMetricMe(meRow, metric);
+  const me = userId ? normalizeMetricMe(meRow, metric) : null;
   const generatedAt = normalizeGeneratedAt(entryRows, meRow);
 
   if (entries.length === 0 && !meRow) return { ok: false };
@@ -431,7 +404,10 @@ async function computeWindow({ period }) {
   throw new Error(`Unsupported period: ${String(period)}`);
 }
 
-function normalizeEntry(row) {
+function normalizeEntry(row, options = {}) {
+  const userId = typeof options?.userId === "string" ? options.userId : null;
+  const publicUserSet = options?.publicUserSet;
+
   const gptTokens = toBigInt(row?.gpt_tokens);
   const claudeTokens = toBigInt(row?.claude_tokens);
   const totalTokens = toBigInt(row?.total_tokens);
@@ -442,17 +418,25 @@ function normalizeEntry(row) {
     claudeTokens,
   });
 
+  const rawUserId = typeof row?.user_id === "string" ? row.user_id : null;
+  const isPublic = resolveIsPublic({ row, rawUserId, publicUserSet });
+  const isMe = userId
+    ? rawUserId
+      ? rawUserId === userId
+      : Boolean(row?.is_me)
+    : false;
+
   return {
-    user_id: null,
+    user_id: isPublic ? rawUserId : null,
     rank: toPositiveInt(row?.rank),
-    is_me: Boolean(row?.is_me),
-    display_name: normalizeDisplayName(row?.display_name),
-    avatar_url: normalizeAvatarUrl(row?.avatar_url),
+    is_me: isMe,
+    display_name: isPublic ? normalizeDisplayName(row?.display_name) : "Anonymous",
+    avatar_url: isPublic ? normalizeAvatarUrl(row?.avatar_url) : null,
     gpt_tokens: gptTokens.toString(),
     claude_tokens: claudeTokens.toString(),
     other_tokens: otherTokens.toString(),
     total_tokens: totalTokens.toString(),
-    is_public: Boolean(row?.is_public),
+    is_public: isPublic,
   };
 }
 
@@ -482,6 +466,35 @@ function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
 
   const derived = totalTokens - gptTokens - claudeTokens;
   return derived > 0n ? derived : 0n;
+}
+
+function resolveIsPublic({ row, rawUserId, publicUserSet }) {
+  if (publicUserSet instanceof Set) {
+    if (!rawUserId) return false;
+    return publicUserSet.has(rawUserId);
+  }
+  return Boolean(row?.is_public);
+}
+
+async function loadActivePublicUserIds({ serviceClient, rows }) {
+  if (!serviceClient) return null;
+  if (!Array.isArray(rows) || rows.length === 0) return new Set();
+
+  const ids = [...new Set(rows.map((row) => (typeof row?.user_id === "string" ? row.user_id : null)).filter(Boolean))];
+  if (ids.length === 0) return new Set();
+
+  const { data, error } = await serviceClient.database
+    .from("vibeusage_public_views")
+    .select("user_id")
+    .in("user_id", ids)
+    .is("revoked_at", null);
+
+  if (error) {
+    console.error("public visibility lookup error", error);
+    return null;
+  }
+
+  return new Set((data || []).map((row) => (typeof row?.user_id === "string" ? row.user_id : null)).filter(Boolean));
 }
 
 function normalizeGeneratedAt(entryRows, meRow) {

@@ -7181,7 +7181,7 @@ test("vibeusage-leaderboard rejects invalid period", async () => {
   assert.equal(res.status, 400);
 });
 
-test("vibeusage-leaderboard snapshot entries gate user_id by is_public and include is_public", async () => {
+test("vibeusage-leaderboard snapshot visibility uses canonical active public rows", async () => {
   setDenoEnv({
     INSFORGE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
@@ -7201,8 +7201,8 @@ test("vibeusage-leaderboard snapshot entries gate user_id by is_public and inclu
       rank: 1,
       rank_gpt: 1,
       rank_claude: 1,
-      display_name: "Nick",
-      avatar_url: "https://example.com/avatar.png",
+      display_name: "Stale Public",
+      avatar_url: "https://example.com/public.png",
       is_public: true,
       gpt_tokens: "10",
       claude_tokens: "5",
@@ -7214,8 +7214,8 @@ test("vibeusage-leaderboard snapshot entries gate user_id by is_public and inclu
       rank: 2,
       rank_gpt: 2,
       rank_claude: 2,
-      display_name: "Private Nick",
-      avatar_url: "https://example.com/private.png",
+      display_name: "Actually Public",
+      avatar_url: "https://example.com/actual.png",
       is_public: false,
       gpt_tokens: "7",
       claude_tokens: "3",
@@ -7243,29 +7243,42 @@ test("vibeusage-leaderboard snapshot entries gate user_id by is_public and inclu
       return {
         database: {
           from: (table) => {
-            if (table !== "vibeusage_leaderboard_snapshots") {
-              throw new Error(`Unexpected service table: ${String(table)}`);
+            if (table === "vibeusage_leaderboard_snapshots") {
+              return {
+                select: () => {
+                  const q = {
+                    eq: () => q,
+                    order: () => q,
+                    range: async () => ({ data: snapshotRows, error: null }),
+                    maybeSingle: async () => ({
+                      data: snapshotRows.find((row) => row.user_id === userId) || null,
+                      error: null,
+                    }),
+                    limit: async () => ({
+                      data: snapshotRows.slice(0, 1),
+                      error: null,
+                      count: snapshotRows.length,
+                    }),
+                  };
+                  return q;
+                },
+              };
             }
 
-            return {
-              select: () => {
-                const q = {
-                  eq: () => q,
-                  order: () => q,
-                  range: async () => ({ data: snapshotRows, error: null }),
-                  maybeSingle: async () => ({
-                    data: snapshotRows.find((row) => row.user_id === userId) || null,
-                    error: null,
+            if (table === "vibeusage_public_views") {
+              return {
+                select: () => ({
+                  in: () => ({
+                    is: async () => ({
+                      data: [{ user_id: userId }],
+                      error: null,
+                    }),
                   }),
-                  limit: async () => ({
-                    data: snapshotRows.slice(0, 1),
-                    error: null,
-                    count: snapshotRows.length,
-                  }),
-                };
-                return q;
-              },
-            };
+                }),
+              };
+            }
+
+            throw new Error(`Unexpected service table: ${String(table)}`);
           },
         },
       };
@@ -7283,18 +7296,117 @@ test("vibeusage-leaderboard snapshot entries gate user_id by is_public and inclu
   assert.equal(res.status, 200);
   const body = await res.json();
 
-  assert.equal(Object.prototype.hasOwnProperty.call(body.entries?.[0] || {}, "is_public"), true);
-  assert.equal(Object.prototype.hasOwnProperty.call(body.entries?.[1] || {}, "is_public"), true);
-  assert.equal(Object.prototype.hasOwnProperty.call(body.entries?.[0] || {}, "user_id"), true);
-  assert.equal(Object.prototype.hasOwnProperty.call(body.entries?.[1] || {}, "user_id"), true);
+  assert.equal(body.entries?.length, 2);
 
-  assert.equal(body.entries?.[0]?.display_name, "Nick");
-  assert.equal(body.entries?.[0]?.is_public, true);
+  assert.equal(body.entries?.[0]?.display_name, "Anonymous");
+  assert.equal(body.entries?.[0]?.is_public, false);
+  assert.equal(body.entries?.[0]?.user_id, null);
+
+  assert.equal(body.entries?.[1]?.display_name, "Actually Public");
+  assert.equal(body.entries?.[1]?.is_public, true);
+  assert.equal(body.entries?.[1]?.user_id, userId);
+});
+
+test("vibeusage-leaderboard allows anonymous viewer and returns null me", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-leaderboard");
+
+  const publicUserId = "f1111111-2222-3333-4444-555555555555";
+  const privateUserId = "f6666666-2222-3333-4444-555555555555";
+
+  const snapshotRows = [
+    {
+      user_id: publicUserId,
+      rank: 1,
+      rank_gpt: 1,
+      rank_claude: 1,
+      display_name: "Public User",
+      avatar_url: "https://example.com/public.png",
+      is_public: false,
+      gpt_tokens: "10",
+      claude_tokens: "5",
+      total_tokens: "15",
+      generated_at: "2026-02-09T00:00:00.000Z",
+    },
+    {
+      user_id: privateUserId,
+      rank: 2,
+      rank_gpt: 2,
+      rank_claude: 2,
+      display_name: "Private User",
+      avatar_url: "https://example.com/private.png",
+      is_public: true,
+      gpt_tokens: "7",
+      claude_tokens: "3",
+      total_tokens: "10",
+      generated_at: "2026-02-09T00:00:00.000Z",
+    },
+  ];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === SERVICE_ROLE_KEY) {
+      return {
+        database: {
+          from: (table) => {
+            if (table === "vibeusage_leaderboard_snapshots") {
+              return {
+                select: () => {
+                  const q = {
+                    eq: () => q,
+                    order: () => q,
+                    range: async () => ({ data: snapshotRows, error: null }),
+                    maybeSingle: async () => ({ data: null, error: null }),
+                    limit: async () => ({
+                      data: snapshotRows.slice(0, 1),
+                      error: null,
+                      count: snapshotRows.length,
+                    }),
+                  };
+                  return q;
+                },
+              };
+            }
+
+            if (table === "vibeusage_public_views") {
+              return {
+                select: () => ({
+                  in: () => ({
+                    is: async () => ({
+                      data: [{ user_id: publicUserId }],
+                      error: null,
+                    }),
+                  }),
+                }),
+              };
+            }
+
+            throw new Error(`Unexpected service table: ${String(table)}`);
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-leaderboard?period=week&limit=2", {
+    method: "GET",
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.me, null);
   assert.equal(body.entries?.[0]?.user_id, publicUserId);
-
-  assert.equal(body.entries?.[1]?.display_name, "Private Nick");
-  assert.equal(body.entries?.[1]?.is_public, false);
+  assert.equal(body.entries?.[0]?.is_public, true);
   assert.equal(body.entries?.[1]?.user_id, null);
+  assert.equal(body.entries?.[1]?.is_public, false);
 });
 
 test("vibeusage-leaderboard-refresh rejects non-week period", async () => {
