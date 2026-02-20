@@ -17,6 +17,8 @@ import {
 import {
   getLeaderboardSettings,
   setLeaderboardSettings,
+  getPublicVisibility,
+  setPublicVisibility,
   getUserStatus,
   getPublicViewProfile,
   issuePublicViewToken,
@@ -266,14 +268,14 @@ export function DashboardPage({
         return;
       }
       try {
-        const data = await getLeaderboardSettings({
+        const data = await getPublicVisibility({
           baseUrl,
           accessToken: resolvedToken,
         });
         if (!active) return;
-        const enabled = Boolean(data?.leaderboard_public);
+        const enabled = Boolean(data?.enabled);
         setPublicViewEnabled(enabled);
-        setPublicViewToken(null);
+        setPublicViewToken(data?.share_token || null);
       } catch (_err) {
         if (!active) return;
         setPublicViewEnabled(false);
@@ -1251,14 +1253,14 @@ export function DashboardPage({
         return;
       }
       const nextValue = !publicViewEnabled;
-      const data = await setLeaderboardSettings({
+      const data = await setPublicVisibility({
         baseUrl,
         accessToken: resolvedToken,
-        leaderboardPublic: nextValue,
+        enabled: nextValue,
       });
-      const enabled = Boolean(data?.leaderboard_public);
+      const enabled = Boolean(data?.enabled);
       setPublicViewEnabled(enabled);
-      if (!enabled) setPublicViewToken(null);
+      setPublicViewToken(data?.share_token || null);
     } catch (_err) {
       // ignore toggle errors
     } finally {
