@@ -8018,6 +8018,189 @@ test("vibeusage-leaderboard-settings rejects invalid body", async () => {
   assert.equal(res.status, 400);
 });
 
+test("vibeusage-public-visibility returns active state for authenticated user", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-public-visibility");
+
+  const userId = "d0000000-0000-0000-0000-000000000000";
+  const userJwt = createUserJwt(userId);
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null }),
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, "vibeusage_public_views");
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({
+                    data: {
+                      user_id: userId,
+                      revoked_at: null,
+                      updated_at: "2026-02-20T00:00:00.000Z",
+                    },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-public-visibility", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${userJwt}` },
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+
+  const body = await res.json();
+  assert.equal(body.enabled, true);
+  assert.equal(body.updated_at, "2026-02-20T00:00:00.000Z");
+  assert.equal(body.share_token, `pv1-${userId}`);
+});
+
+test("vibeusage-public-visibility enables active state via POST", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-public-visibility");
+
+  const userId = "d0000000-0000-0000-0000-000000000001";
+  const userJwt = createUserJwt(userId);
+
+  const state = { row: null };
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null }),
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, "vibeusage_public_views");
+            return {
+              upsert: async (rows, options) => {
+                assert.equal(options?.onConflict, "user_id");
+                state.row = rows?.[0] || null;
+                return { error: null };
+              },
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: state.row, error: null }),
+                }),
+              }),
+            };
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-public-visibility", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${userJwt}` },
+    body: JSON.stringify({ enabled: true }),
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+
+  const body = await res.json();
+  assert.equal(body.enabled, true);
+  assert.equal(body.share_token, `pv1-${userId}`);
+  assert.equal(state.row?.revoked_at, null);
+  assert.equal(typeof state.row?.token_hash, "string");
+  assert.equal(state.row?.token_hash.length, 64);
+});
+
+test("vibeusage-public-visibility disables active state via POST", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-public-visibility");
+
+  const userId = "d0000000-0000-0000-0000-000000000002";
+  const userJwt = createUserJwt(userId);
+
+  const state = {
+    row: {
+      user_id: userId,
+      token_hash: "x".repeat(64),
+      revoked_at: null,
+      updated_at: "2026-02-20T00:00:00.000Z",
+    },
+  };
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null }),
+        },
+        database: {
+          from: (table) => {
+            assert.equal(table, "vibeusage_public_views");
+            return {
+              update: (values) => ({
+                eq: async () => {
+                  state.row = { ...state.row, ...values };
+                  return { error: null };
+                },
+              }),
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: state.row, error: null }),
+                }),
+              }),
+            };
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-public-visibility", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${userJwt}` },
+    body: JSON.stringify({ enabled: false }),
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+
+  const body = await res.json();
+  assert.equal(body.enabled, false);
+  assert.equal(body.share_token, null);
+  assert.equal(typeof state.row?.revoked_at, "string");
+});
+
 test("vibeusage-leaderboard-profile rejects missing user_id", async () => {
   setDenoEnv({
     INSFORGE_INTERNAL_URL: BASE_URL,
