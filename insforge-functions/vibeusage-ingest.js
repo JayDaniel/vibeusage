@@ -325,10 +325,6 @@ var require_public_view = __commonJS({
       if (!resolvedUserId) {
         return { ok: false, edgeClient: null, userId: null };
       }
-      const { data: settings, error: settingsErr } = await dbClient.database.from("vibeusage_user_settings").select("leaderboard_public").eq("user_id", resolvedUserId).maybeSingle();
-      if (settingsErr || settings?.leaderboard_public !== true) {
-        return { ok: false, edgeClient: null, userId: null };
-      }
       return { ok: true, edgeClient: dbClient, userId: resolvedUserId };
     }
     async function resolvePublicUserId({ dbClient, token }) {

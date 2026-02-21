@@ -21,7 +21,7 @@ function setDenoEnv(env = {}) {
   };
 }
 
-function makeClient({ leaderboardPublic }) {
+function makeClient({ active = true }) {
   return ({ edgeFunctionToken }) => {
     assert.equal(edgeFunctionToken, SERVICE_ROLE_KEY);
 
@@ -34,25 +34,9 @@ function makeClient({ leaderboardPublic }) {
                 eq: () => ({
                   is: () => ({
                     maybeSingle: async () => ({
-                      data: { user_id: 'user-1' },
+                      data: active ? { user_id: 'user-1' } : null,
                       error: null
                     })
-                  })
-                })
-              })
-            };
-          }
-
-          if (table === 'vibeusage_user_settings') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({
-                    data:
-                      leaderboardPublic == null
-                        ? null
-                        : { leaderboard_public: Boolean(leaderboardPublic) },
-                    error: null
                   })
                 })
               })
@@ -66,11 +50,11 @@ function makeClient({ leaderboardPublic }) {
   };
 }
 
-test('resolvePublicView requires leaderboard_public enabled', async () => {
+test('resolvePublicView requires active public view row', async () => {
   setDenoEnv();
 
   const original = globalThis.createClient;
-  globalThis.createClient = makeClient({ leaderboardPublic: false });
+  globalThis.createClient = makeClient({ active: false });
   try {
     const { resolvePublicView } = require('../insforge-src/shared/public-view');
     const res = await resolvePublicView({
@@ -83,11 +67,11 @@ test('resolvePublicView requires leaderboard_public enabled', async () => {
   }
 });
 
-test('resolvePublicView succeeds when leaderboard_public is true', async () => {
+test('resolvePublicView succeeds when public view row is active', async () => {
   setDenoEnv();
 
   const original = globalThis.createClient;
-  globalThis.createClient = makeClient({ leaderboardPublic: true });
+  globalThis.createClient = makeClient({ active: true });
   try {
     const { resolvePublicView } = require('../insforge-src/shared/public-view');
     const res = await resolvePublicView({
@@ -136,16 +120,6 @@ test('resolvePublicView accepts pv1 user token when link is active', async () =>
             };
           }
 
-          if (table === 'vibeusage_user_settings') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({ data: { leaderboard_public: true }, error: null })
-                })
-              })
-            };
-          }
-
           throw new Error(`Unexpected table: ${String(table)}`);
         }
       }
@@ -166,4 +140,3 @@ test('resolvePublicView accepts pv1 user token when link is active', async () =>
     globalThis.createClient = original;
   }
 });
-

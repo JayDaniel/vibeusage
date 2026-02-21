@@ -104,10 +104,6 @@ var require_public_view = __commonJS({
       if (!resolvedUserId) {
         return { ok: false, edgeClient: null, userId: null };
       }
-      const { data: settings, error: settingsErr } = await dbClient.database.from("vibeusage_user_settings").select("leaderboard_public").eq("user_id", resolvedUserId).maybeSingle();
-      if (settingsErr || settings?.leaderboard_public !== true) {
-        return { ok: false, edgeClient: null, userId: null };
-      }
       return { ok: true, edgeClient: dbClient, userId: resolvedUserId };
     }
     async function resolvePublicUserId({ dbClient, token }) {
@@ -1136,12 +1132,10 @@ function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
   const derived = totalTokens - gptTokens - claudeTokens;
   return derived > 0n ? derived : 0n;
 }
-function resolveIsPublic({ row, rawUserId, publicUserSet }) {
-  if (publicUserSet instanceof Set) {
-    if (!rawUserId) return false;
-    return publicUserSet.has(rawUserId);
-  }
-  return Boolean(row?.is_public);
+function resolveIsPublic({ rawUserId, publicUserSet }) {
+  if (!(publicUserSet instanceof Set)) return false;
+  if (!rawUserId) return false;
+  return publicUserSet.has(rawUserId);
 }
 async function loadActivePublicUserIds({ serviceClient, rows }) {
   if (!serviceClient) return null;

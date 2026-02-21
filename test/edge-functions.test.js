@@ -7307,6 +7307,102 @@ test("vibeusage-leaderboard snapshot visibility uses canonical active public row
   assert.equal(body.entries?.[1]?.user_id, userId);
 });
 
+test("vibeusage-leaderboard fails closed when canonical public lookup errors", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-leaderboard");
+
+  const userId = "bbbbbbbb-2222-3333-4444-555555555555";
+  const userJwt = createUserJwt(userId);
+
+  const snapshotRows = [
+    {
+      user_id: userId,
+      rank: 1,
+      rank_gpt: 1,
+      rank_claude: 1,
+      display_name: "Should Not Leak",
+      avatar_url: "https://example.com/leak.png",
+      is_public: true,
+      gpt_tokens: "10",
+      claude_tokens: "5",
+      total_tokens: "15",
+      generated_at: "2026-02-09T00:00:00.000Z",
+    },
+  ];
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === userJwt) {
+      return {
+        auth: {
+          getCurrentUser: async () => ({ data: { user: { id: userId } }, error: null }),
+        },
+        database: {
+          from: () => {
+            throw new Error("Unexpected user database access");
+          },
+        },
+      };
+    }
+
+    if (args && args.edgeFunctionToken === SERVICE_ROLE_KEY) {
+      return {
+        database: {
+          from: (table) => {
+            if (table === "vibeusage_leaderboard_snapshots") {
+              return {
+                select: () => {
+                  const q = {
+                    eq: () => q,
+                    order: () => q,
+                    range: async () => ({ data: snapshotRows, error: null }),
+                    maybeSingle: async () => ({ data: snapshotRows[0], error: null }),
+                    limit: async () => ({ data: snapshotRows, error: null, count: snapshotRows.length }),
+                  };
+                  return q;
+                },
+              };
+            }
+
+            if (table === "vibeusage_public_views") {
+              return {
+                select: () => ({
+                  in: () => ({
+                    is: async () => ({ data: null, error: { message: "db unavailable" } }),
+                  }),
+                }),
+              };
+            }
+
+            throw new Error(`Unexpected service table: ${String(table)}`);
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-leaderboard?period=week&limit=1", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${userJwt}` },
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+
+  assert.equal(body.entries?.length, 1);
+  assert.equal(body.entries?.[0]?.is_public, false);
+  assert.equal(body.entries?.[0]?.user_id, null);
+  assert.equal(body.entries?.[0]?.display_name, "Anonymous");
+  assert.equal(body.entries?.[0]?.avatar_url, null);
+});
+
 test("vibeusage-leaderboard allows anonymous viewer and returns null me", async () => {
   setDenoEnv({
     INSFORGE_INTERNAL_URL: BASE_URL,
@@ -7605,20 +7701,6 @@ test("vibeusage-leaderboard-refresh snapshots weekly leaderboard with token fiel
               };
             }
 
-            if (table === "vibeusage_user_settings") {
-              return {
-                select: () => ({
-                  in: async (_col, ids) => ({
-                    data: ids.map((id) => ({
-                      user_id: id,
-                      leaderboard_public: true,
-                    })),
-                    error: null,
-                  }),
-                }),
-              };
-            }
-
             if (table === "users") {
               return {
                 select: () => ({
@@ -7883,6 +7965,116 @@ test("vibeusage-public-visibility disables active state via POST", async () => {
   assert.equal(body.enabled, false);
   assert.equal(body.share_token, null);
   assert.equal(typeof state.row?.revoked_at, "string");
+});
+
+test("vibeusage-public-view-profile allows active share token without legacy settings", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-public-view-profile");
+  const userId = "d0000000-0000-0000-0000-000000000010";
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === SERVICE_ROLE_KEY) {
+      return {
+        database: {
+          from: (table) => {
+            if (table === "vibeusage_public_views") {
+              return {
+                select: () => ({
+                  eq: () => ({
+                    is: () => ({
+                      maybeSingle: async () => ({ data: { user_id: userId }, error: null }),
+                    }),
+                  }),
+                }),
+              };
+            }
+
+            if (table === "users") {
+              return {
+                select: () => ({
+                  eq: () => ({
+                    maybeSingle: async () => ({
+                      data: {
+                        nickname: "Public Alpha",
+                        avatar_url: "https://example.com/avatar.png",
+                        profile: null,
+                        metadata: null,
+                      },
+                      error: null,
+                    }),
+                  }),
+                }),
+              };
+            }
+
+            throw new Error(`Unexpected service table: ${String(table)}`);
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-public-view-profile", {
+    method: "GET",
+    headers: { Authorization: `Bearer pv1-${userId}` },
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.display_name, "Public Alpha");
+  assert.equal(body.avatar_url, "https://example.com/avatar.png");
+});
+
+test("vibeusage-public-view-profile rejects inactive share token", async () => {
+  setDenoEnv({
+    INSFORGE_INTERNAL_URL: BASE_URL,
+    ANON_KEY,
+    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+  });
+
+  const fn = require("../insforge-functions/vibeusage-public-view-profile");
+  const userId = "d0000000-0000-0000-0000-000000000011";
+
+  globalThis.createClient = (args) => {
+    if (args && args.edgeFunctionToken === SERVICE_ROLE_KEY) {
+      return {
+        database: {
+          from: (table) => {
+            if (table === "vibeusage_public_views") {
+              return {
+                select: () => ({
+                  eq: () => ({
+                    is: () => ({
+                      maybeSingle: async () => ({ data: null, error: null }),
+                    }),
+                  }),
+                }),
+              };
+            }
+            throw new Error(`Unexpected service table: ${String(table)}`);
+          },
+        },
+      };
+    }
+
+    throw new Error(`Unexpected createClient args: ${JSON.stringify(args)}`);
+  };
+
+  const req = new Request("http://localhost/functions/vibeusage-public-view-profile", {
+    method: "GET",
+    headers: { Authorization: `Bearer pv1-${userId}` },
+  });
+
+  const res = await fn(req);
+  assert.equal(res.status, 401);
 });
 
 test("vibeusage-leaderboard-settings is retired", async () => {

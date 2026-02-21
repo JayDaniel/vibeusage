@@ -104,10 +104,6 @@ var require_public_view = __commonJS({
       if (!resolvedUserId) {
         return { ok: false, edgeClient: null, userId: null };
       }
-      const { data: settings, error: settingsErr } = await dbClient.database.from("vibeusage_user_settings").select("leaderboard_public").eq("user_id", resolvedUserId).maybeSingle();
-      if (settingsErr || settings?.leaderboard_public !== true) {
-        return { ok: false, edgeClient: null, userId: null };
-      }
       return { ok: true, edgeClient: dbClient, userId: resolvedUserId };
     }
     async function resolvePublicUserId({ dbClient, token }) {
@@ -976,18 +972,12 @@ async function loadPublicProfileLookup({ serviceClient, userIds }) {
   const lookup = /* @__PURE__ */ new Map();
   if (uniqueUserIds.length === 0) return lookup;
   try {
-    const [settingsRes, usersRes, publicViewsRes] = await Promise.all([
-      serviceClient.database.from("vibeusage_user_settings").select("user_id,leaderboard_public").in("user_id", uniqueUserIds),
+    const [usersRes, publicViewsRes] = await Promise.all([
       serviceClient.database.from("users").select("id,nickname,avatar_url,profile,metadata").in("id", uniqueUserIds),
       serviceClient.database.from("vibeusage_public_views").select("user_id").in("user_id", uniqueUserIds).is("revoked_at", null)
     ]);
-    if (settingsRes?.error || usersRes?.error || publicViewsRes?.error) {
+    if (usersRes?.error || publicViewsRes?.error) {
       return lookup;
-    }
-    const settingsMap = /* @__PURE__ */ new Map();
-    for (const row of settingsRes.data || []) {
-      if (typeof row?.user_id !== "string") continue;
-      settingsMap.set(row.user_id, Boolean(row?.leaderboard_public));
     }
     const usersMap = /* @__PURE__ */ new Map();
     for (const row of usersRes.data || []) {
@@ -1002,11 +992,9 @@ async function loadPublicProfileLookup({ serviceClient, userIds }) {
     }
     for (const userId of uniqueUserIds) {
       const row = usersMap.get(userId) || null;
-      const leaderboardPublic = settingsMap.get(userId) === true;
-      const hasLink = hasActiveLink.has(userId);
-      const isPublic = leaderboardPublic && hasLink;
-      const displayName = isPublic ? resolveDisplayName(row) : null;
-      const avatarUrl = isPublic ? resolveAvatarUrl(row) : null;
+      const isPublic = hasActiveLink.has(userId);
+      const displayName = resolveDisplayName(row);
+      const avatarUrl = resolveAvatarUrl(row);
       lookup.set(userId, {
         isPublic,
         displayName: displayName || null,
@@ -1043,8 +1031,8 @@ function normalizeSnapshotRow({ row, period, from, to, generatedAt, publicProfil
   const totalTokens = totalTokensBigInt.toString();
   const fallbackDisplayName = normalizeDisplayName(row.display_name);
   const fallbackAvatarUrl = normalizeAvatarUrl(row.avatar_url);
-  const displayName = publicProfile ? publicProfile.isPublic ? publicProfile.displayName || "Anonymous" : "Anonymous" : fallbackDisplayName;
-  const avatarUrl = publicProfile ? publicProfile.isPublic ? publicProfile.avatarUrl || null : null : fallbackAvatarUrl;
+  const displayName = publicProfile?.displayName || fallbackDisplayName || "Anonymous";
+  const avatarUrl = publicProfile?.avatarUrl || fallbackAvatarUrl;
   const isPublic = publicProfile?.isPublic || false;
   return {
     period,

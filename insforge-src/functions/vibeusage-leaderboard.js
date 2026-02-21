@@ -468,12 +468,11 @@ function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
   return derived > 0n ? derived : 0n;
 }
 
-function resolveIsPublic({ row, rawUserId, publicUserSet }) {
-  if (publicUserSet instanceof Set) {
-    if (!rawUserId) return false;
-    return publicUserSet.has(rawUserId);
-  }
-  return Boolean(row?.is_public);
+function resolveIsPublic({ rawUserId, publicUserSet }) {
+  // Fail closed: canonical lookup is the only truth source.
+  if (!(publicUserSet instanceof Set)) return false;
+  if (!rawUserId) return false;
+  return publicUserSet.has(rawUserId);
 }
 
 async function loadActivePublicUserIds({ serviceClient, rows }) {
