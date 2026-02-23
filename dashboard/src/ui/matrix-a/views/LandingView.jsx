@@ -47,14 +47,9 @@ export function LandingView({
       ) : null}
       <div className="fixed top-6 right-6 z-[70] flex flex-col items-end space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
         <GithubStar isFixed={false} size="header" />
-        <MatrixButton as="a" href={signInUrl} size="header" className="matrix-header-action--ghost">
-          <span className="font-matrix font-black text-caption tracking-[0.12em] text-matrix-primary">
-            {loginLabel}
-          </span>
-        </MatrixButton>
         <MatrixButton as="a" href={signUpUrl} size="header" className="matrix-header-chip--solid">
           <span className="font-matrix font-black text-caption tracking-[0.12em] text-black">
-            {signupLabel}
+            {copy("landing.nav.login_signup")}
           </span>
         </MatrixButton>
       </div>
@@ -210,13 +205,7 @@ export function LandingView({
             href={signUpUrl}
             className="w-full text-center text-black bg-matrix-primary font-black uppercase tracking-[0.3em] py-4 hover:bg-white transition-colors"
           >
-            {copy("landing.cta.primary")}
-          </a>
-          <a
-            href={signInUrl}
-            className="w-full text-center text-matrix-primary border border-matrix-primary font-black uppercase tracking-[0.3em] py-4 hover:bg-matrix-primary/10 transition-colors"
-          >
-            {copy("landing.cta.secondary")}
+            {copy("landing.cta.login_signup")}
           </a>
         </div>
       </main>

@@ -26,6 +26,7 @@ landing.hero.subtagline,landing,LandingPage,LandingPage,hero_subtagline,"Track C
 landing.screenshot.alt,landing,LandingPage,LandingPage,screenshot_alt,"VibeUsage dashboard screenshot",,active
 landing.nav.login,landing,LandingPage,LandingPage,nav_login,"LOGIN",,active
 landing.nav.signup,landing,LandingPage,LandingPage,nav_signup,"SIGN UP",,active
+landing.nav.login_signup,landing,LandingPage,LandingPage,nav_login_signup,"SIGN IN / SIGN UP",,active
 landing.seo.title,landing,LandingPage,LandingPage,seo_title,"Secure Token Usage Tracking for AI Agent Clients",,active
 landing.seo.summary,landing,LandingPage,LandingPage,seo_summary,"VibeUsage tracks token usage across AI agent clients (Codex, Claude Code, OpenCode, Gemini, OpenClaw) with minimal data collection and auditable metrics.",,active
 landing.install.title,landing,LandingPage,LandingPage,install_title,"INSTALL IN ONE COMMAND",,active
@@ -69,6 +70,7 @@ landing.cta.initialize,landing,LandingPage,LandingPage,cta_primary,">> INITIALIZ
 landing.cta.subtext,landing,LandingPage,LandingPage,cta_subtext,"Connect with GitHub // Enter the System",,active
 landing.cta.primary,landing,LandingPage,LandingPage,cta_primary,">> INITIALIZE_LINK <<",,active
 landing.cta.secondary,landing,LandingPage,LandingPage,cta_secondary,"Connect with GitHub // Enter the System",,active
+landing.cta.login_signup,landing,LandingPage,LandingPage,cta_login_signup,">> ENTER SYSTEM <<",,active
 landing.footer.link.manifesto,landing,LandingPage,LandingPage,footer_link_manifesto,"Manifesto",,active
 landing.footer.link.docs,landing,LandingPage,LandingPage,footer_link_docs,"Docs",,active
 landing.footer.link.security,landing,LandingPage,LandingPage,footer_link_security,"Security",,active
