@@ -86,13 +86,20 @@ export function OpenCodeIcon({ className = "w-5 h-5" }) {
 }
 
 /**
- * OpenClaw Logo (Custom - Terminal/Claw Icon)
- * Custom design for OpenClaw
+ * OpenClaw Logo (Lobster/Claw Icon)
+ * OpenClaw brand: lobster-themed personal AI assistant
+ * Based on 🦞 emoji and claw concept
  */
 export function OpenClawIcon({ className = "w-5 h-5" }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4zm7-10h2v6h-2V8zm-4 4h2v2H7v-2zm8 0h2v2h-2v-2z"/>
+      {/* Lobster claw body */}
+      <path d="M12 2C9.5 2 7.5 3.5 7 5.5c-.3 1-.2 2 .3 3-.5.3-1 .7-1.3 1.2-.5.8-.7 1.8-.5 2.8.1.5.4 1 .8 1.3-.2.3-.3.6-.3 1 0 .8.4 1.5 1 2-.1.3-.2.6-.2 1 0 1.1.6 2 1.5 2.5-.2.3-.3.7-.3 1.1 0 1.4 1.1 2.5 2.5 2.5h2.5c1.4 0 2.5-1.1 2.5-2.5 0-.4-.1-.8-.3-1.1.9-.5 1.5-1.4 1.5-2.5 0-.4-.1-.7-.2-1 .6-.5 1-1.2 1-2 0-.4-.1-.7-.3-1 .4-.3.7-.8.8-1.3.2-1 0-2-.5-2.8-.3-.5-.8-.9-1.3-1.2.5-1 .6-2 .3-3-.5-2-2.5-3.5-5-3.5z"/>
+      {/* Claw pincers */}
+      <path fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M8 6c-1.5 0-2.5 1-3 2.5M16 6c1.5 0 2.5 1 3 2.5"/>
+      {/* Eye details */}
+      <circle cx="9.5" cy="9" r="1" fill="#000"/>
+      <circle cx="14.5" cy="9" r="1" fill="#000"/>
     </svg>
   );
 }
