@@ -18,10 +18,10 @@ const LandingExtras = React.lazy(() =>
 // Unified Matrix card shell (clean + consistent)
 function MatrixCard({ children, className = "", header }) {
   return (
-    <section className={`relative overflow-hidden border border-[#00FF41]/28 bg-[#04130b]/72 ${className}`}>
+    <section className={`relative overflow-hidden border border-[#00FF41]/45 bg-[#04130b]/72 ${className}`}>
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.12)_50%)] bg-[length:100%_4px] opacity-25" />
       {header ? (
-        <header className="relative border-b border-[#00FF41]/18 px-5 py-3">
+        <header className="relative border-b border-[#00FF41]/25 px-5 py-3">
           <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#00FF41]/78">{header}</span>
         </header>
       ) : null}
@@ -40,8 +40,8 @@ function TerminalCommand({ command, copied, onCopy, label, helper }) {
         </p>
       )}
       <div className="relative">
-        <div className="relative flex items-center gap-0 border border-[#00FF41]/28 bg-black/80">
-          <div className="shrink-0 px-3 py-3 border-r border-[#00FF41]/18 bg-[#00FF41]/6">
+        <div className="relative flex items-center gap-0 border border-[#00FF41]/40 bg-black/80">
+          <div className="shrink-0 px-3 py-3 border-r border-[#00FF41]/25 bg-[#00FF41]/6">
             <span className="text-[#00FF41] font-mono text-sm">$</span>
           </div>
 
@@ -54,7 +54,7 @@ function TerminalCommand({ command, copied, onCopy, label, helper }) {
           <button
             type="button"
             onClick={onCopy}
-            className="shrink-0 px-4 py-3 border-l border-[#00FF41]/18 text-[#00FF41]/70 hover:text-[#00FF41] hover:bg-[#00FF41]/10 transition-colors duration-200"
+            className="shrink-0 px-4 py-3 border-l border-[#00FF41]/25 text-[#00FF41]/70 hover:text-[#00FF41] hover:bg-[#00FF41]/10 transition-colors duration-200"
             title={copied ? "Copied!" : "Copy to clipboard"}
           >
             {copied ? (
@@ -200,7 +200,7 @@ export function LandingView({
 
         {/* Screenshot */}
         <MatrixCard className="w-full max-w-4xl" header="Dashboard Preview">
-          <div className="relative overflow-hidden border border-[#00FF41]/20 bg-black/60">
+          <div className="relative overflow-hidden border border-[#00FF41]/35 bg-black/60">
             <img
               src="/landing-dashboard.jpg"
               alt={copy("landing.screenshot.alt")}
@@ -229,7 +229,7 @@ export function LandingView({
                 </li>
               ))}
             </ul>
-            <div className="pt-3 border-t border-[#00FF41]/10">
+            <div className="pt-3 border-t border-[#00FF41]/20">
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#00FF41]/40">
                 {copy("landing.seo.roadmap")}
               </p>
