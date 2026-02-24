@@ -19,7 +19,7 @@ const LandingExtras = React.lazy(() =>
 function MatrixCard({ children, className = "", header }) {
   return (
     <section className={`relative overflow-hidden border border-[#00FF41]/28 bg-[#04130b]/72 ${className}`}>
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0)_50%,rgba(0,255,65,0.16)_50%)] bg-[length:100%_4px] opacity-25" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.12)_50%)] bg-[length:100%_4px] opacity-25" />
       {header ? (
         <header className="relative border-b border-[#00FF41]/18 px-5 py-3">
           <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#00FF41]/78">{header}</span>
@@ -134,7 +134,7 @@ export function LandingView({
       </div>
       
       {/* CRT scanline overlay */}
-      <div className="pointer-events-none fixed inset-0 z-50 bg-[linear-gradient(rgba(0,255,65,0)_50%,rgba(0,255,65,0.18)_50%)] bg-[length:100%_3px]" />
+      <div className="pointer-events-none fixed inset-0 z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.15)_50%)] bg-[length:100%_3px]" />
 
       {/* Main content */}
       <main className="w-full max-w-4xl relative z-10 flex flex-col items-center space-y-8 sm:space-y-12 py-8 sm:py-12">
@@ -249,7 +249,7 @@ export function LandingView({
             </div>
             
             {/* Bottom scanline */}
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00FF41]/35" />
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/20" />
           </a>
         </div>
         
