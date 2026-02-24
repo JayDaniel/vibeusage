@@ -11,17 +11,13 @@ export const SignalBox = ({
   children,
   className = "",
 }) => (
-  <div className={`relative flex flex-col matrix-panel ${className}`}>
-    <div className="flex items-center text-matrix-primary leading-none text-heading p-2 border-b border-matrix-ghost">
-      <span className="font-black uppercase bg-matrix-panelStrong px-2 py-1 border border-matrix-ghost mr-2">
+  <section className={`relative overflow-hidden border border-[#00FF41]/45 bg-[#04130b]/72 ${className}`}>
+    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0)_50%,rgba(0,255,65,0.16)_50%)] bg-[length:100%_4px] opacity-25" />
+    <header className="relative border-b border-[#00FF41]/25 px-5 py-3">
+      <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#00FF41]/78">
         <DecodingText text={title} />
       </span>
-      <span className="flex-1 text-matrix-ghost truncate">
-        --------------------------------------------------
-      </span>
-    </div>
-    <div className="p-4 relative z-10 h-full">{children}</div>
-    <div className="absolute top-0 left-0 w-1.5 h-1.5 bg-matrix-primary opacity-60"></div>
-    <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-matrix-primary opacity-60"></div>
-  </div>
+    </header>
+    <div className="relative z-10 p-4 h-full">{children}</div>
+  </section>
 );
