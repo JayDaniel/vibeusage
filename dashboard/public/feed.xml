@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>VibeUsage Updates</title>
+    <link>https://www.vibeusage.cc/</link>
+    <description>Product updates for VibeUsage token tracking.</description>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Feb 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>VibeUsage Homepage</title>
+      <link>https://www.vibeusage.cc/</link>
+      <guid isPermaLink="true">https://www.vibeusage.cc/</guid>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 GMT</pubDate>
+      <description>Track token usage across AI coding agents with VibeUsage.</description>
+    </item>
+  </channel>
+</rss>

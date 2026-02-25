@@ -15,14 +15,146 @@
     <meta name="twitter:title" content="__VIBEUSAGE_TWITTER_TITLE__" />
     <meta name="twitter:description" content="__VIBEUSAGE_TWITTER_DESCRIPTION__" />
     <meta name="twitter:image" content="__VIBEUSAGE_TWITTER_IMAGE__" />
+    <link rel="canonical" href="__VIBEUSAGE_OG_URL__" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <meta name="theme-color" content="#000000" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <style>
+      .js .aeo-seed-content {
+        display: none;
+      }
+
+      .aeo-seed-content {
+        margin: 0;
+        padding: 1.5rem;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+
+      .aeo-seed-content h1,
+      .aeo-seed-content h2,
+      .aeo-seed-content h3 {
+        margin: 0.75rem 0;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "VibeUsage",
+            "url": "https://www.vibeusage.cc/",
+            "logo": "https://www.vibeusage.cc/icon-512.png",
+            "sameAs": ["https://github.com/victorGPT/vibeusage"]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "VibeUsage",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "macOS, Linux, Windows",
+            "url": "https://www.vibeusage.cc/",
+            "downloadUrl": "https://www.npmjs.com/package/vibeusage",
+            "description": "Track token usage across AI coding agent clients including Codex, Claude Code, OpenCode, Gemini, and OpenClaw."
+          },
+          {
+            "@type": "WebSite",
+            "name": "VibeUsage",
+            "url": "https://www.vibeusage.cc/",
+            "description": "Track token usage across AI coding agent clients with auditable metrics."
+          },
+          {
+            "@type": "WebPage",
+            "name": "VibeUsage Homepage",
+            "url": "https://www.vibeusage.cc/",
+            "description": "Install VibeUsage in one command and monitor token usage across AI coding agent clients."
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do I install VibeUsage?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Run npx --yes vibeusage init in your terminal, then connect your account to start syncing usage."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which AI coding clients are supported?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "VibeUsage supports Codex, Claude Code, OpenCode, Gemini, and OpenClaw."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What does VibeUsage track?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "VibeUsage tracks token usage and usage trends across models, projects, and time while emphasizing minimal data collection and auditable metrics."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
+    <main class="aeo-seed-content" aria-label="VibeUsage AI-readable summary">
+      <h1>VibeUsage: Token usage tracker for AI agent CLIs</h1>
+      <p>
+        VibeUsage helps developers measure token usage across Codex, Claude Code, OpenCode, Gemini, and
+        OpenClaw in one dashboard. It focuses on minimal data collection, auditable metrics, and clear
+        visibility into model and project usage.
+      </p>
+
+      <h2>Install in one command</h2>
+      <p><code>npx --yes vibeusage init</code></p>
+      <p>
+        After initialization, connect your account and start syncing usage data from supported AI coding
+        clients.
+      </p>
+
+      <h2>What VibeUsage provides</h2>
+      <ul>
+        <li>Unified token usage tracking across multiple AI coding tools.</li>
+        <li>Leaderboard and project-level usage comparisons.</li>
+        <li>Structured visibility into model, daily, and monthly consumption.</li>
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      <h3>How do I install VibeUsage?</h3>
+      <p>Run <code>npx --yes vibeusage init</code>, then connect your account and start syncing usage.</p>
+
+      <h3>Which AI coding clients are supported?</h3>
+      <p>VibeUsage supports Codex, Claude Code, OpenCode, Gemini, and OpenClaw.</p>
+
+      <h3>What does VibeUsage track?</h3>
+      <p>
+        It tracks token usage and trends by model, project, and time window, then visualizes insights in a
+        unified dashboard and leaderboard.
+      </p>
+
+      <h3>Important resources</h3>
+      <ul>
+        <li><a href="/share">Share dashboard view</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="/robots.txt">Robots policy</a></li>
+        <li><a href="/llms.txt">LLMs policy and index</a></li>
+        <li><a href="/feed.xml">RSS feed</a></li>
+        <li><a href="https://github.com/victorGPT/vibeusage">GitHub repository</a></li>
+      </ul>
+    </main>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

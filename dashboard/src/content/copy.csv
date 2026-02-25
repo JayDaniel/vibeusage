@@ -41,7 +41,7 @@ landing.ai_agent.command,landing,LandingPage,LandingPage,ai_agent_command,"https
 landing.ai_agent.copy_label,landing,LandingPage,LandingPage,ai_agent_copy_label,"Copy Guide Link",,active
 landing.ai_agent.helper,landing,LandingPage,LandingPage,ai_agent_helper,"Or click to open the guide and copy manually.",,active
 landing.ai_agent.guide_url,landing,LandingPage,LandingPage,ai_agent_guide_url,"https://github.com/victorGPT/vibeusage/blob/main/docs/AI_AGENT_INSTALL.md",,active
-landing.meta.title,landing,LandingPage,Meta,title,"VibeUsage",,active
+landing.meta.title,landing,LandingPage,Meta,title,"VibeUsage — Token Usage Tracker for AI Agent CLIs",,active
 landing.meta.description,landing,LandingPage,Meta,description,"Track token usage across AI agent clients: Codex, Claude Code, OpenCode, Gemini, and OpenClaw.",,active
 landing.meta.og_site_name,landing,LandingPage,Meta,og_site_name,"VibeUsage",,active
 landing.meta.og_type,landing,LandingPage,Meta,og_type,"website",,active
