@@ -49,7 +49,7 @@ landing.meta.og_image,landing,LandingPage,Meta,og_image,"https://www.vibeusage.c
 landing.meta.og_url,landing,LandingPage,Meta,og_url,"https://www.vibeusage.cc/",,active
 landing.meta.twitter_card,landing,LandingPage,Meta,twitter_card,"summary_large_image",,active
 share.meta.title,share,SharePage,Meta,title,"VibeUsage Share",,active
-share.meta.description,share,SharePage,Meta,description,"Shareable VibeUsage dashboard snapshot.",,active
+share.meta.description,share,SharePage,Meta,description,"Share a VibeUsage dashboard snapshot with token usage insights across models, projects, and time windows.",,active
 share.meta.og_site_name,share,SharePage,Meta,og_site_name,"VibeUsage",,active
 share.meta.og_type,share,SharePage,Meta,og_type,"website",,active
 share.meta.og_image,share,SharePage,Meta,og_image,"https://www.vibeusage.cc/share-dashboard.jpg",,active
