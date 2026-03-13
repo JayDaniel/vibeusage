@@ -37,10 +37,9 @@ module.exports = withRequestLogging("vibeusage-sync-ping", async function (reque
   const nowIso = new Date().toISOString();
 
   if (serviceRoleKey) {
-    const serviceClient = createClient({
-      baseUrl,
-      anonKey: anonKey || serviceRoleKey,
-      edgeFunctionToken: serviceRoleKey,
+    const serviceClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
     });
 
     const { data: tokenRow, error: tokenErr } = await serviceClient.database

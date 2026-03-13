@@ -58,11 +58,10 @@ module.exports = async function (request) {
   const serviceRoleKey = getServiceRoleKey();
   const anonKey = getAnonKey();
   const serviceClient = serviceRoleKey
-    ? createClient({
-        baseUrl,
-        anonKey: anonKey || serviceRoleKey,
-        edgeFunctionToken: serviceRoleKey,
-      })
+    ? createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    })
     : null;
 
   if (serviceClient) {
@@ -109,11 +108,10 @@ module.exports = async function (request) {
 
   const readClient = auth.ok
     ? auth.edgeClient
-    : createClient({
-        baseUrl,
-        anonKey: anonKey || undefined,
-        edgeFunctionToken: anonKey || undefined,
-      });
+    : createClient(baseUrl, anonKey || undefined, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${anonKey || undefined}` } },
+    });
 
   if (!readClient) return json({ error: "Service unavailable" }, 503);
 

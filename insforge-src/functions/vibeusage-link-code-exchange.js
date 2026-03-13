@@ -35,11 +35,10 @@ module.exports = withRequestLogging("vibeusage-link-code-exchange", async functi
   if (!serviceRoleKey) return json({ error: "Missing service role key" }, 500);
 
   const anonKey = getAnonKey();
-  const dbClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: serviceRoleKey,
-  });
+  const dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    });
 
   const codeHash = await sha256Hex(linkCode);
   const token = await deriveToken({ secret: serviceRoleKey, codeHash, requestId });
@@ -73,7 +72,7 @@ module.exports = withRequestLogging("vibeusage-link-code-exchange", async functi
   const tokenId = crypto.randomUUID();
   const nowIso = new Date().toISOString();
 
-  const { error: deviceErr } = await dbClient.database.from("vibeusage_tracker_devices").insert([
+  const { error: deviceErr } = await dbClient.from("vibeusage_tracker_devices").insert([
     {
       id: deviceId,
       user_id: userId,
@@ -176,7 +175,7 @@ async function bestEffortDeleteToken({ dbClient, tokenId }) {
 
 async function bestEffortDeleteDevice({ dbClient, deviceId, userId }) {
   try {
-    let query = dbClient.database.from("vibeusage_tracker_devices").delete().eq("id", deviceId);
+    let query = dbClient.from("vibeusage_tracker_devices").delete().eq("id", deviceId);
     if (userId) query = query.eq("user_id", userId);
     const { error } = await query;
     if (error) {

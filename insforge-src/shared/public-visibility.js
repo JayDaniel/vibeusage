@@ -27,7 +27,7 @@ async function getPublicVisibilityState({ edgeClient, userId }) {
   }
 
   try {
-    const { data, error } = await edgeClient.database
+    const { data, error } = await edgeClient
       .from('vibeusage_public_views')
       .select('user_id,revoked_at,updated_at')
       .eq('user_id', userId)
@@ -65,7 +65,7 @@ async function setPublicVisibilityState({ edgeClient, userId, enabled, nowIso })
 }
 
 async function enablePublicVisibility({ edgeClient, userId, nowIso }) {
-  const table = edgeClient.database.from('vibeusage_public_views');
+  const table = edgeClient.from('vibeusage_public_views');
   const shareToken = buildPublicShareToken(userId);
   const tokenHash = await sha256Hex(shareToken);
   const updatedAt = typeof nowIso === 'string' && nowIso ? nowIso : new Date().toISOString();
@@ -108,7 +108,7 @@ async function enablePublicVisibility({ edgeClient, userId, nowIso }) {
 async function disablePublicVisibility({ edgeClient, userId, nowIso }) {
   const updatedAt = typeof nowIso === 'string' && nowIso ? nowIso : new Date().toISOString();
 
-  const { error } = await edgeClient.database
+  const { error } = await edgeClient
     .from('vibeusage_public_views')
     .update({ revoked_at: updatedAt, updated_at: updatedAt })
     .eq('user_id', userId);

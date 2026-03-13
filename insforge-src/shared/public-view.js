@@ -1,5 +1,6 @@
 "use strict";
 
+const { createClient } = require("@supabase/supabase-js");
 const { getAnonKey, getServiceRoleKey } = require("./env");
 
 const PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
@@ -14,10 +15,11 @@ async function resolvePublicView({ baseUrl, shareToken }) {
   if (!serviceRoleKey) return { ok: false, edgeClient: null, userId: null };
 
   const anonKey = getAnonKey();
-  const dbClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: serviceRoleKey,
+  const dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+    global: {
+      headers: { Authorization: `Bearer ${serviceRoleKey}` },
+    },
   });
 
   const resolvedUserId = await resolvePublicUserId({ dbClient, token });
@@ -25,7 +27,7 @@ async function resolvePublicView({ baseUrl, shareToken }) {
     return { ok: false, edgeClient: null, userId: null };
   }
 
-  const { data: settings, error: settingsErr } = await dbClient.database
+  const { data: settings, error: settingsErr } = await dbClient
     .from("vibeusage_user_settings")
     .select("leaderboard_public")
     .eq("user_id", resolvedUserId)
@@ -41,7 +43,7 @@ async function resolvePublicView({ baseUrl, shareToken }) {
 async function resolvePublicUserId({ dbClient, token }) {
   if (!dbClient || !token) return null;
 
-  const { data, error } = await dbClient.database
+  const { data, error } = await dbClient
     .from("vibeusage_public_views")
     .select("user_id")
     .eq("user_id", token.userId)

@@ -42,14 +42,14 @@
     "validate:ui-hardcode": "node scripts/ops/validate-ui-hardcode.cjs"
   },
   "dependencies": {
-    "@insforge/sdk": "^1.0.4"
+    "@supabase/supabase-js": "^2.49.8"
   },
   "devDependencies": {
     "@sourcegraph/scip-typescript": "^0.3.6",
     "esbuild": "0.27.2"
   },
   "bundledDependencies": [
-    "@insforge/sdk"
+    "@supabase/supabase-js"
   ],
   "engines": {
     "node": "20.x"

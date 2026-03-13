@@ -27,7 +27,7 @@ const SDK_ALLOWLIST = new Set([
   path.join("dashboard", "src", "lib", "insforge-client.ts"),
 ]);
 
-const SDK_PACKAGE = "@insforge/sdk";
+const SDK_PACKAGE = "@supabase/supabase-js";
 
 function isSdkAllowlisted(file, root) {
   const relativePath = path.normalize(path.relative(root, file));

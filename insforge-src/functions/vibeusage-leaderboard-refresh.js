@@ -34,11 +34,10 @@ module.exports = async function (request) {
 
   const baseUrl = getBaseUrl();
   const anonKey = getAnonKey();
-  const serviceClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: serviceRoleKey,
-  });
+  const serviceClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    });
 
   const targetPeriods = requested ? [requested] : PERIODS;
   const generatedAt = new Date().toISOString();

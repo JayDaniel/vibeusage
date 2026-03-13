@@ -1,4 +1,4 @@
-import { useAuth as useInsforgeAuth } from "@insforge/react-router";
+import { useAuth as useInsforgeAuth } from "./lib/supabase-auth-provider.jsx";
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
@@ -107,11 +107,15 @@ export default function App() {
     let active = true;
     const refreshSession = () => {
       return insforgeAuthClient.auth
-        .getCurrentSession()
+        .getSession()
         .then(({ data }) => {
           if (!active) return;
           const session = data?.session ?? null;
-          setInsforgeSession(session);
+          const mappedSession = session ? {
+            accessToken: session.access_token ?? null,
+            user: session.user ?? null,
+          } : null;
+          setInsforgeSession(mappedSession);
 
           // Debug logging for mobile troubleshooting
           if (
@@ -120,8 +124,8 @@ export default function App() {
           ) {
             // eslint-disable-next-line no-console
             console.log("[Auth] Session refreshed:", {
-              hasSession: Boolean(session?.accessToken),
-              userId: session?.user?.id ?? null,
+              hasSession: Boolean(mappedSession?.accessToken),
+              userId: mappedSession?.user?.id ?? null,
               timestamp: new Date().toISOString(),
             });
           }
@@ -173,8 +177,8 @@ export default function App() {
     if (!insforgeSignedIn) {
       return fallbackToken;
     }
-    const { data } = await insforgeAuthClient.auth.getCurrentSession();
-    const sessionToken = data?.session?.accessToken ?? null;
+    const { data } = await insforgeAuthClient.auth.getSession();
+    const sessionToken = data?.session?.access_token ?? null;
     if (!isLikelyExpiredAccessToken(sessionToken)) {
       return sessionToken;
     }
@@ -191,9 +195,15 @@ export default function App() {
         return;
       }
       try {
-        const { data } = await insforgeAuthClient.auth.getCurrentSession();
+        const { data } = await insforgeAuthClient.auth.getSession();
+        const sess = data?.session ?? null;
+        const mappedSession = sess ? {
+          accessToken: sess.access_token ?? null,
+          user: sess.user ?? null,
+        } : null;
+        setInsforgeSession(mappedSession);
         if (!active) return;
-        if (data?.session?.accessToken) {
+        if (mappedSession?.accessToken) {
           clearSessionSoftExpired();
         }
       } catch (_e) {

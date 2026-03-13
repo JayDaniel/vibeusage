@@ -1,8 +1,8 @@
-import { createClient } from "@insforge/sdk";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getInsforgeAnonKey, getInsforgeBaseUrl } from "./config";
 import { createTimeoutFetch } from "./http-timeout";
 
-// Storage key prefix for InsForge SDK session data
+// Storage key prefix for session data
 const INSFORGE_STORAGE_KEY = "vibeusage.insforge.session.v1";
 const INSFORGE_TOKEN_KEY = "insforge-auth-token";
 const TOKEN_ENVELOPE_VERSION = 1;
@@ -13,38 +13,6 @@ type StoredTokenEnvelope = {
   token: string;
   expiresAt: number;
 };
-
-type InsforgeSessionLike = {
-  accessToken?: string | null;
-  user?: unknown;
-} | null;
-
-type GetCurrentSessionResult = {
-  data?: {
-    session?: InsforgeSessionLike;
-  };
-};
-
-type InsforgeTokenManagerLike = {
-  setStorageMode?: () => void;
-  saveSession?: (session: InsforgeSessionLike) => void;
-  getSession?: () => InsforgeSessionLike;
-};
-
-type InsforgeAuthLike = {
-  getCurrentSession?: (...args: unknown[]) => Promise<GetCurrentSessionResult>;
-};
-
-type InsforgeClientBridgeLike = {
-  auth?: InsforgeAuthLike;
-};
-
-function getTokenManager(client: unknown): InsforgeTokenManagerLike | null {
-  if (!client || typeof client !== "object") return null;
-  const candidate = (client as { tokenManager?: unknown }).tokenManager;
-  if (!candidate || typeof candidate !== "object") return null;
-  return candidate as InsforgeTokenManagerLike;
-}
 
 function decodeBase64Url(input: string): string | null {
   if (typeof input !== "string" || input.length === 0) return null;
@@ -314,80 +282,113 @@ export function createPersistentStorage() {
   };
 }
 
+type HttpClient = {
+  get: (path: string, options?: Record<string, any>) => Promise<any>;
+  post: (path: string, body?: any, options?: Record<string, any>) => Promise<any>;
+};
+
+type InsforgeClientWithHttp = SupabaseClient & {
+  getHttpClient: () => HttpClient;
+};
+
+/// 创建用于数据查询的 Supabase 客户端（携带用户 accessToken）
+/// 返回值同时包含 SupabaseClient 接口和 getHttpClient() 桥接方法，
+/// 后者提供 {get(), post()} 兼容接口，供 vibeusage-api.ts 调用 Edge Functions
 export function createInsforgeClient({
   baseUrl,
   accessToken,
 }: {
   baseUrl?: string;
   accessToken?: string;
-} = {}) {
+} = {}): InsforgeClientWithHttp {
   if (!baseUrl) throw new Error("Missing baseUrl");
   const anonKey = getInsforgeAnonKey();
   const timeoutFetch = createTimeoutFetch(globalThis.fetch) as unknown as typeof fetch;
-  return createClient({
-    baseUrl,
-    anonKey: anonKey || undefined,
-    edgeFunctionToken: accessToken || undefined,
-    storage: createPersistentStorage(),
-    fetch: timeoutFetch,
+  const globalHeaders: Record<string, string> = {};
+  if (accessToken) {
+    globalHeaders["Authorization"] = `Bearer ${accessToken}`;
+  }
+  const supabaseClient = createClient(baseUrl, anonKey || "", {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+    global: {
+      headers: globalHeaders,
+      fetch: timeoutFetch,
+    },
   });
+
+  const httpClient: HttpClient = {
+    async get(path: string, options: Record<string, any> = {}) {
+      const url = new URL(path.startsWith("/") ? path : `/${path}`, baseUrl);
+      if (options.params) {
+        for (const [key, value] of Object.entries(options.params)) {
+          if (value != null) url.searchParams.set(key, String(value));
+        }
+      }
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...globalHeaders,
+      };
+      if (anonKey) headers["apikey"] = anonKey;
+      const res = await timeoutFetch(url.toString(), {
+        method: "GET",
+        headers,
+        signal: options.signal,
+        cache: options.cache,
+      });
+      if (!res.ok) {
+        const errorBody = await res.text().catch(() => "");
+        const err: any = new Error(errorBody || `HTTP ${res.status}`);
+        err.statusCode = res.status;
+        err.status = res.status;
+        throw err;
+      }
+      return res.json();
+    },
+    async post(path: string, body?: any, options: Record<string, any> = {}) {
+      const url = new URL(path.startsWith("/") ? path : `/${path}`, baseUrl);
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...globalHeaders,
+      };
+      if (anonKey) headers["apikey"] = anonKey;
+      const res = await timeoutFetch(url.toString(), {
+        method: "POST",
+        headers,
+        body: body != null ? JSON.stringify(body) : undefined,
+        signal: options.signal,
+        cache: options.cache,
+      });
+      if (!res.ok) {
+        const errorBody = await res.text().catch(() => "");
+        const err: any = new Error(errorBody || `HTTP ${res.status}`);
+        err.statusCode = res.status;
+        err.status = res.status;
+        throw err;
+      }
+      return res.json();
+    },
+  };
+
+  const extended = supabaseClient as InsforgeClientWithHttp;
+  extended.getHttpClient = () => httpClient;
+  return extended;
 }
 
-export function createInsforgeAuthClient() {
+/// 创建用于认证流程的 Supabase 客户端（含 session 持久化）
+export function createInsforgeAuthClient(): SupabaseClient {
   const baseUrl = getInsforgeBaseUrl();
   if (!baseUrl) throw new Error("Missing baseUrl");
   const anonKey = getInsforgeAnonKey();
-  const client = createClient({
-    baseUrl,
-    anonKey: anonKey || undefined,
-    // Use persistent storage for auth client to survive page reloads
-    // This is critical for mobile browsers where memory is frequently cleared
-    storage: createPersistentStorage(),
+  return createClient(baseUrl, anonKey || "", {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      storage: createPersistentStorage(),
+    },
   });
-  forceStorageMode(client);
-  installSessionPersistenceBridge(client);
-  return client;
-}
-
-function persistSessionToStorage(client: InsforgeClientBridgeLike, session: InsforgeSessionLike) {
-  if (!session?.accessToken) return;
-  const tokenManager = getTokenManager(client);
-  if (!tokenManager || typeof tokenManager.saveSession !== "function") return;
-  if (typeof tokenManager.setStorageMode === "function") {
-    tokenManager.setStorageMode();
-  }
-  tokenManager.saveSession(session);
-}
-
-export function installSessionPersistenceBridge(client: InsforgeClientBridgeLike) {
-  const auth = client?.auth;
-  if (!auth || typeof auth.getCurrentSession !== "function") return;
-
-  const marker = "__vibeusage_session_bridge_installed_v1__";
-  const bridgeState = client as Record<string, unknown>;
-  if (bridgeState[marker]) return;
-
-  const originalGetCurrentSession = auth.getCurrentSession.bind(auth);
-  auth.getCurrentSession = async (...args: unknown[]) => {
-    const result = await originalGetCurrentSession(...args);
-    persistSessionToStorage(client, result?.data?.session ?? null);
-    return result;
-  };
-
-  bridgeState[marker] = true;
-}
-
-export function forceStorageMode(client: InsforgeClientBridgeLike) {
-  try {
-    const tokenManager = getTokenManager(client);
-    if (!tokenManager || typeof tokenManager.setStorageMode !== "function") {
-      return;
-    }
-    tokenManager.setStorageMode();
-    if (typeof tokenManager.getSession === "function") {
-      persistSessionToStorage(client, tokenManager.getSession());
-    }
-  } catch (_e) {
-    // ignore SDK internals mismatch
-  }
 }

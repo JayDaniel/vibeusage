@@ -62,11 +62,10 @@ module.exports = withRequestLogging("vibeusage-ingest", async function (request,
   const serviceRoleKey = getServiceRoleKey();
   const anonKey = getAnonKey();
   const serviceClient = serviceRoleKey
-    ? createClient({
-        baseUrl,
-        anonKey: anonKey || serviceRoleKey,
-        edgeFunctionToken: serviceRoleKey,
-      })
+    ? createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    })
     : null;
 
   try {

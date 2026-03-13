@@ -1,5 +1,6 @@
 "use strict";
 
+const { createClient } = require("@supabase/supabase-js");
 const { getAnonKey, getJwtSecret } = require("./env");
 const { resolvePublicView, isPublicShareToken } = require("./public-view");
 
@@ -171,10 +172,11 @@ async function getEdgeClientAndUserId({ baseUrl, bearer }) {
 
 async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
   const anonKey = getAnonKey();
-  const edgeClient = createClient({
-    baseUrl,
-    anonKey: anonKey || undefined,
-    edgeFunctionToken: bearer,
+  const edgeClient = createClient(baseUrl, anonKey || "", {
+    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+    global: {
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : {},
+    },
   });
   const local = await verifyUserJwtHs256({ token: bearer });
   const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
@@ -189,7 +191,7 @@ async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
     };
   }
 
-  if (typeof edgeClient?.auth?.getCurrentUser !== "function") {
+  if (typeof edgeClient?.auth?.getUser !== "function") {
     return {
       ok: false,
       edgeClient: null,
@@ -202,7 +204,7 @@ async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
 
   let authResult = null;
   try {
-    authResult = await edgeClient.auth.getCurrentUser();
+    authResult = await edgeClient.auth.getUser(bearer);
   } catch (e) {
     const message = getAuthFailureMessage(e);
     const status = classifyAuthFailure({

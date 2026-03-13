@@ -1,17 +1,18 @@
 "use strict";
 
-function loadInsforgeSdk() {
+/// 加载 Supabase SDK，若缺失则抛出明确的错误提示
+function loadSupabaseSdk() {
   try {
-    return require("@insforge/sdk");
+    return require("@supabase/supabase-js");
   } catch (err) {
-    const wrapped = new Error("Missing dependency @insforge/sdk. Please reinstall vibeusage.");
+    const wrapped = new Error("Missing dependency @supabase/supabase-js. Please reinstall vibeusage.");
     wrapped.cause = err;
     throw wrapped;
   }
 }
 
 function getAnonKey({ env = process.env } = {}) {
-  return env.VIBEUSAGE_INSFORGE_ANON_KEY || "";
+  return env.VIBEUSAGE_SUPABASE_ANON_KEY || env.VIBEUSAGE_INSFORGE_ANON_KEY || "";
 }
 
 function getHttpTimeoutMs({ env = process.env } = {}) {
@@ -23,6 +24,9 @@ function getHttpTimeoutMs({ env = process.env } = {}) {
   return clampInt(n, 1000, 120_000);
 }
 
+/// 创建带超时控制的 fetch 包装函数
+/// - Parameter baseFetch: 原始 fetch 函数
+/// - Returns: 带超时 abort 机制的 fetch 函数
 function createTimeoutFetch(baseFetch) {
   if (!baseFetch) return baseFetch;
   return async (input, init = {}) => {
@@ -45,15 +49,29 @@ function createTimeoutFetch(baseFetch) {
   };
 }
 
+/// 创建 Supabase 客户端实例
+/// - Parameters:
+///   - baseUrl: Supabase 项目 URL
+///   - accessToken: 可选的 Bearer token（用于 Edge Function 认证）
+/// - Returns: Supabase 客户端实例
 function createInsforgeClient({ baseUrl, accessToken } = {}) {
   if (!baseUrl) throw new Error("Missing baseUrl");
-  const { createClient } = loadInsforgeSdk();
+  const { createClient } = loadSupabaseSdk();
   const anonKey = getAnonKey();
-  return createClient({
-    baseUrl,
-    anonKey: anonKey || undefined,
-    edgeFunctionToken: accessToken || undefined,
-    fetch: createTimeoutFetch(globalThis.fetch),
+  const globalHeaders = {};
+  if (accessToken) {
+    globalHeaders["Authorization"] = `Bearer ${accessToken}`;
+  }
+  return createClient(baseUrl, anonKey || "", {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+    global: {
+      headers: globalHeaders,
+      fetch: createTimeoutFetch(globalThis.fetch),
+    },
   });
 }
 

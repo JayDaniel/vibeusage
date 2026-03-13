@@ -25,7 +25,7 @@ test("guardrails flag internal URL usage and non-wrapper SDK imports", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "guardrails-"));
   writeFile(
     path.join(root, "src", "feature.js"),
-    "import { createClient } from '@insforge/sdk';\n",
+    "import { createClient } from '@supabase/supabase-js';\n",
   );
   writeFile(
     path.join(root, "dashboard", "page.tsx"),
@@ -41,7 +41,7 @@ test("guardrails allow SDK usage in approved wrapper", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "guardrails-"));
   writeFile(
     path.join(root, "src", "lib", "insforge-client.js"),
-    "import { createClient } from '@insforge/sdk';\n",
+    "import { createClient } from '@supabase/supabase-js';\n",
   );
 
   const { errors } = runGuardrails({ root });

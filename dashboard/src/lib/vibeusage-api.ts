@@ -15,7 +15,7 @@ import {
   isMockEnabled,
 } from "./mock-data";
 
-const BACKEND_RUNTIME_UNAVAILABLE = "Backend runtime unavailable (InsForge). Please retry later.";
+const BACKEND_RUNTIME_UNAVAILABLE = "Backend runtime unavailable. Please retry later.";
 
 const PATHS = {
   usageSummary: "vibeusage-usage-summary",
@@ -860,8 +860,12 @@ function shouldAttemptSessionRefresh({
 async function refreshSessionOnce() {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = insforgeAuthClient.auth
-    .getCurrentSession()
-    .then(({ data }: AnyRecord) => data?.session ?? null)
+    .getSession()
+    .then(({ data }: AnyRecord) => {
+      const session = data?.session ?? null;
+      if (!session) return null;
+      return { accessToken: session.access_token ?? null, user: session.user ?? null };
+    })
     .catch(() => null)
     .finally(() => {
       refreshInFlight = null;

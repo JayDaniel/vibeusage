@@ -31,11 +31,10 @@ module.exports = withRequestLogging("vibeusage-link-code-init", async function (
   const serviceRoleKey = getServiceRoleKey();
   const anonKey = getAnonKey();
   const dbClient = serviceRoleKey
-    ? createClient({
-        baseUrl,
-        anonKey: anonKey || serviceRoleKey,
-        edgeFunctionToken: serviceRoleKey,
-      })
+    ? createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    })
     : auth.edgeClient;
 
   const linkCode = generateLinkCode();
@@ -43,7 +42,7 @@ module.exports = withRequestLogging("vibeusage-link-code-init", async function (
   const sessionId = await sha256Hex(bearer);
   const expiresAt = new Date(Date.now() + LINK_CODE_TTL_MS).toISOString();
 
-  const { error: insertErr } = await dbClient.database.from("vibeusage_link_codes").insert([
+  const { error: insertErr } = await dbClient.from("vibeusage_link_codes").insert([
     {
       user_id: auth.userId,
       code_hash: codeHash,

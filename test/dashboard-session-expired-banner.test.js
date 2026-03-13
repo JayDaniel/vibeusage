@@ -24,11 +24,10 @@ test("App does not use legacy auth hook", () => {
   assert.doesNotMatch(src, /useLegacyAuth/);
 });
 
-test("main wires InsForge hosted auth routes", () => {
+test("main wires Supabase hosted auth routes", () => {
   const src = read("dashboard/src/main.jsx");
-  assert.match(src, /@insforge\/react-router/);
-  assert.match(src, /getInsforgeRoutes/);
-  assert.match(src, /getInsforgeBaseUrl/);
+  assert.match(src, /supabase-auth-provider/);
+  assert.match(src, /getSupabaseRoutes/);
   assert.match(src, /afterSignInUrl/);
 });
 
@@ -60,9 +59,9 @@ test("App routes LandingPage when signed out", () => {
   assert.match(src, /gate\s*===\s*["']landing["']/);
 });
 
-test("App uses InsForge auth hook for signed-in gating", () => {
+test("App uses Supabase auth hook for signed-in gating", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /@insforge\/react-router/);
+  assert.match(src, /supabase-auth-provider/);
   assert.match(src, /useInsforgeAuth/);
 });
 
@@ -79,7 +78,7 @@ test("App keeps auth while session is soft-expired", () => {
 
 test("App provides InsForge access token resolver", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /getCurrentSession/);
+  assert.match(src, /getSession/);
   assert.match(src, /getAccessToken/);
 });
 
@@ -122,7 +121,7 @@ test("App registers visibility revalidate for soft-expired sessions", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /visibilitychange/);
   assert.match(src, /sessionSoftExpired/);
-  assert.match(src, /getCurrentSession/);
+  assert.match(src, /getSession/);
 });
 
 test("vibeusage-api resolves access token providers", () => {

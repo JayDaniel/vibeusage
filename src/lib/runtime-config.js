@@ -6,6 +6,7 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
   const baseUrl = pickString(
     cli.baseUrl,
     config.baseUrl,
+    env?.VIBEUSAGE_SUPABASE_URL,
     env?.VIBEUSAGE_INSFORGE_BASE_URL,
     defaults.baseUrl,
     DEFAULT_BASE_URL,
@@ -32,14 +33,18 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
     DEFAULT_HTTP_TIMEOUT_MS,
   );
   const debug = pickBoolean(cli.debug, config.debug, env?.VIBEUSAGE_DEBUG, defaults.debug, false);
-  const insforgeAnonKey = pickString(
+  const supabaseAnonKey = pickString(
+    cli.supabaseAnonKey,
     cli.insforgeAnonKey,
+    config.supabaseAnonKey,
     config.insforgeAnonKey,
+    env?.VIBEUSAGE_SUPABASE_ANON_KEY,
     env?.VIBEUSAGE_INSFORGE_ANON_KEY,
+    defaults.supabaseAnonKey,
     defaults.insforgeAnonKey,
     "",
   );
-  if (insforgeAnonKey.value == null) insforgeAnonKey.value = "";
+  if (supabaseAnonKey.value == null) supabaseAnonKey.value = "";
   const autoRetryNoSpawn = pickBoolean(
     cli.autoRetryNoSpawn,
     config.autoRetryNoSpawn,
@@ -54,7 +59,8 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
     deviceToken: deviceToken.value,
     httpTimeoutMs: httpTimeoutMs.value,
     debug: debug.value,
-    insforgeAnonKey: insforgeAnonKey.value,
+    supabaseAnonKey: supabaseAnonKey.value,
+    insforgeAnonKey: supabaseAnonKey.value,
     autoRetryNoSpawn: autoRetryNoSpawn.value,
     sources: {
       baseUrl: baseUrl.source,
@@ -62,7 +68,8 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
       deviceToken: deviceToken.source,
       httpTimeoutMs: httpTimeoutMs.source,
       debug: debug.source,
-      insforgeAnonKey: insforgeAnonKey.source,
+      supabaseAnonKey: supabaseAnonKey.source,
+      insforgeAnonKey: supabaseAnonKey.source,
       autoRetryNoSpawn: autoRetryNoSpawn.source,
     },
   };
@@ -81,7 +88,7 @@ function pickHttpTimeoutMs(...candidates) {
 }
 
 function pickValue(candidates, normalize) {
-  const labels = ["cli", "config", "env", "default", "default"];
+  const labels = ["cli", "cli", "config", "config", "env", "env", "default", "default", "default", "default"];
   for (let i = 0; i < candidates.length; i += 1) {
     const value = normalize(candidates[i]);
     if (value !== undefined) {

@@ -39,11 +39,10 @@ module.exports = withRequestLogging("vibeusage-entitlements-revoke", async funct
   if (!anonKey && !serviceRoleKey) return json({ error: "Admin key missing" }, 500);
 
   const baseUrl = getBaseUrl();
-  const dbClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: isServiceRole ? serviceRoleKey : bearer,
-  });
+  const dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${isServiceRole ? serviceRoleKey : bearer}` } },
+    });
 
   const nowIso = new Date().toISOString();
   const update = {

@@ -142,11 +142,10 @@ module.exports = withRequestLogging("vibeusage-pricing-sync", async function (re
 
   const baseUrl = getBaseUrl();
   const anonKey = getAnonKey();
-  const serviceClient = createClient({
-    baseUrl,
-    anonKey: anonKey || serviceRoleKey,
-    edgeFunctionToken: serviceRoleKey,
-  });
+  const serviceClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
+    });
 
   let upserted = 0;
   for (let i = 0; i < rows.length; i += UPSERT_BATCH_SIZE) {

@@ -39,10 +39,9 @@ module.exports = withRequestLogging("vibeusage-device-token-issue", async functi
     userId = typeof body.data?.user_id === "string" ? body.data.user_id : null;
     if (!userId) return json({ error: "user_id is required (admin mode)" }, 400);
     const anonKey = getAnonKey();
-    dbClient = createClient({
-      baseUrl,
-      anonKey: anonKey || serviceRoleKey,
-      edgeFunctionToken: serviceRoleKey,
+    dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } },
     });
   } else {
     const auth = await getEdgeClientAndUserId({ baseUrl, bearer });
@@ -61,7 +60,7 @@ module.exports = withRequestLogging("vibeusage-device-token-issue", async functi
   const token = generateToken();
   const tokenHash = await sha256Hex(token);
 
-  const { error: deviceErr } = await dbClient.database.from("vibeusage_tracker_devices").insert([
+  const { error: deviceErr } = await dbClient.from("vibeusage_tracker_devices").insert([
     {
       id: deviceId,
       user_id: userId,
@@ -113,7 +112,7 @@ function generateToken() {
 
 async function bestEffortDeleteDevice({ dbClient, deviceId, userId }) {
   try {
-    let query = dbClient.database.from("vibeusage_tracker_devices").delete().eq("id", deviceId);
+    let query = dbClient.from("vibeusage_tracker_devices").delete().eq("id", deviceId);
     if (userId) query = query.eq("user_id", userId);
     const { error } = await query;
     if (error) {
