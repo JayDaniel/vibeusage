@@ -10,7 +10,7 @@ if (!globalThis.crypto) {
 
 const SERVICE_ROLE_KEY = "srk_test_123";
 const ANON_KEY = "anon_test_123";
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 const JWT_SECRET = "jwt_secret_test";
 
 function toBase64Url(value) {
@@ -50,7 +50,7 @@ function createUserJwt(userId, { expiresInSeconds = 3600 } = {}) {
 }
 
 function setDenoEnv(env) {
-  const merged = { INSFORGE_JWT_SECRET: JWT_SECRET, ...env };
+  const merged = { SUPABASE_JWT_SECRET: JWT_SECRET, ...env };
   globalThis.Deno = {
     env: {
       get(key) {
@@ -61,7 +61,7 @@ function setDenoEnv(env) {
 }
 
 test("vibeusage function sources are not wrapper shims", () => {
-  const functionsDir = path.join(__dirname, "..", "insforge-src", "functions");
+  const functionsDir = path.join(__dirname, "..", "supabase-src", "functions");
   const entries = fs
     .readdirSync(functionsDir)
     .filter((name) => name.startsWith("vibeusage-") && name.endsWith(".js"));
@@ -73,17 +73,17 @@ test("vibeusage function sources are not wrapper shims", () => {
   }
 });
 
-test("env exposes INSFORGE_JWT_SECRET via getJwtSecret", () => {
-  setDenoEnv({ INSFORGE_JWT_SECRET: JWT_SECRET });
-  const { getJwtSecret } = require("../insforge-src/shared/env");
+test("env exposes SUPABASE_JWT_SECRET via getJwtSecret", () => {
+  setDenoEnv({ SUPABASE_JWT_SECRET: JWT_SECRET });
+  const { getJwtSecret } = require("../supabase-src/shared/env");
   assert.equal(getJwtSecret(), JWT_SECRET);
 });
 
 test("local jwt verification accepts valid HS256 token", async () => {
   const userId = "11111111-1111-1111-1111-111111111111";
   const jwt = signJwt({ sub: userId, exp: Math.floor(Date.now() / 1000) + 3600 }, JWT_SECRET);
-  setDenoEnv({ INSFORGE_JWT_SECRET: JWT_SECRET, INSFORGE_ANON_KEY: ANON_KEY });
-  const { verifyUserJwtHs256 } = require("../insforge-src/shared/auth");
+  setDenoEnv({ SUPABASE_JWT_SECRET: JWT_SECRET, SUPABASE_ANON_KEY: ANON_KEY });
+  const { verifyUserJwtHs256 } = require("../supabase-src/shared/auth");
   const res = await verifyUserJwtHs256({ token: jwt });
   assert.equal(res.ok, true);
   assert.equal(res.userId, userId);
@@ -92,8 +92,8 @@ test("local jwt verification accepts valid HS256 token", async () => {
 test("local jwt verification rejects token without exp", async () => {
   const userId = "11111111-1111-1111-1111-111111111112";
   const jwt = signJwt({ sub: userId }, JWT_SECRET);
-  setDenoEnv({ INSFORGE_JWT_SECRET: JWT_SECRET, INSFORGE_ANON_KEY: ANON_KEY });
-  const { verifyUserJwtHs256 } = require("../insforge-src/shared/auth");
+  setDenoEnv({ SUPABASE_JWT_SECRET: JWT_SECRET, SUPABASE_ANON_KEY: ANON_KEY });
+  const { verifyUserJwtHs256 } = require("../supabase-src/shared/auth");
   const res = await verifyUserJwtHs256({ token: jwt });
   assert.equal(res.ok, false);
   assert.equal(res.error, "Missing exp");
@@ -102,8 +102,8 @@ test("local jwt verification rejects token without exp", async () => {
 test("local jwt verification rejects expired token", async () => {
   const userId = "22222222-2222-2222-2222-222222222222";
   const jwt = signJwt({ sub: userId, exp: Math.floor(Date.now() / 1000) - 10 }, JWT_SECRET);
-  setDenoEnv({ INSFORGE_JWT_SECRET: JWT_SECRET, INSFORGE_ANON_KEY: ANON_KEY });
-  const { verifyUserJwtHs256 } = require("../insforge-src/shared/auth");
+  setDenoEnv({ SUPABASE_JWT_SECRET: JWT_SECRET, SUPABASE_ANON_KEY: ANON_KEY });
+  const { verifyUserJwtHs256 } = require("../supabase-src/shared/auth");
   const res = await verifyUserJwtHs256({ token: jwt });
   assert.equal(res.ok, false);
 });
@@ -111,8 +111,8 @@ test("local jwt verification rejects expired token", async () => {
 test("local jwt verification rejects when secret missing", async () => {
   const userId = "22222222-2222-2222-2222-222222222223";
   const jwt = signJwt({ sub: userId, exp: Math.floor(Date.now() / 1000) + 3600 }, JWT_SECRET);
-  setDenoEnv({ INSFORGE_JWT_SECRET: undefined, INSFORGE_ANON_KEY: ANON_KEY });
-  const { verifyUserJwtHs256 } = require("../insforge-src/shared/auth");
+  setDenoEnv({ SUPABASE_JWT_SECRET: undefined, SUPABASE_ANON_KEY: ANON_KEY });
+  const { verifyUserJwtHs256 } = require("../supabase-src/shared/auth");
   const res = await verifyUserJwtHs256({ token: jwt });
   assert.equal(res.ok, false);
   assert.equal(res.code, "missing_jwt_secret");
@@ -132,8 +132,8 @@ test("getEdgeClientAndUserIdFast falls back to remote auth when jwt secret missi
     },
   });
 
-  setDenoEnv({ INSFORGE_JWT_SECRET: undefined, INSFORGE_ANON_KEY: ANON_KEY });
-  const { getEdgeClientAndUserIdFast } = require("../insforge-src/shared/auth");
+  setDenoEnv({ SUPABASE_JWT_SECRET: undefined, SUPABASE_ANON_KEY: ANON_KEY });
+  const { getEdgeClientAndUserIdFast } = require("../supabase-src/shared/auth");
   const res = await getEdgeClientAndUserIdFast({ baseUrl: BASE_URL, bearer: userJwt });
   assert.equal(res.ok, true);
   assert.equal(res.userId, userId);
@@ -154,7 +154,7 @@ test("getEdgeClientAndUserIdFast rejects when auth lookup fails", async () => {
     },
   });
 
-  const { getEdgeClientAndUserIdFast } = require("../insforge-src/shared/auth");
+  const { getEdgeClientAndUserIdFast } = require("../supabase-src/shared/auth");
   const res = await getEdgeClientAndUserIdFast({ baseUrl: BASE_URL, bearer: userJwt });
   assert.equal(res.ok, false);
   assert.equal(res.status, 401);
@@ -175,7 +175,7 @@ test("getEdgeClientAndUserIdFast returns 503 when auth lookup fails transiently"
     },
   });
 
-  const { getEdgeClientAndUserIdFast } = require("../insforge-src/shared/auth");
+  const { getEdgeClientAndUserIdFast } = require("../supabase-src/shared/auth");
   const res = await getEdgeClientAndUserIdFast({ baseUrl: BASE_URL, bearer: userJwt });
   assert.equal(res.ok, false);
   assert.equal(res.status, 503);
@@ -184,7 +184,7 @@ test("getEdgeClientAndUserIdFast returns 503 when auth lookup fails transiently"
 });
 
 test("vibeusage-usage-summary returns 503 when auth lookup fails transiently", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-usage-summary");
 
   const userId = "33333333-3333-3333-3333-333333333335";
   const userJwt = createUserJwt(userId);
@@ -217,7 +217,7 @@ test("vibeusage-usage-summary returns 503 when auth lookup fails transiently", a
 });
 
 test("vibeusage-debug-auth accepts locally verified jwt", async () => {
-  const fn = require("../insforge-functions/vibeusage-debug-auth");
+  const fn = require("../supabase-functions/vibeusage-debug-auth");
   const userId = "33333333-3333-3333-3333-333333333333";
   const userJwt = createUserJwt(userId);
   globalThis.createClient = () => {
@@ -538,7 +538,7 @@ const ORIGINAL_FETCH = globalThis.fetch;
 beforeEach(() => {
   setDenoEnv({
     SERVICE_ROLE_KEY,
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 });
@@ -556,11 +556,11 @@ afterEach(() => {
 
 test("vibeusage-device-token-issue works without serviceRoleKey (user mode)", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-device-token-issue");
+  const fn = require("../supabase-functions/vibeusage-device-token-issue");
 
   const calls = [];
   const db = createServiceDbMock();
@@ -606,7 +606,7 @@ test("vibeusage-device-token-issue works without serviceRoleKey (user mode)", as
 });
 
 test("vibeusage-device-token-issue admin mode skips user lookup", async () => {
-  const fn = require("../insforge-functions/vibeusage-device-token-issue");
+  const fn = require("../supabase-functions/vibeusage-device-token-issue");
 
   const calls = [];
   const service = createServiceDbMock();
@@ -637,7 +637,7 @@ test("vibeusage-device-token-issue admin mode skips user lookup", async () => {
 });
 
 test("vibeusage-ingest uses serviceRoleKey as edgeFunctionToken and ingests hourly aggregates", async () => {
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const calls = [];
   const fetchCalls = [];
@@ -748,7 +748,7 @@ test("vibeusage-ingest uses serviceRoleKey as edgeFunctionToken and ingests hour
 });
 
 test("vibeusage-ingest ingests project_hourly buckets and upserts project registry", async () => {
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const calls = [];
   const fetchCalls = [];
@@ -876,7 +876,7 @@ test("vibeusage-ingest ingests project_hourly buckets and upserts project regist
 });
 
 test("vibeusage-ingest accepts wrapped payload with data.hourly", async () => {
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const calls = [];
   const fetchCalls = [];
@@ -970,7 +970,7 @@ test("vibeusage-ingest accepts wrapped payload with data.hourly", async () => {
 });
 
 test("vibeusage-ingest accepts project_hourly alongside hourly payloads", async () => {
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const calls = [];
   const fetchCalls = [];
@@ -1092,7 +1092,7 @@ test("vibeusage-ingest accepts project_hourly alongside hourly payloads", async 
 });
 
 test("vibeusage-ingest upserts device subscriptions when provided", async () => {
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const fetchCalls = [];
   const tokenRow = {
@@ -1200,11 +1200,11 @@ test("vibeusage-ingest upserts device subscriptions when provided", async () => 
 
 test("vibeusage-ingest works without serviceRoleKey via anonKey records API", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const tokenRow = {
     id: "token-id",
@@ -1349,14 +1349,14 @@ test("vibeusage-ingest works without serviceRoleKey via anonKey records API", as
 
 test("vibeusage-ingest returns 429 when concurrency limit exceeded", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
     VIBEUSAGE_INGEST_MAX_INFLIGHT: "1",
     VIBEUSAGE_INGEST_RETRY_AFTER_MS: "1000",
   });
 
-  delete require.cache[require.resolve("../insforge-functions/vibeusage-ingest")];
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  delete require.cache[require.resolve("../supabase-functions/vibeusage-ingest")];
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const tokenRow = {
     id: "token-id",
@@ -1435,11 +1435,11 @@ test("vibeusage-ingest returns 429 when concurrency limit exceeded", async () =>
 
 test("vibeusage-ingest anonKey path errors when hourly upsert unsupported", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-ingest");
+  const fn = require("../supabase-functions/vibeusage-ingest");
 
   const tokenRow = {
     id: "token-id",
@@ -1492,7 +1492,7 @@ test("vibeusage-ingest anonKey path errors when hourly upsert unsupported", asyn
 });
 
 test("vibeusage-usage-heatmap returns a week-aligned grid with derived fields", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-heatmap");
+  const fn = require("../supabase-functions/vibeusage-usage-heatmap");
 
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -1607,7 +1607,7 @@ test("vibeusage-usage-heatmap returns a week-aligned grid with derived fields", 
 });
 
 test("vibeusage-usage-heatmap canonical model filter includes alias rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-heatmap");
+  const fn = require("../supabase-functions/vibeusage-usage-heatmap");
 
   const userId = "33333333-3333-3333-3333-333333333333";
   const userJwt = createUserJwt(userId);
@@ -1665,7 +1665,7 @@ test("vibeusage-usage-heatmap canonical model filter includes alias rows", async
 });
 
 test("vibeusage-usage-heatmap normalizes model for non-UTC alias filtering", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-heatmap");
+  const fn = require("../supabase-functions/vibeusage-usage-heatmap");
 
   const userId = "33333333-3333-3333-3333-333333333333";
   const userJwt = createUserJwt(userId);
@@ -1731,7 +1731,7 @@ test("vibeusage-usage-heatmap normalizes model for non-UTC alias filtering", asy
 });
 
 test("vibeusage-usage-heatmap honors alias effective_from across range", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-heatmap");
+  const fn = require("../supabase-functions/vibeusage-usage-heatmap");
 
   const userId = "33333333-3333-3333-3333-333333333333";
   const userJwt = createUserJwt(userId);
@@ -1803,7 +1803,7 @@ test("vibeusage-usage-heatmap honors alias effective_from across range", async (
 });
 
 test("vibeusage-usage-heatmap rejects invalid parameters", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-heatmap");
+  const fn = require("../supabase-functions/vibeusage-usage-heatmap");
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
 
@@ -1821,7 +1821,7 @@ test("vibeusage-usage-heatmap rejects invalid parameters", async () => {
 
 test("vibeusage-usage-daily uses hourly when rollup disabled", () =>
   withRollupDisabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -1874,7 +1874,7 @@ test("vibeusage-usage-daily uses hourly when rollup disabled", () =>
 
 test("vibeusage-usage-daily ignores rollup flag", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -1911,7 +1911,7 @@ test("vibeusage-usage-daily ignores rollup flag", () =>
 
 test("vibeusage-usage-daily applies optional source filter", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -1974,7 +1974,7 @@ test("vibeusage-usage-daily applies optional source filter", () =>
 
 test("vibeusage-usage-daily applies optional model filter", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -2041,7 +2041,7 @@ test("vibeusage-usage-daily applies optional model filter", () =>
 
 test("vibeusage-usage-daily treats empty source as missing", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -2105,7 +2105,7 @@ test("vibeusage-usage-daily treats empty source as missing", () =>
 
 test("vibeusage-usage-daily excludes canary buckets by default", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-daily");
+    const fn = require("../supabase-functions/vibeusage-usage-daily");
 
     const userId = "66666666-6666-6666-6666-666666666666";
     const userJwt = createUserJwt(userId);
@@ -2168,7 +2168,7 @@ test("vibeusage-usage-daily excludes canary buckets by default", () =>
   }));
 
 test("vibeusage-usage-daily includes billable_total_tokens in summary", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
 
   const userId = "66666666-6666-6666-6666-666666666666";
   const userJwt = createUserJwt(userId);
@@ -2240,7 +2240,7 @@ test("vibeusage-usage-daily includes billable_total_tokens in summary", async ()
 });
 
 test("vibeusage-usage-daily prefers stored billable_total_tokens", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
 
   const userId = "66666666-6666-6666-6666-666666666666";
   const userJwt = createUserJwt(userId);
@@ -2303,7 +2303,7 @@ test("vibeusage-usage-daily prefers stored billable_total_tokens", async () => {
 });
 
 test("vibeusage-usage-hourly aggregates half-hour buckets into half-hour totals", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -2412,7 +2412,7 @@ test("vibeusage-usage-hourly aggregates half-hour buckets into half-hour totals"
 });
 
 test("vibeusage-usage-hourly local timezone prefers stored billable_total_tokens", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -2471,7 +2471,7 @@ test("vibeusage-usage-hourly local timezone prefers stored billable_total_tokens
 });
 
 test("vibeusage-usage-hourly computes billable totals from aggregated rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -2530,7 +2530,7 @@ test("vibeusage-usage-hourly computes billable totals from aggregated rows", asy
 });
 
 test("vibeusage-usage-hourly prefers stored billable totals in aggregate path", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -2594,7 +2594,7 @@ test("vibeusage-usage-hourly prefers stored billable totals in aggregate path", 
 });
 
 test("vibeusage-usage-hourly aggregate path falls back when billable sums incomplete", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -2659,7 +2659,7 @@ test("vibeusage-usage-hourly aggregate path falls back when billable sums incomp
 });
 
 test("vibeusage-usage-hourly canonical model filter includes alias rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "11111111-1111-1111-1111-111111111111";
   const userJwt = createUserJwt(userId);
@@ -2748,7 +2748,7 @@ test("vibeusage-usage-hourly canonical model filter includes alias rows", async 
 });
 
 test("vibeusage-usage-hourly selects model column for canonical filtering (UTC)", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "44444444-4444-4444-4444-444444444444";
   const userJwt = createUserJwt(userId);
@@ -2822,7 +2822,7 @@ test("vibeusage-usage-hourly selects model column for canonical filtering (UTC)"
 });
 
 test("vibeusage-usage-hourly selects model column for canonical filtering (local time)", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -2896,7 +2896,7 @@ test("vibeusage-usage-hourly selects model column for canonical filtering (local
 });
 
 test("vibeusage-usage-hourly honors alias effective_from across day", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-hourly");
+  const fn = require("../supabase-functions/vibeusage-usage-hourly");
 
   const userId = "11111111-1111-1111-1111-111111111111";
   const userJwt = createUserJwt(userId);
@@ -2975,7 +2975,7 @@ test("vibeusage-usage-hourly honors alias effective_from across day", async () =
 });
 
 test("vibeusage-usage-monthly aggregates hourly rows into months", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-monthly");
+  const fn = require("../supabase-functions/vibeusage-usage-monthly");
 
   const userId = "88888888-8888-8888-8888-888888888888";
   const userJwt = createUserJwt(userId);
@@ -3092,7 +3092,7 @@ test("vibeusage-usage-monthly aggregates hourly rows into months", async () => {
 });
 
 test("vibeusage-usage-monthly canonical model filter includes alias rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-monthly");
+  const fn = require("../supabase-functions/vibeusage-usage-monthly");
 
   const userId = "22222222-2222-2222-2222-222222222222";
   const userJwt = createUserJwt(userId);
@@ -3150,7 +3150,7 @@ test("vibeusage-usage-monthly canonical model filter includes alias rows", async
 });
 
 test("vibeusage-usage-monthly honors alias effective_from across range", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-monthly");
+  const fn = require("../supabase-functions/vibeusage-usage-monthly");
 
   const userId = "22222222-2222-2222-2222-222222222222";
   const userJwt = createUserJwt(userId);
@@ -3225,7 +3225,7 @@ test("vibeusage-usage-monthly honors alias effective_from across range", async (
 
 test("vibeusage-usage-summary uses hourly when rollup disabled", () =>
   withRollupDisabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -3278,7 +3278,7 @@ test("vibeusage-usage-summary uses hourly when rollup disabled", () =>
   }));
 
 test("vibeusage-project-usage-summary aggregates project usage", async () => {
-  const fn = require("../insforge-functions/vibeusage-project-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-project-usage-summary");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -3346,7 +3346,7 @@ test("vibeusage-project-usage-summary aggregates project usage", async () => {
 });
 
 test("vibeusage-project-usage-summary ignores date range for all-time totals", async () => {
-  const fn = require("../insforge-functions/vibeusage-project-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-project-usage-summary");
 
   const userId = "11111111-1111-1111-1111-111111111111";
   const userJwt = createUserJwt(userId);
@@ -3403,7 +3403,7 @@ test("vibeusage-project-usage-summary ignores date range for all-time totals", a
 });
 
 test("vibeusage-project-usage-summary uses PostgREST sum() syntax", async () => {
-  const fn = require("../insforge-functions/vibeusage-project-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-project-usage-summary");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -3454,7 +3454,7 @@ test("vibeusage-project-usage-summary uses PostgREST sum() syntax", async () => 
 });
 
 test("vibeusage-project-usage-summary falls back on schema cache aggregate error", async () => {
-  const fn = require("../insforge-functions/vibeusage-project-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-project-usage-summary");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -3559,7 +3559,7 @@ test("vibeusage-project-usage-summary falls back on schema cache aggregate error
 });
 
 test("vibeusage-project-usage-summary falls back when aggregates are blocked", async () => {
-  const fn = require("../insforge-functions/vibeusage-project-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-project-usage-summary");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -3658,7 +3658,7 @@ test("vibeusage-project-usage-summary falls back when aggregates are blocked", a
 });
 test("vibeusage-usage-summary returns rolling metrics when requested", () =>
   withRollupDisabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -3750,7 +3750,7 @@ test("vibeusage-usage-summary returns rolling metrics when requested", () =>
 
 test("vibeusage-usage-summary counts rolling active days in local timezone", () =>
   withRollupDisabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -3828,7 +3828,7 @@ test("vibeusage-usage-summary counts rolling active days in local timezone", () 
 
 test("vibeusage-usage-summary rolling fallback does not double count hourly rows", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -3908,7 +3908,7 @@ test("vibeusage-usage-summary rolling fallback does not double count hourly rows
 
 test("vibeusage-usage-summary derives active days from hourly when rollup spans local days", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4004,7 +4004,7 @@ test("vibeusage-usage-summary derives active days from hourly when rollup spans 
 
 test("vibeusage-usage-summary derives active days from hourly for IANA tz", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4100,7 +4100,7 @@ test("vibeusage-usage-summary derives active days from hourly for IANA tz", () =
 
 test("vibeusage-usage-summary clamps rolling windows to local yesterday", () =>
   withRollupDisabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4201,7 +4201,7 @@ test("vibeusage-usage-summary clamps rolling windows to local yesterday", () =>
 
 test("vibeusage-usage-summary returns total_cost_usd and pricing metadata", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4295,7 +4295,7 @@ test("vibeusage-usage-summary returns total_cost_usd and pricing metadata", () =
 
 test("vibeusage-usage-summary prefers stored billable_total_tokens", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4359,7 +4359,7 @@ test("vibeusage-usage-summary prefers stored billable_total_tokens", () =>
 
 test("vibeusage-usage-summary canonical model filter includes alias rows", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4433,7 +4433,7 @@ test("vibeusage-usage-summary canonical model filter includes alias rows", () =>
 
 test("vibeusage-usage-summary honors alias effective_from across range", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "11111111-1111-1111-1111-111111111111";
     const userJwt = createUserJwt(userId);
@@ -4517,7 +4517,7 @@ test("vibeusage-usage-summary honors alias effective_from across range", () =>
 
 test("vibeusage-usage-summary prices per-alias effective_from when unfiltered", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "12121212-1212-1212-1212-121212121212";
     const userJwt = createUserJwt(userId);
@@ -4648,7 +4648,7 @@ test("vibeusage-usage-summary prices per-alias effective_from when unfiltered", 
 
 test("vibeusage-usage-summary emits debug payload when requested", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
     const prevThreshold = process.env.VIBEUSAGE_SLOW_QUERY_MS;
 
     const userId = "99999999-9999-9999-9999-999999999999";
@@ -4759,7 +4759,7 @@ test("vibeusage-usage-summary emits debug payload when requested", () =>
 
 test("vibeusage-usage-summary logs vibeusage function name", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "99999999-9999-9999-9999-999999999999";
     const userJwt = createUserJwt(userId);
@@ -4840,7 +4840,7 @@ test("vibeusage-usage-summary logs vibeusage function name", () =>
 
 test("vibeusage-usage-summary validates user via auth lookup", () =>
   withRollupEnabled(async () => {
-    const fn = require("../insforge-functions/vibeusage-usage-summary");
+    const fn = require("../supabase-functions/vibeusage-usage-summary");
 
     const userId = "77777777-7777-7777-7777-777777777777";
     const userJwt = createUserJwt(userId);
@@ -4930,7 +4930,7 @@ test("vibeusage-usage-summary validates user via auth lookup", () =>
   }));
 
 test("vibeusage-usage-summary rejects oversized ranges", { concurrency: 1 }, async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-summary");
+  const fn = require("../supabase-functions/vibeusage-usage-summary");
   const prevMaxDays = process.env.VIBEUSAGE_USAGE_MAX_DAYS;
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -4975,7 +4975,7 @@ test("vibeusage-usage-summary rejects oversized ranges", { concurrency: 1 }, asy
 });
 
 test("getUsageMaxDays defaults to 800 days", { concurrency: 1 }, () => {
-  const { getUsageMaxDays } = require("../insforge-src/shared/date");
+  const { getUsageMaxDays } = require("../supabase-src/shared/date");
   const prevMaxDays = process.env.VIBEUSAGE_USAGE_MAX_DAYS;
   try {
     delete process.env.VIBEUSAGE_USAGE_MAX_DAYS;
@@ -4990,7 +4990,7 @@ test("resolveIdentityAtDate uses date portion of effective_from timestamps", () 
   const {
     buildAliasTimeline,
     resolveIdentityAtDate,
-  } = require("../insforge-src/shared/model-alias-timeline");
+  } = require("../supabase-src/shared/model-alias-timeline");
 
   const aliasRows = [
     {
@@ -5013,7 +5013,7 @@ test("resolveIdentityAtDate uses date portion of effective_from timestamps", () 
 });
 
 test("fetchAliasRows includes same-day alias timestamps", { concurrency: 1 }, async () => {
-  const { fetchAliasRows } = require("../insforge-src/shared/model-alias-timeline");
+  const { fetchAliasRows } = require("../supabase-src/shared/model-alias-timeline");
   const aliasRows = [
     {
       usage_model: "gpt-foo",
@@ -5088,7 +5088,7 @@ test("fetchAliasRows includes same-day alias timestamps", { concurrency: 1 }, as
 });
 
 test("vibeusage-usage-daily rejects oversized ranges", { concurrency: 1 }, async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
   const prevMaxDays = process.env.VIBEUSAGE_USAGE_MAX_DAYS;
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -5133,7 +5133,7 @@ test("vibeusage-usage-daily rejects oversized ranges", { concurrency: 1 }, async
 });
 
 test("vibeusage-usage-model-breakdown includes billable_total_tokens per source", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -5211,7 +5211,7 @@ test("vibeusage-usage-model-breakdown includes billable_total_tokens per source"
 });
 
 test("vibeusage-usage-model-breakdown prefers stored billable_total_tokens", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -5291,7 +5291,7 @@ test("vibeusage-usage-model-breakdown prefers stored billable_total_tokens", asy
 });
 
 test("vibeusage-usage-model-breakdown sorts models by billable_total_tokens", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -5368,9 +5368,9 @@ test(
   "vibeusage usage aggregates stay consistent across summary daily breakdown",
   { concurrency: 1 },
   async () => {
-    const summaryFn = require("../insforge-functions/vibeusage-usage-summary");
-    const dailyFn = require("../insforge-functions/vibeusage-usage-daily");
-    const breakdownFn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+    const summaryFn = require("../supabase-functions/vibeusage-usage-summary");
+    const dailyFn = require("../supabase-functions/vibeusage-usage-daily");
+    const breakdownFn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
     const userId = "88888888-8888-8888-8888-888888888888";
     const userJwt = createUserJwt(userId);
@@ -5488,9 +5488,9 @@ test(
   { concurrency: 1 },
   () =>
     withRollupDisabled(async () => {
-      const summaryFn = require("../insforge-functions/vibeusage-usage-summary");
-      const dailyFn = require("../insforge-functions/vibeusage-usage-daily");
-      const breakdownFn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+      const summaryFn = require("../supabase-functions/vibeusage-usage-summary");
+      const dailyFn = require("../supabase-functions/vibeusage-usage-daily");
+      const breakdownFn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
       const userId = "77777777-7777-7777-7777-777777777777";
       const userJwt = createUserJwt(userId);
@@ -5611,9 +5611,9 @@ test(
   { concurrency: 1 },
   () =>
     withRollupDisabled(async () => {
-      const summaryFn = require("../insforge-functions/vibeusage-usage-summary");
-      const dailyFn = require("../insforge-functions/vibeusage-usage-daily");
-      const breakdownFn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+      const summaryFn = require("../supabase-functions/vibeusage-usage-summary");
+      const dailyFn = require("../supabase-functions/vibeusage-usage-daily");
+      const breakdownFn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
       const userId = "77777777-7777-7777-7777-777777777777";
       const userJwt = createUserJwt(userId);
@@ -5807,7 +5807,7 @@ function assertTokenTotalsEqual(expected, actual, label) {
 }
 
 test("vibeusage-usage-model-breakdown rejects oversized ranges", { concurrency: 1 }, async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
   const prevMaxDays = process.env.VIBEUSAGE_USAGE_MAX_DAYS;
   const userId = "55555555-5555-5555-5555-555555555555";
   const userJwt = createUserJwt(userId);
@@ -5852,7 +5852,7 @@ test("vibeusage-usage-model-breakdown rejects oversized ranges", { concurrency: 
 });
 
 test("vibeusage-usage-model-breakdown emits model_id and merges aliases", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -5938,7 +5938,7 @@ test("vibeusage-usage-model-breakdown emits model_id and merges aliases", async 
 });
 
 test("vibeusage-usage-model-breakdown honors alias effective_from across range", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -6033,7 +6033,7 @@ test("vibeusage-usage-model-breakdown honors alias effective_from across range",
 });
 
 test("vibeusage-usage-model-breakdown prices per-alias effective_from when unfiltered", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-model-breakdown");
+  const fn = require("../supabase-functions/vibeusage-usage-model-breakdown");
 
   const userId = "23232323-2323-2323-2323-232323232323";
   const userJwt = createUserJwt(userId);
@@ -6167,7 +6167,7 @@ test("vibeusage-usage-model-breakdown prices per-alias effective_from when unfil
 });
 
 test("vibeusage-usage-daily canonical model filter includes alias rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
 
   const userId = "88888888-8888-8888-8888-888888888888";
   const userJwt = createUserJwt(userId);
@@ -6241,7 +6241,7 @@ test("vibeusage-usage-daily canonical model filter includes alias rows", async (
 });
 
 test("vibeusage-usage-daily prefixed model filter includes alias rows", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -6314,7 +6314,7 @@ test("vibeusage-usage-daily prefixed model filter includes alias rows", async ()
 });
 
 test("vibeusage-usage-daily honors alias effective_from across range", async () => {
-  const fn = require("../insforge-functions/vibeusage-usage-daily");
+  const fn = require("../supabase-functions/vibeusage-usage-daily");
 
   const userId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
   const userJwt = createUserJwt(userId);
@@ -6409,7 +6409,7 @@ test(
   { concurrency: 1 },
   () =>
     withRollupDisabled(async () => {
-      const fn = require("../insforge-functions/vibeusage-usage-daily");
+      const fn = require("../supabase-functions/vibeusage-usage-daily");
 
       const userId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
       const userJwt = createUserJwt(userId);
@@ -6542,11 +6542,11 @@ test(
 
 test("vibeusage-leaderboard returns a week window and slices entries to limit", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
 
   const userId = "66666666-6666-6666-6666-666666666666";
   const userJwt = createUserJwt(userId);
@@ -6664,11 +6664,11 @@ test("vibeusage-leaderboard returns a week window and slices entries to limit", 
 
 test("vibeusage-leaderboard supports month period", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
   const userId = "77777777-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
 
@@ -6751,11 +6751,11 @@ test("vibeusage-leaderboard supports month period", async () => {
 
 test("vibeusage-leaderboard supports total period", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
   const userId = "77777777-7777-7777-7777-777777777778";
   const userJwt = createUserJwt(userId);
 
@@ -6824,11 +6824,11 @@ test("vibeusage-leaderboard supports total period", async () => {
 
 test("vibeusage-leaderboard supports offset pagination", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
 
   const userId = "99999999-6666-6666-6666-666666666666";
   const userJwt = createUserJwt(userId);
@@ -6924,11 +6924,11 @@ test("vibeusage-leaderboard supports offset pagination", async () => {
 
 test("vibeusage-leaderboard supports metric=Gpt", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
 
   const userId = "99999999-7777-7777-7777-777777777777";
   const userJwt = createUserJwt(userId);
@@ -7018,11 +7018,11 @@ test("vibeusage-leaderboard supports metric=Gpt", async () => {
 
 test("vibeusage-leaderboard supports metric=other", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
 
   const userId = "99999999-7878-7878-7878-787878787878";
   const userJwt = createUserJwt(userId);
@@ -7119,7 +7119,7 @@ test("vibeusage-leaderboard supports metric=other", async () => {
 });
 
 test("vibeusage-leaderboard rejects invalid metric", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
   const userId = "99999999-8888-8888-8888-888888888888";
   const userJwt = createUserJwt(userId);
 
@@ -7152,7 +7152,7 @@ test("vibeusage-leaderboard rejects invalid metric", async () => {
 });
 
 test("vibeusage-leaderboard rejects invalid period", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
   const userId = "88888888-8888-8888-8888-888888888888";
   const userJwt = createUserJwt(userId);
 
@@ -7183,12 +7183,12 @@ test("vibeusage-leaderboard rejects invalid period", async () => {
 
 test("vibeusage-leaderboard snapshot entries gate user_id by is_public and include is_public", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard");
+  const fn = require("../supabase-functions/vibeusage-leaderboard");
 
   const userId = "11111111-2222-3333-4444-555555555555";
   const userJwt = createUserJwt(userId);
@@ -7299,12 +7299,12 @@ test("vibeusage-leaderboard snapshot entries gate user_id by is_public and inclu
 
 test("vibeusage-leaderboard-refresh rejects non-week period", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-refresh");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-refresh");
 
   globalThis.createClient = () => {
     throw new Error("Unexpected createClient call");
@@ -7322,12 +7322,12 @@ test("vibeusage-leaderboard-refresh rejects non-week period", async () => {
 
 test("vibeusage-leaderboard-refresh defaults to week+month periods", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-refresh");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-refresh");
 
   const deletedPeriods = [];
   const sourceViews = [];
@@ -7406,12 +7406,12 @@ test("vibeusage-leaderboard-refresh defaults to week+month periods", async () =>
 
 test("vibeusage-leaderboard-refresh snapshots weekly leaderboard with token fields", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-refresh");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-refresh");
 
   const deletes = [];
   const inserts = [];
@@ -7591,7 +7591,7 @@ test("vibeusage-leaderboard-refresh snapshots weekly leaderboard with token fiel
 });
 
 test("vibeusage-leaderboard-settings inserts user setting row", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "99999999-9999-9999-9999-999999999999";
   const userJwt = createUserJwt(userId);
@@ -7680,7 +7680,7 @@ test("vibeusage-leaderboard-settings inserts user setting row", async () => {
 });
 
 test("vibeusage-leaderboard-settings updates existing row", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
   const userJwt = createUserJwt(userId);
@@ -7797,7 +7797,7 @@ test("vibeusage-leaderboard-settings updates existing row", async () => {
 });
 
 test("vibeusage-leaderboard-settings syncs snapshot display name from profile fallback", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
   const userJwt = createUserJwt(userId);
@@ -7912,7 +7912,7 @@ test("vibeusage-leaderboard-settings syncs snapshot display name from profile fa
 });
 
 test("vibeusage-leaderboard-settings returns user setting state", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "cccccccc-cccc-cccc-cccc-cccccccccccc";
   const userJwt = createUserJwt(userId);
@@ -7957,7 +7957,7 @@ test("vibeusage-leaderboard-settings returns user setting state", async () => {
 });
 
 test("vibeusage-leaderboard-settings defaults to false when missing row", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "dddddddd-dddd-dddd-dddd-dddddddddddd";
   const userJwt = createUserJwt(userId);
@@ -7999,7 +7999,7 @@ test("vibeusage-leaderboard-settings defaults to false when missing row", async 
 });
 
 test("vibeusage-leaderboard-settings rejects invalid body", async () => {
-  const fn = require("../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
   const userJwt = createUserJwt(userId);
@@ -8032,12 +8032,12 @@ test("vibeusage-leaderboard-settings rejects invalid body", async () => {
 
 test("vibeusage-leaderboard-profile rejects missing user_id", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-profile");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-profile");
 
   const userId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee";
   const userJwt = createUserJwt(userId);
@@ -8064,12 +8064,12 @@ test("vibeusage-leaderboard-profile rejects missing user_id", async () => {
 
 test("vibeusage-leaderboard-profile hides non-public users", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-profile");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-profile");
 
   const userId = "ffffffff-ffff-ffff-ffff-ffffffffffff";
   const userJwt = createUserJwt(userId);
@@ -8122,12 +8122,12 @@ test("vibeusage-leaderboard-profile hides non-public users", async () => {
 
 test("vibeusage-leaderboard-profile requires active public link for non-self user", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-profile");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-profile");
 
   const userId = "ffff0000-0000-0000-0000-000000000000";
   const userJwt = createUserJwt(userId);
@@ -8210,12 +8210,12 @@ test("vibeusage-leaderboard-profile requires active public link for non-self use
 
 test("vibeusage-leaderboard-profile hides snapshot rows marked private", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-profile");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-profile");
 
   const userId = "999a0000-0000-0000-0000-000000000000";
   const userJwt = createUserJwt(userId);
@@ -8308,12 +8308,12 @@ test("vibeusage-leaderboard-profile hides snapshot rows marked private", async (
 
 test("vibeusage-leaderboard-profile returns weekly snapshot entry for public user", async () => {
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
   });
 
-  const fn = require("../insforge-functions/vibeusage-leaderboard-profile");
+  const fn = require("../supabase-functions/vibeusage-leaderboard-profile");
 
   const userId = "99990000-0000-0000-0000-000000000000";
   const userJwt = createUserJwt(userId);
@@ -8413,7 +8413,7 @@ test("vibeusage-leaderboard-profile returns weekly snapshot entry for public use
 });
 
 test("vibeusage-user-status returns pro.active for cutoff user", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   const userId = "11111111-1111-1111-1111-111111111111";
   const userJwt = createUserJwt(userId);
@@ -8581,7 +8581,7 @@ test("vibeusage-user-status returns pro.active for cutoff user", async () => {
 });
 
 test("vibeusage-user-status returns tracked subscriptions for identity card", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   const userId = "11111111-1111-1111-1111-111111111119";
   const userJwt = createUserJwt(userId);
@@ -8765,7 +8765,7 @@ test("vibeusage-user-status returns tracked subscriptions for identity card", as
 });
 
 test("vibeusage-user-status marks install partial when device tables are missing", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   const userId = "11111111-1111-1111-1111-11111111111a";
   const userJwt = createUserJwt(userId);
@@ -8911,7 +8911,7 @@ test("vibeusage-user-status marks install partial when device tables are missing
 });
 
 test("vibeusage-user-status falls back to users table when created_at missing", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   const userId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
   const userJwt = createUserJwt(userId);
@@ -9007,10 +9007,10 @@ test("vibeusage-user-status falls back to users table when created_at missing", 
 });
 
 test("vibeusage-user-status degrades when created_at missing and no service role", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   setDenoEnv({
-    INSFORGE_INTERNAL_URL: BASE_URL,
+    SUPABASE_INTERNAL_URL: BASE_URL,
     ANON_KEY,
   });
 
@@ -9151,7 +9151,7 @@ test("vibeusage-user-status degrades when created_at missing and no service role
 });
 
 test("vibeusage-user-status returns 500 for unrelated missing relation errors", async () => {
-  const fn = require("../insforge-functions/vibeusage-user-status");
+  const fn = require("../supabase-functions/vibeusage-user-status");
 
   const userId = "dddddddd-dddd-dddd-dddd-dddddddddddd";
   const userJwt = createUserJwt(userId);
@@ -9231,7 +9231,7 @@ test("vibeusage-user-status returns 500 for unrelated missing relation errors", 
 });
 
 test("vibeusage-entitlements rejects non-admin caller", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const userId = "cccccccc-cccc-cccc-cccc-cccccccccccc";
   const userJwt = createUserJwt(userId);
@@ -9251,7 +9251,7 @@ test("vibeusage-entitlements rejects non-admin caller", async () => {
 });
 
 test("vibeusage-entitlements inserts entitlement (admin)", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createServiceDbMock();
   const userId = "22222222-2222-2222-2222-222222222222";
@@ -9288,7 +9288,7 @@ test("vibeusage-entitlements inserts entitlement (admin)", async () => {
 });
 
 test("vibeusage-entitlements replays idempotency_key without duplicate insert", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createEntitlementsDbMock();
   const userId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
@@ -9332,7 +9332,7 @@ test("vibeusage-entitlements replays idempotency_key without duplicate insert", 
 });
 
 test("vibeusage-entitlements accepts long idempotency_key without collisions", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createEntitlementsDbMock();
   const userId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
@@ -9384,7 +9384,7 @@ test("vibeusage-entitlements accepts long idempotency_key without collisions", a
 });
 
 test("vibeusage-entitlements normalizes user_id for idempotency replays", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createEntitlementsDbMock({ normalizeUserId: true });
   const userId = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
@@ -9430,7 +9430,7 @@ test("vibeusage-entitlements normalizes user_id for idempotency replays", async 
 });
 
 test("vibeusage-entitlements rejects idempotency_key payload mismatch", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createEntitlementsDbMock();
   const userId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee";
@@ -9475,7 +9475,7 @@ test("vibeusage-entitlements rejects idempotency_key payload mismatch", async ()
 });
 
 test("vibeusage-entitlements returns existing row after insert conflict", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const userId = "ffffffff-ffff-ffff-ffff-ffffffffffff";
   const conflictRow = {
@@ -9519,7 +9519,7 @@ test("vibeusage-entitlements returns existing row after insert conflict", async 
 });
 
 test("vibeusage-entitlements rejects id reuse across users", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const existingId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
   const existingRow = {
@@ -9563,7 +9563,7 @@ test("vibeusage-entitlements rejects id reuse across users", async () => {
 });
 
 test("vibeusage-entitlements accepts project_admin token", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createServiceDbMock();
   const userId = "44444444-4444-4444-4444-444444444444";
@@ -9592,7 +9592,7 @@ test("vibeusage-entitlements accepts project_admin token", async () => {
 });
 
 test("vibeusage-entitlements accepts project_admin token from roles array", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements");
+  const fn = require("../supabase-functions/vibeusage-entitlements");
 
   const db = createServiceDbMock();
   const userId = "55555555-5555-5555-5555-555555555555";
@@ -9621,7 +9621,7 @@ test("vibeusage-entitlements accepts project_admin token from roles array", asyn
 });
 
 test("vibeusage-entitlements-revoke updates revoked_at (admin)", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements-revoke");
+  const fn = require("../supabase-functions/vibeusage-entitlements-revoke");
 
   const db = createServiceDbMock();
   const entitlementId = "33333333-3333-3333-3333-333333333333";
@@ -9652,7 +9652,7 @@ test("vibeusage-entitlements-revoke updates revoked_at (admin)", async () => {
 });
 
 test("vibeusage-entitlements-revoke accepts project_admin token", async () => {
-  const fn = require("../insforge-functions/vibeusage-entitlements-revoke");
+  const fn = require("../supabase-functions/vibeusage-entitlements-revoke");
 
   const db = createServiceDbMock();
   const entitlementId = "55555555-5555-5555-5555-555555555555";
@@ -9676,7 +9676,7 @@ test("vibeusage-entitlements-revoke accepts project_admin token", async () => {
 });
 
 test("vibeusage-link-code-init issues a short-lived link code", async () => {
-  const fn = require("../insforge-functions/vibeusage-link-code-init");
+  const fn = require("../supabase-functions/vibeusage-link-code-init");
 
   const db = createServiceDbMock();
   const userId = "66666666-6666-6666-6666-666666666666";
@@ -9724,7 +9724,7 @@ test("vibeusage-link-code-init issues a short-lived link code", async () => {
 });
 
 test("vibeusage-link-code-exchange creates device token and marks link code used", async () => {
-  const fn = require("../insforge-functions/vibeusage-link-code-exchange");
+  const fn = require("../supabase-functions/vibeusage-link-code-exchange");
 
   const linkCode = "link_code_test";
   const requestId = "req_123";
@@ -9789,7 +9789,7 @@ test("vibeusage-link-code-exchange creates device token and marks link code used
 });
 
 test("vibeusage-link-code-exchange returns existing device for repeated request", async () => {
-  const fn = require("../insforge-functions/vibeusage-link-code-exchange");
+  const fn = require("../supabase-functions/vibeusage-link-code-exchange");
 
   const linkCode = "link_code_used";
   const requestId = "req_repeat";

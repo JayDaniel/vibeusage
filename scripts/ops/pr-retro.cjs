@@ -7,7 +7,7 @@ const { execFileSync } = require("node:child_process");
 
 const FRONT_PREFIXES = ["dashboard/"];
 const FRONT_FILES = ["copy.jsx"];
-const BACK_PREFIXES = ["insforge-functions/", "insforge-src/", "src/", "test/"];
+const BACK_PREFIXES = ["supabase-functions/", "supabase-src/", "src/", "test/"];
 
 function parseArgs(argv) {
   const out = {

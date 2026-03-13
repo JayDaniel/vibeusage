@@ -20,14 +20,14 @@ test("resolveRuntimeConfig prefers CLI flags over config and env", () => {
 test("resolveRuntimeConfig ignores non-VIBEUSAGE env inputs", () => {
   const result = resolveRuntimeConfig({
     env: {
-      VIBESCORE_INSFORGE_BASE_URL: "https://legacy.example",
+      VIBESCORE_SUPABASE_URL: "https://legacy.example",
       VIBESCORE_DEVICE_TOKEN: "legacy",
-      INSFORGE_ANON_KEY: "legacy",
+      SUPABASE_ANON_KEY: "legacy",
     },
   });
 
   assert.equal(result.deviceToken, null);
-  assert.equal(result.insforgeAnonKey, "");
+  assert.equal(result.supabaseAnonKey, "");
   assert.equal(result.sources.deviceToken, "default");
 });
 

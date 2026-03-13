@@ -6,7 +6,7 @@ const assert = require("node:assert/strict");
 const {
   getDefaultPricingProfile,
   resolvePricingProfile,
-} = require("../../insforge-src/shared/pricing");
+} = require("../../supabase-src/shared/pricing");
 
 class DatabaseStub {
   constructor(rows = []) {

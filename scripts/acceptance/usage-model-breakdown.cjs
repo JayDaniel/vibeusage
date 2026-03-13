@@ -7,7 +7,7 @@ const {
   computeUsageCost,
   formatUsdFromMicros,
   getDefaultPricingProfile,
-} = require("../../insforge-src/shared/pricing");
+} = require("../../supabase-src/shared/pricing");
 
 class DatabaseStub {
   constructor(rows) {
@@ -98,9 +98,9 @@ function buildExpectedCost(totals) {
 }
 
 async function callEndpoint({ rows, query }) {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {
@@ -113,7 +113,7 @@ async function callEndpoint({ rows, query }) {
 
   global.createClient = () => createClientStub(rows);
 
-  const breakdown = require("../../insforge-src/functions/vibeusage-usage-model-breakdown.js");
+  const breakdown = require("../../supabase-src/functions/vibeusage-usage-model-breakdown.js");
 
   const res = await breakdown(
     new Request(`http://local/functions/vibeusage-usage-model-breakdown?${query}`, {

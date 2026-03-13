@@ -351,7 +351,7 @@ function buildSessionPluginIndex({ trackerDir, packageName = "vibeusage", opencl
     `const trackerBinPath = ${JSON.stringify(trackerBinPath)};\n` +
     `const fallbackPkg = ${JSON.stringify(fallbackPkg)};\n` +
     `const openclawHome = ${JSON.stringify(safeOpenclawHome)};\n` +
-    `const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@insforge', 'sdk', 'package.json');\n` +
+    `const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@supabase', 'supabase-js', 'package.json');\n` +
     `const triggerStatePath = path.join(trackerDir, 'openclaw.session-sync.trigger-state.json');\n` +
     `const SESSION_TRIGGER_THROTTLE_MS = 15_000;\n` +
     `\n` +

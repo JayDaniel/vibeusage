@@ -11,8 +11,8 @@ import {
   clearSessionExpired,
   clearSessionSoftExpired,
 } from "../lib/auth-storage";
-import { insforgeAuthClient } from "../lib/insforge-auth-client";
-import { clearInsforgePersistentStorage } from "../lib/insforge-client";
+import { supabaseAuthClient } from "../lib/supabase-auth-client";
+import { clearSupabasePersistentStorage } from "../lib/supabase-client";
 
 function buildCallbackUrl() {
   if (typeof window === "undefined") return "/auth/callback";
@@ -46,14 +46,14 @@ export function SignUpRedirect() {
       try {
         // Force a clean auth state so stale mobile sessions cannot short-circuit
         // OAuth and bounce back to a useless dashboard.
-        await insforgeAuthClient.auth.signOut().catch(() => {});
-        clearInsforgePersistentStorage();
+        await supabaseAuthClient.auth.signOut().catch(() => {});
+        clearSupabasePersistentStorage();
         clearAuthStorage();
         clearSessionExpired();
         clearSessionSoftExpired();
 
-        // Insforge OAuth sign-in also provisions new users when needed.
-        const { error } = await insforgeAuthClient.auth.signInWithOAuth({
+        // Supabase OAuth sign-in also provisions new users when needed.
+        const { error } = await supabaseAuthClient.auth.signInWithOAuth({
           provider: "github",
           redirectTo: callbackUrl,
         });

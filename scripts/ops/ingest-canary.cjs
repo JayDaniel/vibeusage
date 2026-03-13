@@ -4,14 +4,14 @@
 
 const baseUrl =
   process.env.VIBEUSAGE_CANARY_BASE_URL ||
-  process.env.VIBEUSAGE_INSFORGE_BASE_URL ||
-  process.env.INSFORGE_BASE_URL ||
+  process.env.VIBEUSAGE_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
   "";
 const deviceToken = process.env.VIBEUSAGE_CANARY_DEVICE_TOKEN || "";
 
 if (!baseUrl) {
   console.error(
-    "Missing base URL: set VIBEUSAGE_CANARY_BASE_URL or VIBEUSAGE_INSFORGE_BASE_URL or INSFORGE_BASE_URL",
+    "Missing base URL: set VIBEUSAGE_CANARY_BASE_URL or VIBEUSAGE_SUPABASE_URL or SUPABASE_URL",
   );
   process.exit(2);
 }

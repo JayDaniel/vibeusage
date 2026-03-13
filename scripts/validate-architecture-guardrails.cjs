@@ -10,21 +10,21 @@ const IGNORED_DIRS = new Set([
   "node_modules",
   ".git",
   ".code",
-  "insforge-functions",
+  "supabase-functions",
   "dist",
   "build",
   ".tmp",
   "archive",
 ]);
 
-const CLIENT_IMPORT_PATTERNS = ["insforge-src", "insforge-functions"];
-const CLIENT_INTERNAL_PATTERNS = ["INSFORGE_INTERNAL_URL"];
-const SERVICE_ROLE_PATTERNS = ["SERVICE_ROLE_KEY", "INSFORGE_SERVICE_ROLE_KEY", "service_role_key"];
+const CLIENT_IMPORT_PATTERNS = ["supabase-src", "supabase-functions"];
+const CLIENT_INTERNAL_PATTERNS = ["SUPABASE_INTERNAL_URL"];
+const SERVICE_ROLE_PATTERNS = ["SERVICE_ROLE_KEY", "SUPABASE_SERVICE_ROLE_KEY", "service_role_key"];
 const SDK_ALLOWLIST = new Set([
-  path.join("src", "lib", "insforge-client.js"),
-  path.join("src", "lib", "insforge-client.ts"),
-  path.join("dashboard", "src", "lib", "insforge-client.js"),
-  path.join("dashboard", "src", "lib", "insforge-client.ts"),
+  path.join("src", "lib", "supabase-client.js"),
+  path.join("src", "lib", "supabase-client.ts"),
+  path.join("dashboard", "src", "lib", "supabase-client.js"),
+  path.join("dashboard", "src", "lib", "supabase-client.ts"),
 ]);
 
 const SDK_PACKAGE = "@supabase/supabase-js";

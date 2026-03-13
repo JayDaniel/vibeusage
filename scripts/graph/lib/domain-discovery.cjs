@@ -10,8 +10,8 @@ const DEFAULT_DOMAIN_ROOTS = [
   "dashboard",
   "bin",
   "scripts",
-  "insforge-src",
-  "insforge-functions",
+  "supabase-src",
+  "supabase-functions",
 ];
 
 function discoverDomains({ rootDir, fs, path: pathMod = path }) {

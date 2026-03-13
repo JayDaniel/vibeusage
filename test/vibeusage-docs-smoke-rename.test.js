@@ -16,7 +16,7 @@ const targets = [
   path.join("scripts", "ops", "billable-total-tokens-backfill.cjs"),
   path.join("scripts", "ops", "ingest-canary.cjs"),
   path.join("scripts", "ops", "opencode-usage-audit.cjs"),
-  path.join("scripts", "smoke", "insforge-smoke.cjs"),
+  path.join("scripts", "smoke", "supabase-smoke.cjs"),
 ];
 
 async function read(relPath) {

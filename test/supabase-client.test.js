@@ -1,15 +1,15 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 
-const { getAnonKey, getHttpTimeoutMs } = require("../src/lib/insforge-client");
+const { getAnonKey, getHttpTimeoutMs } = require("../src/lib/supabase-client");
 
-test("getAnonKey reads only VIBEUSAGE_INSFORGE_ANON_KEY", () => {
+test("getAnonKey reads only VIBEUSAGE_SUPABASE_ANON_KEY", () => {
   assert.equal(
-    getAnonKey({ env: { VIBEUSAGE_INSFORGE_ANON_KEY: "new", VIBESCORE_INSFORGE_ANON_KEY: "old" } }),
+    getAnonKey({ env: { VIBEUSAGE_SUPABASE_ANON_KEY: "new", VIBESCORE_SUPABASE_ANON_KEY: "old" } }),
     "new",
   );
-  assert.equal(getAnonKey({ env: { VIBESCORE_INSFORGE_ANON_KEY: "old" } }), "");
-  assert.equal(getAnonKey({ env: { INSFORGE_ANON_KEY: "anon" } }), "");
+  assert.equal(getAnonKey({ env: { VIBESCORE_SUPABASE_ANON_KEY: "old" } }), "");
+  assert.equal(getAnonKey({ env: { SUPABASE_ANON_KEY: "anon" } }), "");
 });
 
 test("getHttpTimeoutMs reads only VIBEUSAGE_HTTP_TIMEOUT_MS", () => {

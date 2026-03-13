@@ -32,9 +32,9 @@ const SCENARIO_CATALOG = [
       "src/lib/rollout.js",
       "src/lib/uploader.js",
       "src/lib/vibeusage-api.js",
-      "insforge-src/functions/vibeusage-ingest.js",
+      "supabase-src/functions/vibeusage-ingest.js",
     ],
-    optionalPaths: ["insforge-src/functions/vibeusage-sync-ping.js"],
+    optionalPaths: ["supabase-src/functions/vibeusage-sync-ping.js"],
     lifelines: [
       {
         id: "cli-user",
@@ -66,14 +66,14 @@ const SCENARIO_CATALOG = [
       },
       {
         id: "edge",
-        name: "InsForge Edge",
+        name: "Supabase Edge",
         subtitle: "vibeusage-ingest",
         notes: "Validates token and writes usage.",
         color: "4",
       },
       {
         id: "db",
-        name: "InsForge DB",
+        name: "Supabase DB",
         subtitle: "vibeusage_tracker_*",
         notes: "Idempotent upserts + metrics.",
         color: "4",
@@ -163,8 +163,8 @@ const SCENARIO_CATALOG = [
     weight: 80,
     requiredPaths: [
       "src/commands/init.js",
-      "insforge-src/functions/vibeusage-link-code-init.js",
-      "insforge-src/functions/vibeusage-link-code-exchange.js",
+      "supabase-src/functions/vibeusage-link-code-init.js",
+      "supabase-src/functions/vibeusage-link-code-exchange.js",
       "src/lib/vibeusage-api.js",
     ],
     optionalPaths: [],
@@ -185,14 +185,14 @@ const SCENARIO_CATALOG = [
       },
       {
         id: "edge",
-        name: "InsForge Edge",
+        name: "Supabase Edge",
         subtitle: "link-code-*",
         notes: "Issues and exchanges codes.",
         color: "4",
       },
       {
         id: "db",
-        name: "InsForge DB",
+        name: "Supabase DB",
         subtitle: "link codes + tokens",
         notes: "Persists auth state.",
         color: "4",
@@ -267,8 +267,8 @@ const SCENARIO_CATALOG = [
     weight: 70,
     requiredPaths: [
       "dashboard/src/lib/vibeusage-api.js",
-      "dashboard/src/lib/insforge-client.js",
-      "insforge-src/functions/vibeusage-usage-summary.js",
+      "dashboard/src/lib/supabase-client.js",
+      "supabase-src/functions/vibeusage-usage-summary.js",
     ],
     optionalPaths: [],
     lifelines: [
@@ -288,14 +288,14 @@ const SCENARIO_CATALOG = [
       },
       {
         id: "edge",
-        name: "InsForge Edge",
+        name: "Supabase Edge",
         subtitle: "vibeusage-usage-summary",
         notes: "Aggregates usage totals.",
         color: "4",
       },
       {
         id: "db",
-        name: "InsForge DB",
+        name: "Supabase DB",
         subtitle: "vibeusage_tracker_hourly",
         notes: "Serves aggregate rows.",
         color: "4",

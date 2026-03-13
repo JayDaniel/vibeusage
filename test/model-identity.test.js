@@ -6,7 +6,7 @@ const {
   applyModelIdentity,
   resolveModelIdentity,
   resolveUsageModelsForCanonical,
-} = require("../insforge-src/shared/model-identity");
+} = require("../supabase-src/shared/model-identity");
 
 test("normalizeUsageModelKey lowercases and trims", () => {
   assert.equal(normalizeUsageModelKey(" GPT-4o "), "gpt-4o");

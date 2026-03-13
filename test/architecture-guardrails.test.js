@@ -13,7 +13,7 @@ function writeFile(filePath, content) {
 
 test("guardrails flag client imports and service role keys", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "guardrails-"));
-  writeFile(path.join(root, "src", "client.js"), "const x = 'insforge-src/functions';\n");
+  writeFile(path.join(root, "src", "client.js"), "const x = 'supabase-src/functions';\n");
   writeFile(path.join(root, "dashboard", "app.jsx"), "const key = process.env.SERVICE_ROLE_KEY;\n");
 
   const { errors } = runGuardrails({ root });
@@ -29,7 +29,7 @@ test("guardrails flag internal URL usage and non-wrapper SDK imports", () => {
   );
   writeFile(
     path.join(root, "dashboard", "page.tsx"),
-    "const baseUrl = process.env.INSFORGE_INTERNAL_URL;\n",
+    "const baseUrl = process.env.SUPABASE_INTERNAL_URL;\n",
   );
 
   const { errors } = runGuardrails({ root });
@@ -40,7 +40,7 @@ test("guardrails flag internal URL usage and non-wrapper SDK imports", () => {
 test("guardrails allow SDK usage in approved wrapper", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "guardrails-"));
   writeFile(
-    path.join(root, "src", "lib", "insforge-client.js"),
+    path.join(root, "src", "lib", "supabase-client.js"),
     "import { createClient } from '@supabase/supabase-js';\n",
   );
 

@@ -84,9 +84,9 @@ function createClientStub(database) {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {
@@ -100,7 +100,7 @@ async function main() {
   const calls = { ranges: [] };
   global.createClient = () => createClientStub(new DatabaseStub({ calls }));
 
-  const usageMonthly = require("../../insforge-src/functions/vibeusage-usage-monthly.js");
+  const usageMonthly = require("../../supabase-src/functions/vibeusage-usage-monthly.js");
   const query = "months=2&to=2025-12-15";
 
   const res = await usageMonthly(

@@ -2,7 +2,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const { getDefaultPricingProfile } = require("../../insforge-src/shared/pricing");
+const { getDefaultPricingProfile } = require("../../supabase-src/shared/pricing");
 
 const ROWS = [
   {
@@ -103,9 +103,9 @@ function createClientStub() {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {
@@ -118,7 +118,7 @@ async function main() {
 
   global.createClient = createClientStub;
 
-  const usageSummary = require("../../insforge-src/functions/vibeusage-usage-summary.js");
+  const usageSummary = require("../../supabase-src/functions/vibeusage-usage-summary.js");
 
   const base = "http://local/functions/vibeusage-usage-summary?from=2025-12-30&to=2025-12-30";
 

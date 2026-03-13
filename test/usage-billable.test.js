@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 
-const { computeBillableTotalTokens } = require("../insforge-src/shared/usage-billable");
+const { computeBillableTotalTokens } = require("../supabase-src/shared/usage-billable");
 
 test("computeBillableTotalTokens applies source rules", () => {
   const totals = {

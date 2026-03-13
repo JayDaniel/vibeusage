@@ -6,14 +6,14 @@ if (!globalThis.crypto) {
   globalThis.crypto = webcrypto;
 }
 
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 const SERVICE_ROLE_KEY = "srk_test_123";
 const ANON_KEY = "anon_test_123";
 
 function setDenoEnv(env = {}) {
   const merged = {
-    INSFORGE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
-    INSFORGE_ANON_KEY: ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: SERVICE_ROLE_KEY,
+    SUPABASE_ANON_KEY: ANON_KEY,
     ...env,
   };
   globalThis.Deno = {
@@ -76,7 +76,7 @@ test("resolvePublicView requires leaderboard_public enabled", async () => {
   const original = globalThis.createClient;
   globalThis.createClient = makeClient({ leaderboardPublic: false });
   try {
-    const { resolvePublicView } = require("../insforge-src/shared/public-view");
+    const { resolvePublicView } = require("../supabase-src/shared/public-view");
     const res = await resolvePublicView({
       baseUrl: BASE_URL,
       shareToken: "pv1-11111111-2222-3333-4444-555555555555",
@@ -93,7 +93,7 @@ test("resolvePublicView succeeds when leaderboard_public is true", async () => {
   const original = globalThis.createClient;
   globalThis.createClient = makeClient({ leaderboardPublic: true });
   try {
-    const { resolvePublicView } = require("../insforge-src/shared/public-view");
+    const { resolvePublicView } = require("../supabase-src/shared/public-view");
     const res = await resolvePublicView({
       baseUrl: BASE_URL,
       shareToken: "pv1-11111111-2222-3333-4444-555555555555",
@@ -157,7 +157,7 @@ test("resolvePublicView accepts pv1 user token when link is active", async () =>
   };
 
   try {
-    const { resolvePublicView } = require("../insforge-src/shared/public-view");
+    const { resolvePublicView } = require("../supabase-src/shared/public-view");
     const res = await resolvePublicView({
       baseUrl: BASE_URL,
       shareToken: `pv1-${targetUserId}`,

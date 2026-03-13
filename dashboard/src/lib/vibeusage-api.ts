@@ -1,8 +1,8 @@
 import { clearSessionSoftExpired, markSessionSoftExpired } from "./auth-storage";
 import { normalizeAccessToken, resolveAuthAccessToken } from "./auth-token";
 import { formatDateLocal } from "./date-range";
-import { insforgeAuthClient } from "./insforge-auth-client";
-import { createInsforgeClient } from "./insforge-client";
+import { supabaseAuthClient } from "./supabase-auth-client";
+import { createSupabaseClient } from "./supabase-client";
 import {
   getMockUsageDaily,
   getMockUsageHourly,
@@ -464,7 +464,7 @@ async function requestJson({
 }: AnyRecord = {}) {
   let activeAccessToken = await resolveAccessToken(accessToken);
   let hadAccessToken = hasAccessTokenValue(activeAccessToken);
-  let http = createInsforgeClient({
+  let http = createSupabaseClient({
     baseUrl,
     accessToken: activeAccessToken ?? undefined,
   }).getHttpClient();
@@ -504,7 +504,7 @@ async function requestJson({
         const refreshedSession = await refreshSessionOnce();
         const refreshedToken = refreshedSession?.accessToken ?? null;
         if (hasAccessTokenValue(refreshedToken)) {
-          const retryClient = createInsforgeClient({
+          const retryClient = createSupabaseClient({
             baseUrl,
             accessToken: refreshedToken,
           });
@@ -588,7 +588,7 @@ async function requestPostJson({
 }: AnyRecord = {}) {
   let activeAccessToken = await resolveAccessToken(accessToken);
   let hadAccessToken = hasAccessTokenValue(activeAccessToken);
-  let http = createInsforgeClient({
+  let http = createSupabaseClient({
     baseUrl,
     accessToken: activeAccessToken ?? undefined,
   }).getHttpClient();
@@ -628,7 +628,7 @@ async function requestPostJson({
         const refreshedSession = await refreshSessionOnce();
         const refreshedToken = refreshedSession?.accessToken ?? null;
         if (hasAccessTokenValue(refreshedToken)) {
-          const retryClient = createInsforgeClient({
+          const retryClient = createSupabaseClient({
             baseUrl,
             accessToken: refreshedToken,
           });
@@ -771,7 +771,7 @@ function normalizeSdkError(
   error: any,
   { errorPrefix, hadAccessToken, accessToken, skipSessionExpiry }: AnyRecord = {},
 ) {
-  // InsForgeError may have an empty `message` but a meaningful `error` field.
+  // SupabaseError may have an empty `message` but a meaningful `error` field.
   const rawMessage = typeof error?.message === "string" ? error.message.trim() : "";
   const rawError = typeof error?.error === "string" ? error.error.trim() : "";
   const raw = rawMessage || rawError || String(error || "Unknown error");
@@ -859,7 +859,7 @@ function shouldAttemptSessionRefresh({
 
 async function refreshSessionOnce() {
   if (refreshInFlight) return refreshInFlight;
-  refreshInFlight = insforgeAuthClient.auth
+  refreshInFlight = supabaseAuthClient.auth
     .getSession()
     .then(({ data }: AnyRecord) => {
       const session = data?.session ?? null;

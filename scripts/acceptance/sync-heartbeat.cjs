@@ -47,8 +47,8 @@ async function runScenario({ name, lastSyncAt, expectUpdated }) {
 
   const db = new DatabaseStub({ tokenRow });
   global.createClient = () => createClientStub(db);
-  delete require.cache[require.resolve("../../insforge-src/functions/vibeusage-sync-ping.js")];
-  const syncPing = require("../../insforge-src/functions/vibeusage-sync-ping.js");
+  delete require.cache[require.resolve("../../supabase-src/functions/vibeusage-sync-ping.js")];
+  const syncPing = require("../../supabase-src/functions/vibeusage-sync-ping.js");
 
   const res = await syncPing(
     new Request("http://local/functions/vibeusage-sync-ping", {
@@ -66,9 +66,9 @@ async function runScenario({ name, lastSyncAt, expectUpdated }) {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "service";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "service";
 
   global.Deno = {
     env: {

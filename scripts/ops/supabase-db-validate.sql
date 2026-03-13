@@ -1,4 +1,4 @@
--- Insforge2 DB validation for legacy prefix leaks and header helpers
+-- Supabase DB validation for legacy prefix leaks and header helpers
 -- Expected: 0 rows for legacy leaks
 
 -- 1) Required helper functions present

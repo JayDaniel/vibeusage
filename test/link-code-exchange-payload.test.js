@@ -7,7 +7,7 @@ test("link code exchange uses records API (no rpc)", () => {
   const filePath = path.join(
     __dirname,
     "..",
-    "insforge-src",
+    "supabase-src",
     "functions",
     "vibeusage-link-code-exchange.js",
   );

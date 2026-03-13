@@ -2,21 +2,21 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const { createClient } = require("@insforge/sdk");
+const { createClient } = require("@supabase/supabase-js");
 
 async function main() {
   const baseUrl =
-    process.env.VIBEUSAGE_INSFORGE_BASE_URL ||
-    process.env.VIBESCORE_INSFORGE_BASE_URL ||
-    process.env.INSFORGE_BASE_URL ||
-    "https://5tmappuk.us-east.insforge.app";
+    process.env.VIBEUSAGE_SUPABASE_URL ||
+    process.env.VIBESCORE_SUPABASE_URL ||
+    process.env.SUPABASE_URL ||
+    "https://YOUR_PROJECT.supabase.co";
 
-  const anonKey = process.env.INSFORGE_ANON_KEY || "";
+  const anonKey = process.env.SUPABASE_ANON_KEY || "";
   const serviceRoleKey =
-    process.env.INSFORGE_SERVICE_ROLE_KEY || process.env.INSFORGE_API_KEY || "";
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   if (!anonKey && !serviceRoleKey) {
-    throw new Error("Missing INSFORGE_ANON_KEY or INSFORGE_SERVICE_ROLE_KEY / INSFORGE_API_KEY");
+    throw new Error("Missing SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SERVICE_ROLE_KEY");
   }
 
   const edgeFunctionToken =

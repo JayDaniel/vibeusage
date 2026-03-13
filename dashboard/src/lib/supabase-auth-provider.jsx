@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 /**
- * Supabase Auth React 上下文，替代 @insforge/react-router 的 InsforgeProvider / useAuth。
+ * Supabase Auth React 上下文，替代 旧版 InsforgeProvider / useAuth。
  *
  * 提供 isLoaded、isSignedIn、signOut 三个核心状态，与 App.jsx 中的消费方保持兼容。
  */
@@ -18,7 +18,7 @@ export function useAuth() {
 }
 
 /// Supabase Auth React Provider，监听 auth 状态变化并向下传递
-/// - Parameter client: 通过 createInsforgeAuthClient() 创建的 Supabase 客户端
+/// - Parameter client: 通过 createSupabaseAuthClient() 创建的 Supabase 客户端
 export function SupabaseAuthProvider({ client, children }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);

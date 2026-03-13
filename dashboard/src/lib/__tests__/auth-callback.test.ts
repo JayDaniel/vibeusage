@@ -102,7 +102,7 @@ describe("shouldRedirectFromAuthCallback", () => {
     const storage = createMemoryStorage();
     const shouldRedirect = shouldRedirectFromAuthCallback({
       pathname: "/auth/callback",
-      search: "?insforge_code=code",
+      search: "?supabase_code=code",
       hasSession: false,
       sessionResolved: true,
       storage,

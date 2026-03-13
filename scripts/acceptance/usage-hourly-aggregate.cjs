@@ -80,8 +80,8 @@ function expectHourlyTotals(body, expected) {
 async function runScenario({ name, aggregateError, aggregateRows, bucketRows, expectedTotals }) {
   global.createClient = () =>
     createClientStub(new DatabaseStub({ aggregateError, aggregateRows, bucketRows }));
-  delete require.cache[require.resolve("../../insforge-src/functions/vibeusage-usage-hourly.js")];
-  const usageHourly = require("../../insforge-src/functions/vibeusage-usage-hourly.js");
+  delete require.cache[require.resolve("../../supabase-src/functions/vibeusage-usage-hourly.js")];
+  const usageHourly = require("../../supabase-src/functions/vibeusage-usage-hourly.js");
 
   const res = await usageHourly(
     new Request("http://local/functions/vibeusage-usage-hourly?day=2025-12-01", {
@@ -100,9 +100,9 @@ async function runScenario({ name, aggregateError, aggregateRows, bucketRows, ex
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {

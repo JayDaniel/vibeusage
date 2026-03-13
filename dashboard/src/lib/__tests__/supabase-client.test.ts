@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createPersistentStorage, installSessionPersistenceBridge } from "../insforge-client";
+import { createPersistentStorage, createPersistentStorage } from "../supabase-client";
 
-const TOKEN_STORAGE_KEY = "vibeusage.insforge.session.v1.insforge-auth-token";
+const TOKEN_STORAGE_KEY = "vibeusage.supabase.session.v1.supabase-auth-token";
 
 function createMemoryStorage(): Storage {
   const store = new Map<string, string>();
@@ -51,7 +51,7 @@ describe("createPersistentStorage", () => {
     const storage = createPersistentStorage();
     const token = buildJwt(Math.floor(Date.now() / 1000) + 3600);
 
-    storage.setItem("insforge-auth-token", token);
+    storage.setItem("supabase-auth-token", token);
 
     const raw = window.localStorage.getItem(TOKEN_STORAGE_KEY);
     expect(raw).toBeTruthy();
@@ -60,16 +60,16 @@ describe("createPersistentStorage", () => {
     expect(parsed.token).toBe(token);
     expect(parsed.expiresAt).toBeGreaterThan(Date.now());
 
-    expect(storage.getItem("insforge-auth-token")).toBe(token);
+    expect(storage.getItem("supabase-auth-token")).toBe(token);
   });
 
   it("keeps token envelope readable even after token exp", () => {
     const storage = createPersistentStorage();
     const expiredToken = buildJwt(Math.floor(Date.now() / 1000) - 10);
 
-    storage.setItem("insforge-auth-token", expiredToken);
+    storage.setItem("supabase-auth-token", expiredToken);
 
-    expect(storage.getItem("insforge-auth-token")).toBe(expiredToken);
+    expect(storage.getItem("supabase-auth-token")).toBe(expiredToken);
     expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeTruthy();
   });
 
@@ -84,12 +84,12 @@ describe("createPersistentStorage", () => {
 
     window.sessionStorage.setItem(TOKEN_STORAGE_KEY, wrapped);
 
-    expect(storage.getItem("insforge-auth-token")).toBe(token);
+    expect(storage.getItem("supabase-auth-token")).toBe(token);
     expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBe(wrapped);
   });
 });
 
-describe("installSessionPersistenceBridge", () => {
+describe("createPersistentStorage", () => {
   it("forces storage mode and saves returned session", async () => {
     const session = { accessToken: "token-123", user: { id: "u1" } };
     const tokenManager = {
@@ -97,12 +97,12 @@ describe("installSessionPersistenceBridge", () => {
       saveSession: vi.fn(),
     };
     const auth = {
-      getCurrentSession: vi.fn(async () => ({ data: { session }, error: null })),
+      getSession: vi.fn(async () => ({ data: { session }, error: null })),
     };
     const client = { auth, tokenManager };
 
-    installSessionPersistenceBridge(client);
-    await client.auth.getCurrentSession();
+    createPersistentStorage(client);
+    await client.auth.getSession();
 
     expect(tokenManager.setStorageMode).toHaveBeenCalledTimes(1);
     expect(tokenManager.saveSession).toHaveBeenCalledWith(session);
@@ -118,13 +118,13 @@ describe("installSessionPersistenceBridge", () => {
       data: { session },
       error: null,
     }));
-    const auth = { getCurrentSession: originalGetCurrentSession };
+    const auth = { getSession: originalGetCurrentSession };
     const client = { auth, tokenManager };
 
-    installSessionPersistenceBridge(client);
-    installSessionPersistenceBridge(client);
+    createPersistentStorage(client);
+    createPersistentStorage(client);
 
-    await client.auth.getCurrentSession();
+    await client.auth.getSession();
 
     expect(originalGetCurrentSession).toHaveBeenCalledTimes(1);
     expect(tokenManager.saveSession).toHaveBeenCalledTimes(1);

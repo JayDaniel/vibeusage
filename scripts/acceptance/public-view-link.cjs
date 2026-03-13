@@ -5,7 +5,7 @@ const assert = require("node:assert/strict");
 const { createHash } = require("node:crypto");
 const path = require("node:path");
 
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 const USER_ID = "11111111-2222-3333-4444-555555555555";
 const USER_JWT = "user_jwt_test";
 
@@ -19,13 +19,13 @@ async function main() {
 
   const repoRoot = path.resolve(__dirname, "..", "..");
   const issueFn = require(
-    path.join(repoRoot, "insforge-functions", "vibeusage-public-view-issue.js"),
+    path.join(repoRoot, "supabase-functions", "vibeusage-public-view-issue.js"),
   );
   const revokeFn = require(
-    path.join(repoRoot, "insforge-functions", "vibeusage-public-view-revoke.js"),
+    path.join(repoRoot, "supabase-functions", "vibeusage-public-view-revoke.js"),
   );
   const statusFn = require(
-    path.join(repoRoot, "insforge-functions", "vibeusage-public-view-status.js"),
+    path.join(repoRoot, "supabase-functions", "vibeusage-public-view-status.js"),
   );
 
   const state = {
@@ -168,7 +168,7 @@ function setDenoEnv() {
   globalThis.Deno = {
     env: {
       get(key) {
-        if (key === "INSFORGE_INTERNAL_URL") return BASE_URL;
+        if (key === "SUPABASE_INTERNAL_URL") return BASE_URL;
         return undefined;
       },
     },

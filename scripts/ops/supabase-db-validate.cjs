@@ -18,9 +18,9 @@ function requireEnv(name) {
   return value;
 }
 
-const baseUrl = requireEnv("VIBEUSAGE_INSFORGE_BASE_URL");
+const baseUrl = requireEnv("VIBEUSAGE_SUPABASE_URL");
 const serviceKey = requireEnv("VIBEUSAGE_SERVICE_ROLE_KEY");
-const sqlPath = resolve(__dirname, "insforge2-db-validate.sql");
+const sqlPath = resolve(__dirname, "supabase-db-validate.sql");
 const sql = readFileSync(sqlPath, "utf8");
 const timeoutMs = Number(process.env.VIBEUSAGE_HTTP_TIMEOUT_MS);
 
@@ -92,7 +92,7 @@ for (const query of sections) {
   try {
     result = runSql(query);
   } catch (error) {
-    console.error(`insforge2-db-validate failed on check #${index}`);
+    console.error(`supabase-db-validate failed on check #${index}`);
     console.error(error?.message || String(error));
     process.exit(1);
   }
@@ -122,4 +122,4 @@ if (failed) {
   process.exit(1);
 }
 
-console.log("insforge2-db-validate: OK");
+console.log("supabase-db-validate: OK");

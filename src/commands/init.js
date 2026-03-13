@@ -46,7 +46,7 @@ const {
   issueDeviceTokenWithPassword,
   issueDeviceTokenWithAccessToken,
   issueDeviceTokenWithLinkCode,
-} = require("../lib/insforge");
+} = require("../lib/supabase");
 const { resolveTrackerPaths } = require("../lib/tracker-paths");
 const { resolveRuntimeConfig } = require("../lib/runtime-config");
 const {
@@ -739,7 +739,7 @@ const signalPath = ${JSON.stringify(queueSignalPath)};
 const codexOriginalPath = ${JSON.stringify(originalPath)};
 const codeOriginalPath = ${JSON.stringify(path.join(trackerDir, "code_notify_original.json"))};
 const trackerBinPath = ${JSON.stringify(trackerBinPath)};
-  const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@insforge', 'sdk', 'package.json');
+  const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@supabase', 'supabase-js', 'package.json');
   const configPath = path.join(trackerDir, 'config.json');
 const fallbackPkg = ${JSON.stringify(fallbackPkg)};
 const selfPath = path.resolve(__filename);

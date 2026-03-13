@@ -1,9 +1,9 @@
 "use strict";
 
-const { createInsforgeClient } = require("./insforge-client");
+const { createSupabaseClient } = require("./supabase-client");
 
 async function signInWithPassword({ baseUrl, email, password }) {
-  const client = createInsforgeClient({ baseUrl });
+  const client = createSupabaseClient({ baseUrl });
   const { data, error } = await client.auth.signInWithPassword({ email, password });
   if (error) throw normalizeSdkError(error, "Sign-in failed");
 
@@ -117,7 +117,7 @@ module.exports = {
 };
 
 async function invokeFunction({ baseUrl, accessToken, slug, method, body, errorPrefix }) {
-  const client = createInsforgeClient({ baseUrl, accessToken });
+  const client = createSupabaseClient({ baseUrl, accessToken });
   const { data, error } = await client.functions.invoke(slug, { method, body });
   if (error) throw normalizeSdkError(error, errorPrefix);
   return data;
@@ -165,7 +165,7 @@ function extractSdkErrorMessage(error) {
   if (!error) return "Unknown error";
   const message = typeof error.message === "string" ? error.message.trim() : "";
   const code = typeof error.error === "string" ? error.error.trim() : "";
-  if (message && message !== "InsForgeError") return message;
+  if (message && message !== "SupabaseError") return message;
   if (code && code !== "REQUEST_FAILED") return code;
   if (message) return message;
   if (code) return code;
@@ -174,7 +174,7 @@ function extractSdkErrorMessage(error) {
 
 function normalizeBackendErrorMessage(message) {
   if (!isBackendRuntimeDownMessage(message)) return String(message || "Unknown error");
-  return "Backend runtime unavailable (InsForge). Please retry later.";
+  return "Backend runtime unavailable (Supabase). Please retry later.";
 }
 
 function isBackendRuntimeDownMessage(message) {

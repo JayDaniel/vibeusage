@@ -10,11 +10,11 @@ function stripAnsi(text) {
 
 function loadInitWithStubs() {
   const browserAuthPath = path.join(__dirname, "..", "src", "lib", "browser-auth.js");
-  const insforgePath = path.join(__dirname, "..", "src", "lib", "insforge.js");
+  const supabasePath = path.join(__dirname, "..", "src", "lib", "supabase.js");
   const initPath = path.join(__dirname, "..", "src", "commands", "init.js");
 
   delete require.cache[browserAuthPath];
-  delete require.cache[insforgePath];
+  delete require.cache[supabasePath];
   delete require.cache[initPath];
 
   require.cache[browserAuthPath] = {
@@ -30,9 +30,9 @@ function loadInitWithStubs() {
     },
   };
 
-  require.cache[insforgePath] = {
-    id: insforgePath,
-    filename: insforgePath,
+  require.cache[supabasePath] = {
+    id: supabasePath,
+    filename: supabasePath,
     loaded: true,
     exports: {
       issueDeviceTokenWithAccessToken: async () => ({
@@ -111,10 +111,10 @@ test("init emits local report then auth transition and success url", async () =>
     await fs.rm(tmp, { recursive: true, force: true });
 
     const browserAuthPath = path.join(__dirname, "..", "src", "lib", "browser-auth.js");
-    const insforgePath = path.join(__dirname, "..", "src", "lib", "insforge.js");
+    const supabasePath = path.join(__dirname, "..", "src", "lib", "supabase.js");
     const initPath = path.join(__dirname, "..", "src", "commands", "init.js");
     delete require.cache[browserAuthPath];
-    delete require.cache[insforgePath];
+    delete require.cache[supabasePath];
     delete require.cache[initPath];
   }
 });
@@ -156,10 +156,10 @@ test("init defaults dashboard url when not configured", async () => {
     await fs.rm(tmp, { recursive: true, force: true });
 
     const browserAuthPath = path.join(__dirname, "..", "src", "lib", "browser-auth.js");
-    const insforgePath = path.join(__dirname, "..", "src", "lib", "insforge.js");
+    const supabasePath = path.join(__dirname, "..", "src", "lib", "supabase.js");
     const initPath = path.join(__dirname, "..", "src", "commands", "init.js");
     delete require.cache[browserAuthPath];
-    delete require.cache[insforgePath];
+    delete require.cache[supabasePath];
     delete require.cache[initPath];
   }
 });

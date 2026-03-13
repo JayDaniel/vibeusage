@@ -43,9 +43,9 @@ class DatabaseStub {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {
@@ -88,7 +88,7 @@ async function main() {
     database: db,
   });
 
-  const leaderboard = require("../../insforge-src/functions/vibeusage-leaderboard.js");
+  const leaderboard = require("../../supabase-src/functions/vibeusage-leaderboard.js");
   const res = await leaderboard(
     new Request(
       "http://local/functions/vibeusage-leaderboard?period=week&metric=gpt&limit=1&offset=0",

@@ -65,13 +65,13 @@ function createClientStub() {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
   process.env.VIBESCORE_ROLLUP_ENABLED = "1";
   global.Deno = { env: { get: (k) => process.env[k] || null } };
   global.createClient = createClientStub;
 
-  const usageDaily = require("../../insforge-src/functions/vibeusage-usage-daily.js");
+  const usageDaily = require("../../supabase-src/functions/vibeusage-usage-daily.js");
   const res = await usageDaily(
     new Request(
       "http://local/functions/vibeusage-usage-daily?from=2025-12-01&to=2025-12-01&tz=UTC",

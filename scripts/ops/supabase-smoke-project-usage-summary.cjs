@@ -13,11 +13,11 @@ function buildRequestUrl({ baseUrl, limit } = {}) {
 }
 
 function getConfigFromEnv(env) {
-  const baseUrl = env?.VIBEUSAGE_INSFORGE_BASE_URL || "";
+  const baseUrl = env?.VIBEUSAGE_SUPABASE_URL || "";
   const token = env?.VIBEUSAGE_USER_JWT || "";
   const limitRaw = env?.VIBEUSAGE_PROJECT_USAGE_LIMIT;
   const limit = Number.isFinite(Number(limitRaw)) ? Number(limitRaw) : DEFAULT_LIMIT;
-  if (!baseUrl) return { ok: false, error: "Missing VIBEUSAGE_INSFORGE_BASE_URL" };
+  if (!baseUrl) return { ok: false, error: "Missing VIBEUSAGE_SUPABASE_URL" };
   if (!token) return { ok: false, error: "Missing VIBEUSAGE_USER_JWT" };
   return { ok: true, baseUrl, token, limit };
 }

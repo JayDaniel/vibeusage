@@ -5,11 +5,11 @@ const http = vi.hoisted(() => ({
   post: vi.fn(),
 }));
 
-vi.mock("../insforge-client", () => ({
-  createInsforgeClient: vi.fn(() => ({
+vi.mock("../supabase-client", () => ({
+  createSupabaseClient: vi.fn(() => ({
     getHttpClient: () => http,
   })),
-  createInsforgeAuthClient: vi.fn(() => ({ auth: {} })),
+  createSupabaseAuthClient: vi.fn(() => ({ auth: {} })),
 }));
 
 vi.mock("../auth-token", () => ({
@@ -59,9 +59,9 @@ describe("getUsageSummary", () => {
 });
 
 describe("error normalization", () => {
-  it("uses the InsForgeError `error` field when message is empty", async () => {
+  it("uses the SupabaseError `error` field when message is empty", async () => {
     http.get.mockRejectedValueOnce({
-      name: "InsForgeError",
+      name: "SupabaseError",
       message: "",
       error: "Missing bearer token",
       statusCode: 401,

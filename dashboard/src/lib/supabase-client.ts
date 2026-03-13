@@ -1,10 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { getInsforgeAnonKey, getInsforgeBaseUrl } from "./config";
+import { getSupabaseAnonKey, getSupabaseUrl } from "./config";
 import { createTimeoutFetch } from "./http-timeout";
 
 // Storage key prefix for session data
-const INSFORGE_STORAGE_KEY = "vibeusage.insforge.session.v1";
-const INSFORGE_TOKEN_KEY = "insforge-auth-token";
+const SUPABASE_STORAGE_KEY = "vibeusage.supabase.session.v1";
+const SUPABASE_TOKEN_KEY = "supabase-auth-token";
 const TOKEN_ENVELOPE_VERSION = 1;
 const FALLBACK_TOKEN_TTL_MS = 6 * 60 * 60 * 1000;
 
@@ -89,7 +89,7 @@ function unwrapTokenFromStorage(raw: string | null): {
 }
 
 function getNamespacedStorageKey(key: string): string {
-  return `${INSFORGE_STORAGE_KEY}.${key}`;
+  return `${SUPABASE_STORAGE_KEY}.${key}`;
 }
 
 function setStorageValue(storage: Storage | null, key: string, value: string): boolean {
@@ -111,9 +111,9 @@ function removeStorageValue(storage: Storage | null, key: string): void {
   }
 }
 
-export function clearInsforgePersistentStorage() {
+export function clearSupabasePersistentStorage() {
   if (typeof window === "undefined") return;
-  const prefix = `${INSFORGE_STORAGE_KEY}.`;
+  const prefix = `${SUPABASE_STORAGE_KEY}.`;
   const clearFrom = (storage: Storage | null) => {
     if (!storage) return;
     try {
@@ -191,7 +191,7 @@ export function createPersistentStorage() {
       const sessionStorage = getSessionStorage();
       const localKey = getNamespacedStorageKey(key);
       const sessionKey = getNamespacedStorageKey(key);
-      const tokenKey = key === INSFORGE_TOKEN_KEY;
+      const tokenKey = key === SUPABASE_TOKEN_KEY;
 
       const migrateTokenIfNeeded = (token: string) => {
         if (!tokenKey) return;
@@ -247,7 +247,7 @@ export function createPersistentStorage() {
     },
 
     setItem(key: string, value: string): void {
-      const persistedValue = key === INSFORGE_TOKEN_KEY ? wrapTokenForStorage(value) : value;
+      const persistedValue = key === SUPABASE_TOKEN_KEY ? wrapTokenForStorage(value) : value;
 
       // Always update memory
       memoryStore.set(key, persistedValue);
@@ -287,22 +287,22 @@ type HttpClient = {
   post: (path: string, body?: any, options?: Record<string, any>) => Promise<any>;
 };
 
-type InsforgeClientWithHttp = SupabaseClient & {
+type SupabaseClientWithHttp = SupabaseClient & {
   getHttpClient: () => HttpClient;
 };
 
 /// 创建用于数据查询的 Supabase 客户端（携带用户 accessToken）
 /// 返回值同时包含 SupabaseClient 接口和 getHttpClient() 桥接方法，
 /// 后者提供 {get(), post()} 兼容接口，供 vibeusage-api.ts 调用 Edge Functions
-export function createInsforgeClient({
+export function createSupabaseClient({
   baseUrl,
   accessToken,
 }: {
   baseUrl?: string;
   accessToken?: string;
-} = {}): InsforgeClientWithHttp {
+} = {}): SupabaseClientWithHttp {
   if (!baseUrl) throw new Error("Missing baseUrl");
-  const anonKey = getInsforgeAnonKey();
+  const anonKey = getSupabaseAnonKey();
   const timeoutFetch = createTimeoutFetch(globalThis.fetch) as unknown as typeof fetch;
   const globalHeaders: Record<string, string> = {};
   if (accessToken) {
@@ -373,16 +373,16 @@ export function createInsforgeClient({
     },
   };
 
-  const extended = supabaseClient as InsforgeClientWithHttp;
+  const extended = supabaseClient as SupabaseClientWithHttp;
   extended.getHttpClient = () => httpClient;
   return extended;
 }
 
 /// 创建用于认证流程的 Supabase 客户端（含 session 持久化）
-export function createInsforgeAuthClient(): SupabaseClient {
-  const baseUrl = getInsforgeBaseUrl();
+export function createSupabaseAuthClient(): SupabaseClient {
+  const baseUrl = getSupabaseUrl();
   if (!baseUrl) throw new Error("Missing baseUrl");
-  const anonKey = getInsforgeAnonKey();
+  const anonKey = getSupabaseAnonKey();
   return createClient(baseUrl, anonKey || "", {
     auth: {
       autoRefreshToken: true,

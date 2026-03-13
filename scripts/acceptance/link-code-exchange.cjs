@@ -6,14 +6,14 @@ const { createHash } = require("node:crypto");
 const path = require("node:path");
 
 const SERVICE_ROLE_KEY = "srk_test_123";
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 
 function setDenoEnv() {
   globalThis.Deno = {
     env: {
       get(key) {
-        if (key === "INSFORGE_INTERNAL_URL") return BASE_URL;
-        if (key === "INSFORGE_SERVICE_ROLE_KEY") return SERVICE_ROLE_KEY;
+        if (key === "SUPABASE_INTERNAL_URL") return BASE_URL;
+        if (key === "SUPABASE_SERVICE_ROLE_KEY") return SERVICE_ROLE_KEY;
         return undefined;
       },
     },
@@ -24,7 +24,7 @@ async function main() {
   setDenoEnv();
 
   const repoRoot = path.resolve(__dirname, "..", "..");
-  const fn = require(path.join(repoRoot, "insforge-functions", "vibeusage-link-code-exchange.js"));
+  const fn = require(path.join(repoRoot, "supabase-functions", "vibeusage-link-code-exchange.js"));
 
   const linkCode = "link_code_test";
   const requestId = "req_123";

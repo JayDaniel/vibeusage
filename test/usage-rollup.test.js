@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 
-const { fetchRollupRows } = require("../insforge-src/shared/usage-rollup");
+const { fetchRollupRows } = require("../supabase-src/shared/usage-rollup");
 
 const ROW_LIMIT = 1000;
 

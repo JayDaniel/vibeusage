@@ -54,7 +54,7 @@ function createTimeoutFetch(baseFetch) {
 ///   - baseUrl: Supabase 项目 URL
 ///   - accessToken: 可选的 Bearer token（用于 Edge Function 认证）
 /// - Returns: Supabase 客户端实例
-function createInsforgeClient({ baseUrl, accessToken } = {}) {
+function createSupabaseClient({ baseUrl, accessToken } = {}) {
   if (!baseUrl) throw new Error("Missing baseUrl");
   const { createClient } = loadSupabaseSdk();
   const anonKey = getAnonKey();
@@ -91,7 +91,7 @@ function readEnvValue(env, keys) {
 }
 
 module.exports = {
-  createInsforgeClient,
+  createSupabaseClient,
   getAnonKey,
   getHttpTimeoutMs,
 };

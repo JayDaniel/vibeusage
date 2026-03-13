@@ -5,14 +5,14 @@ const fs = require("node:fs/promises");
 const crypto = require("node:crypto");
 const { test } = require("node:test");
 
-function loadInitWithStubbedInsforge(stub) {
-  const insforgePath = path.join(__dirname, "..", "src", "lib", "insforge.js");
+function loadInitWithStubbedSupabase(stub) {
+  const supabasePath = path.join(__dirname, "..", "src", "lib", "supabase.js");
   const initPath = path.join(__dirname, "..", "src", "commands", "init.js");
-  delete require.cache[insforgePath];
+  delete require.cache[supabasePath];
   delete require.cache[initPath];
-  require.cache[insforgePath] = {
-    id: insforgePath,
-    filename: insforgePath,
+  require.cache[supabasePath] = {
+    id: supabasePath,
+    filename: supabasePath,
     loaded: true,
     exports: stub,
   };
@@ -54,7 +54,7 @@ test("init reuses link code request_id across retries", async () => {
       },
     };
 
-    const { cmdInit } = loadInitWithStubbedInsforge(stub);
+    const { cmdInit } = loadInitWithStubbedSupabase(stub);
     process.stdout.write = () => true;
 
     const linkCode = "link_code_retry";
@@ -88,9 +88,9 @@ test("init reuses link code request_id across retries", async () => {
     else process.env.VIBEUSAGE_DEVICE_TOKEN = prevToken;
     await fs.rm(tmp, { recursive: true, force: true });
 
-    const insforgePath = path.join(__dirname, "..", "src", "lib", "insforge.js");
+    const supabasePath = path.join(__dirname, "..", "src", "lib", "supabase.js");
     const initPath = path.join(__dirname, "..", "src", "commands", "init.js");
-    delete require.cache[insforgePath];
+    delete require.cache[supabasePath];
     delete require.cache[initPath];
   }
 });

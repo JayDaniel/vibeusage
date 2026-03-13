@@ -1,10 +1,10 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
-const { createTotals } = require("../insforge-src/shared/usage-rollup");
+const { createTotals } = require("../supabase-src/shared/usage-rollup");
 const {
   resolveBillableTotals,
   applyTotalsAndBillable,
-} = require("../insforge-src/shared/usage-aggregate");
+} = require("../supabase-src/shared/usage-aggregate");
 
 test("resolveBillableTotals uses stored billable when present", () => {
   const row = {

@@ -42,8 +42,8 @@ test("ops scripts surface supported env fallbacks in error messages", async () =
   const ingestMissingBaseUrl = ingestMissingMatch[0];
   for (const envName of [
     "VIBEUSAGE_CANARY_BASE_URL",
-    "VIBEUSAGE_INSFORGE_BASE_URL",
-    "INSFORGE_BASE_URL",
+    "VIBEUSAGE_SUPABASE_URL",
+    "SUPABASE_URL",
   ]) {
     assert.ok(
       ingestMissingBaseUrl.includes(envName),
@@ -57,7 +57,7 @@ test("ops scripts surface supported env fallbacks in error messages", async () =
     "expected billable backfill to include a missing base URL message",
   );
   const billableMissingBaseUrl = billableMissingBaseMatch[0];
-  for (const envName of ["INSFORGE_BASE_URL", "VIBEUSAGE_INSFORGE_BASE_URL"]) {
+  for (const envName of ["SUPABASE_URL", "VIBEUSAGE_SUPABASE_URL"]) {
     assert.ok(
       billableMissingBaseUrl.includes(envName),
       `expected billable backfill missing base URL message to mention ${envName}`,
@@ -70,7 +70,7 @@ test("ops scripts surface supported env fallbacks in error messages", async () =
     "expected billable backfill to include a missing service role message",
   );
   const billableMissingServiceRole = billableMissingRoleMatch[0];
-  for (const envName of ["INSFORGE_SERVICE_ROLE_KEY", "VIBEUSAGE_SERVICE_ROLE_KEY"]) {
+  for (const envName of ["SUPABASE_SERVICE_ROLE_KEY", "VIBEUSAGE_SERVICE_ROLE_KEY"]) {
     assert.ok(
       billableMissingServiceRole.includes(envName),
       `expected billable backfill missing service role message to mention ${envName}`,
@@ -100,8 +100,8 @@ test("rename scripts update request header helpers", async () => {
   );
 });
 
-test("insforge2 db validate scripts include legacy leak checks", async () => {
-  const sql = await read("scripts/ops/insforge2-db-validate.sql");
+test("supabase db validate scripts include legacy leak checks", async () => {
+  const sql = await read("scripts/ops/supabase-db-validate.sql");
   assert.ok(
     sql.includes("vibeusage_request_headers"),
     "expected db validate SQL to check helper functions",
@@ -112,10 +112,10 @@ test("insforge2 db validate scripts include legacy leak checks", async () => {
   );
   assert.ok(sql.includes("pg_policies"), "expected db validate SQL to check policy leaks");
 
-  const script = await read("scripts/ops/insforge2-db-validate.cjs");
-  assert.ok(script.includes("insforge2-db-validate.sql"), "expected validator to load SQL file");
+  const script = await read("scripts/ops/supabase-db-validate.cjs");
+  assert.ok(script.includes("supabase-db-validate.sql"), "expected validator to load SQL file");
   assert.ok(
-    script.includes("VIBEUSAGE_INSFORGE_BASE_URL"),
+    script.includes("VIBEUSAGE_SUPABASE_URL"),
     "expected validator to require base URL",
   );
   assert.ok(
@@ -124,7 +124,7 @@ test("insforge2 db validate scripts include legacy leak checks", async () => {
   );
 });
 
-test("insforge2 db validate fails on non-2xx responses", async () => {
+test("supabase db validate fails on non-2xx responses", async () => {
   let calls = 0;
   const server = http.createServer((req, res) => {
     if (req.method !== "POST" || req.url !== "/api/database/query") {
@@ -163,11 +163,11 @@ test("insforge2 db validate fails on non-2xx responses", async () => {
   const result = await new Promise((resolve) => {
     const child = spawn(
       process.execPath,
-      [path.join(repoRoot, "scripts/ops/insforge2-db-validate.cjs")],
+      [path.join(repoRoot, "scripts/ops/supabase-db-validate.cjs")],
       {
         env: {
           ...process.env,
-          VIBEUSAGE_INSFORGE_BASE_URL: baseUrl,
+          VIBEUSAGE_SUPABASE_URL: baseUrl,
           VIBEUSAGE_SERVICE_ROLE_KEY: "test-key",
         },
       },
@@ -194,7 +194,7 @@ test("insforge2 db validate fails on non-2xx responses", async () => {
   );
 });
 
-test("insforge2 db validate honors VIBEUSAGE_HTTP_TIMEOUT_MS", async () => {
+test("supabase db validate honors VIBEUSAGE_HTTP_TIMEOUT_MS", async () => {
   let calls = 0;
   const server = http.createServer((req, res) => {
     if (req.method !== "POST" || req.url !== "/api/database/query") {
@@ -228,11 +228,11 @@ test("insforge2 db validate honors VIBEUSAGE_HTTP_TIMEOUT_MS", async () => {
   const result = await new Promise((resolve) => {
     const child = spawn(
       process.execPath,
-      [path.join(repoRoot, "scripts/ops/insforge2-db-validate.cjs")],
+      [path.join(repoRoot, "scripts/ops/supabase-db-validate.cjs")],
       {
         env: {
           ...process.env,
-          VIBEUSAGE_INSFORGE_BASE_URL: baseUrl,
+          VIBEUSAGE_SUPABASE_URL: baseUrl,
           VIBEUSAGE_SERVICE_ROLE_KEY: "test-key",
           VIBEUSAGE_HTTP_TIMEOUT_MS: "50",
         },

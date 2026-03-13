@@ -92,9 +92,9 @@ function createClientStub({ baseUrl, anonKey, edgeFunctionToken } = {}) {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
 
   global.Deno = {
     env: {
@@ -110,7 +110,7 @@ async function main() {
   const { handler, calls } = buildFetchStub();
   global.fetch = handler;
 
-  const usageHeatmap = require("../../insforge-src/functions/vibeusage-usage-heatmap.js");
+  const usageHeatmap = require("../../supabase-src/functions/vibeusage-usage-heatmap.js");
 
   const query = [
     "weeks=2",

@@ -5,7 +5,7 @@
  * Online regression check for usage cost consistency.
  *
  * Env:
- * - VIBEUSAGE_INSFORGE_BASE_URL (default https://5tmappuk.us-east.insforge.app)
+ * - VIBEUSAGE_SUPABASE_URL (default https://YOUR_PROJECT.supabase.co)
  * - VIBEUSAGE_BEARER_TOKEN (required)
  * - VIBEUSAGE_FROM (optional, default today UTC)
  * - VIBEUSAGE_TO (optional, default VIBEUSAGE_FROM)
@@ -113,8 +113,8 @@ function readConfig() {
   const args = parseArgs(process.argv.slice(2));
   const baseUrl =
     args.baseUrl ||
-    process.env.VIBEUSAGE_INSFORGE_BASE_URL ||
-    "https://5tmappuk.us-east.insforge.app";
+    process.env.VIBEUSAGE_SUPABASE_URL ||
+    "https://YOUR_PROJECT.supabase.co";
   const token = args.token || process.env.VIBEUSAGE_BEARER_TOKEN || "";
   const tz = args.tz || process.env.VIBEUSAGE_TZ || "UTC";
   const tzOffsetMinutes = toNumber(

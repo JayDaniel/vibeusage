@@ -82,7 +82,7 @@ async function main() {
     },
   };
 
-  const { resolvePricingProfile } = require("../../insforge-src/shared/pricing");
+  const { resolvePricingProfile } = require("../../supabase-src/shared/pricing");
 
   const profile = await resolvePricingProfile({
     edgeClient: createClientStub(),

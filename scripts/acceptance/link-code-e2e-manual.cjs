@@ -42,7 +42,7 @@ function printUsage() {
       "Manual E2E: Link code install flow",
       "",
       "Usage:",
-      "  node scripts/acceptance/link-code-e2e-manual.cjs --link-code <code> --base-url <insforge_url>",
+      "  node scripts/acceptance/link-code-e2e-manual.cjs --link-code <code> --base-url <supabase_url>",
       "",
       "Prereq:",
       "  1) Log in to Dashboard and copy the install command with link code.",

@@ -30,7 +30,7 @@ async function main() {
     "tracker",
     "app",
     "node_modules",
-    "@insforge",
+    "@supabase",
     "sdk",
     "package.json",
   );

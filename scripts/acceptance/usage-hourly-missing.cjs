@@ -70,8 +70,8 @@ function createClientStub(database) {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
 
   global.Deno = {
     env: {
@@ -84,8 +84,8 @@ async function main() {
 
   const tokenRows = [{ last_sync_at: "2025-12-22T10:30:00Z" }];
   global.createClient = () => createClientStub(new DatabaseStub({ tokenRows }));
-  delete require.cache[require.resolve("../../insforge-src/functions/vibeusage-usage-hourly.js")];
-  const usageHourly = require("../../insforge-src/functions/vibeusage-usage-hourly.js");
+  delete require.cache[require.resolve("../../supabase-src/functions/vibeusage-usage-hourly.js")];
+  const usageHourly = require("../../supabase-src/functions/vibeusage-usage-hourly.js");
 
   const res = await usageHourly(
     new Request("http://local/functions/vibeusage-usage-hourly?day=2025-12-22", {

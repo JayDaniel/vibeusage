@@ -120,9 +120,9 @@ function buildOpenRouterPayload() {
 }
 
 async function main() {
-  process.env.INSFORGE_INTERNAL_URL = "http://insforge:7130";
-  process.env.INSFORGE_ANON_KEY = "anon";
-  process.env.INSFORGE_SERVICE_ROLE_KEY = "service-role-key";
+  process.env.SUPABASE_INTERNAL_URL = "http://supabase:7130";
+  process.env.SUPABASE_ANON_KEY = "anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
   process.env.OPENROUTER_API_KEY = "openrouter-key";
   process.env.VIBESCORE_PRICING_SOURCE = "openrouter";
 
@@ -153,7 +153,7 @@ async function main() {
     });
   };
 
-  const sync = require("../../insforge-src/functions/vibeusage-pricing-sync.js");
+  const sync = require("../../supabase-src/functions/vibeusage-pricing-sync.js");
 
   const req = new Request("http://local/functions/vibeusage-pricing-sync", {
     method: "POST",

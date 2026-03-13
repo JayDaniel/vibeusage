@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { isPublicShareToken } = require("../insforge-src/shared/public-view");
+const { isPublicShareToken } = require("../supabase-src/shared/public-view");
 
 test("isPublicShareToken accepts pv1 user tokens", () => {
   const token = "pv1-11111111-2222-3333-4444-555555555555";

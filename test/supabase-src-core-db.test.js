@@ -3,14 +3,14 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const ingestCore = require("../insforge-src/shared/core/ingest");
-const usageSummaryCore = require("../insforge-src/shared/core/usage-summary");
-const records = require("../insforge-src/shared/db/records");
-const usageMonthlyCore = require("../insforge-src/shared/core/usage-monthly");
-const usageDailyCore = require("../insforge-src/shared/core/usage-daily");
-const usageFilter = require("../insforge-src/shared/core/usage-filter");
-const usageHourlyDb = require("../insforge-src/shared/db/usage-hourly");
-const ingestDb = require("../insforge-src/shared/db/ingest");
+const ingestCore = require("../supabase-src/shared/core/ingest");
+const usageSummaryCore = require("../supabase-src/shared/core/usage-summary");
+const records = require("../supabase-src/shared/db/records");
+const usageMonthlyCore = require("../supabase-src/shared/core/usage-monthly");
+const usageDailyCore = require("../supabase-src/shared/core/usage-daily");
+const usageFilter = require("../supabase-src/shared/core/usage-filter");
+const usageHourlyDb = require("../supabase-src/shared/db/usage-hourly");
+const ingestDb = require("../supabase-src/shared/db/ingest");
 
 test("normalizeHourlyPayload accepts supported shapes", () => {
   assert.deepEqual(ingestCore.normalizeHourlyPayload([{}]), [{}]);
@@ -482,7 +482,7 @@ test("usage-monthly imports getLocalParts from shared/date", () => {
   const filePath = path.join(
     __dirname,
     "..",
-    "insforge-src",
+    "supabase-src",
     "functions",
     "vibeusage-usage-monthly.js",
   );
@@ -491,7 +491,7 @@ test("usage-monthly imports getLocalParts from shared/date", () => {
 });
 
 test("vibeusage-ingest uses shared ingest db and avoids RPC", () => {
-  const filePath = path.join(__dirname, "..", "insforge-src", "functions", "vibeusage-ingest.js");
+  const filePath = path.join(__dirname, "..", "supabase-src", "functions", "vibeusage-ingest.js");
   const content = fs.readFileSync(filePath, "utf8");
   assert.ok(content.includes("shared/db/ingest"));
   assert.equal(content.includes("/api/database/rpc/vibeusage_touch_device_token_sync"), false);

@@ -9,12 +9,12 @@ main().catch((err) => {
 });
 
 async function main() {
-  const fn = require("../../insforge-functions/vibeusage-leaderboard-settings");
+  const fn = require("../../supabase-functions/vibeusage-leaderboard-settings");
 
   const userId = "11111111-2222-3333-4444-555555555555";
   const userJwt = "user_jwt_test";
 
-  setDenoEnv({ INSFORGE_INTERNAL_URL: "http://insforge:7130" });
+  setDenoEnv({ SUPABASE_INTERNAL_URL: "http://supabase:7130" });
 
   const upsertState = {
     row: null,

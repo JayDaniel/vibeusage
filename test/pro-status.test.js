@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 
-const { computeProStatus } = require("../insforge-src/shared/pro-status");
+const { computeProStatus } = require("../supabase-src/shared/pro-status");
 
 test("registration cutoff grants pro with 99y expiry", () => {
   const createdAt = "2025-01-01T00:00:00Z";

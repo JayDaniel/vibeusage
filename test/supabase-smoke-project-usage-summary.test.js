@@ -9,7 +9,7 @@ const modulePath = path.join(
   "..",
   "scripts",
   "ops",
-  "insforge2-smoke-project-usage-summary.cjs",
+  "supabase-smoke-project-usage-summary.cjs",
 );
 
 let smokeModule = null;
@@ -20,7 +20,7 @@ try {
   loadError = err;
 }
 
-test("insforge2 smoke script exports runSmoke", () => {
+test("supabase smoke script exports runSmoke", () => {
   assert.ok(smokeModule && typeof smokeModule.runSmoke === "function", loadError?.message);
 });
 

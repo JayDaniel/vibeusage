@@ -24,49 +24,49 @@ test("usage pagination uses deterministic ordering", () => {
   const adminOrder =
     "order('hour_start',{ascending:true}).order('user_id',{ascending:true}).order('device_id',{ascending:true}).order('source',{ascending:true}).order('model',{ascending:true})";
 
-  assert.ok(normalize(readFile("insforge-src/shared/usage-rollup.js")).includes(rollupOrder));
+  assert.ok(normalize(readFile("supabase-src/shared/usage-rollup.js")).includes(rollupOrder));
   assert.equal(
     countOccurrences(
-      normalize(readFile("insforge-src/functions/vibeusage-usage-summary.js")),
+      normalize(readFile("supabase-src/functions/vibeusage-usage-summary.js")),
       hourlyOrder,
     ),
     1,
   );
   assert.equal(
     countOccurrences(
-      normalize(readFile("insforge-src/functions/vibeusage-usage-daily.js")),
+      normalize(readFile("supabase-src/functions/vibeusage-usage-daily.js")),
       hourlyOrder,
     ),
     1,
   );
   assert.equal(
     countOccurrences(
-      normalize(readFile("insforge-src/functions/vibeusage-usage-model-breakdown.js")),
+      normalize(readFile("supabase-src/functions/vibeusage-usage-model-breakdown.js")),
       hourlyOrder,
     ),
     1,
   );
-  assert.ok(normalize(readFile("insforge-src/shared/db/usage-hourly.js")).includes(hourlyOrder));
+  assert.ok(normalize(readFile("supabase-src/shared/db/usage-hourly.js")).includes(hourlyOrder));
   assert.ok(
-    normalize(readFile("insforge-src/functions/vibeusage-usage-monthly.js")).includes(
+    normalize(readFile("supabase-src/functions/vibeusage-usage-monthly.js")).includes(
       "buildHourlyUsageQuery",
     ),
   );
   assert.equal(
     countOccurrences(
-      normalize(readFile("insforge-src/functions/vibeusage-usage-heatmap.js")),
+      normalize(readFile("supabase-src/functions/vibeusage-usage-heatmap.js")),
       hourlyOrder,
     ),
     2,
   );
   assert.equal(
     countOccurrences(
-      normalize(readFile("insforge-src/functions/vibeusage-usage-hourly.js")),
+      normalize(readFile("supabase-src/functions/vibeusage-usage-hourly.js")),
       hourlyOrder,
     ),
     2,
   );
   assert.ok(
-    normalize(readFile("insforge-src/functions/vibeusage-pricing-sync.js")).includes(adminOrder),
+    normalize(readFile("supabase-src/functions/vibeusage-pricing-sync.js")).includes(adminOrder),
   );
 });

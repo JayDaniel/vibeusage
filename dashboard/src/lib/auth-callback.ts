@@ -131,7 +131,7 @@ export function hasAuthCallbackParams(search: any) {
   if (!normalized) return false;
   const params = new URLSearchParams(normalized);
   return Boolean(
-    params.get("insforge_code") ||
+    params.get("supabase_code") ||
     params.get("access_token") ||
     params.get("user_id") ||
     params.get("email") ||

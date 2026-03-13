@@ -2,11 +2,11 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { logSlowQuery } = require("../insforge-src/shared/logging");
-const { getUsageMaxDays } = require("../insforge-src/shared/date");
-const { normalizeUsageModel, applyUsageModelFilter } = require("../insforge-src/shared/model");
-const { resolveIdentityAtDate } = require("../insforge-src/shared/model-alias-timeline");
-const pricing = require("../insforge-src/shared/pricing");
+const { logSlowQuery } = require("../supabase-src/shared/logging");
+const { getUsageMaxDays } = require("../supabase-src/shared/date");
+const { normalizeUsageModel, applyUsageModelFilter } = require("../supabase-src/shared/model");
+const { resolveIdentityAtDate } = require("../supabase-src/shared/model-alias-timeline");
+const pricing = require("../supabase-src/shared/pricing");
 
 function createPricingEdgeClient({ aliasRows = [], profileRows = [] } = {}) {
   return {
@@ -68,9 +68,9 @@ function createPricingEdgeClient({ aliasRows = [], profileRows = [] } = {}) {
   };
 }
 
-test("insforge shared logging module exists", () => {
-  const loggingPath = path.join(__dirname, "..", "insforge-src", "shared", "logging.js");
-  assert.ok(fs.existsSync(loggingPath), "expected insforge-src/shared/logging.js");
+test("supabase shared logging module exists", () => {
+  const loggingPath = path.join(__dirname, "..", "supabase-src", "shared", "logging.js");
+  assert.ok(fs.existsSync(loggingPath), "expected supabase-src/shared/logging.js");
 });
 
 test("logSlowQuery emits only above threshold (VIBEUSAGE env)", { concurrency: 1 }, () => {

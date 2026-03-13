@@ -5,7 +5,7 @@
  * Developer smoke test (requires a verified email/password account).
  *
  * Env:
- * - VIBEUSAGE_INSFORGE_BASE_URL (default https://5tmappuk.us-east.insforge.app)
+ * - VIBEUSAGE_SUPABASE_URL (default https://YOUR_PROJECT.supabase.co)
  * - VIBEUSAGE_SMOKE_EMAIL (required)
  * - VIBEUSAGE_SMOKE_PASSWORD (required)
  * - VIBEUSAGE_SMOKE_ALLOW_NO_HEATMAP ("1" to ignore missing heatmap endpoint)
@@ -48,7 +48,7 @@ function loadDotEnv() {
 
 async function main() {
   const baseUrl =
-    process.env.VIBEUSAGE_INSFORGE_BASE_URL || "https://5tmappuk.us-east.insforge.app";
+    process.env.VIBEUSAGE_SUPABASE_URL || "https://YOUR_PROJECT.supabase.co";
   const email = process.env.VIBEUSAGE_SMOKE_EMAIL || "";
   const password = process.env.VIBEUSAGE_SMOKE_PASSWORD || "";
   const allowNoHeatmap = process.env.VIBEUSAGE_SMOKE_ALLOW_NO_HEATMAP === "1";

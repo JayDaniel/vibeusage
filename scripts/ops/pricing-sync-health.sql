@@ -1,5 +1,5 @@
 -- Pricing sync health check for OpenRouter rows.
--- Run in InsForge SQL console or via admin tooling.
+-- Run in Supabase SQL console or via admin tooling.
 
 -- 1) Freshness check (expect is_fresh = true for 6h schedule, allow 12h drift).
 select

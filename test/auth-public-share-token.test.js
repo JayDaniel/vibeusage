@@ -6,12 +6,12 @@ if (!globalThis.crypto) {
   globalThis.crypto = webcrypto;
 }
 
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 const JWT_SECRET = "jwt_secret_test";
 const ANON_KEY = "anon_test_123";
 
 function setDenoEnv(env) {
-  const merged = { INSFORGE_JWT_SECRET: JWT_SECRET, INSFORGE_ANON_KEY: ANON_KEY, ...env };
+  const merged = { SUPABASE_JWT_SECRET: JWT_SECRET, SUPABASE_ANON_KEY: ANON_KEY, ...env };
   globalThis.Deno = {
     env: {
       get(key) {
@@ -22,8 +22,8 @@ function setDenoEnv(env) {
 }
 
 test("getAccessContext skips public view lookup for invalid share token", async () => {
-  const publicViewPath = require.resolve("../insforge-src/shared/public-view");
-  const authPath = require.resolve("../insforge-src/shared/auth");
+  const publicViewPath = require.resolve("../supabase-src/shared/public-view");
+  const authPath = require.resolve("../supabase-src/shared/auth");
 
   let publicCalls = 0;
   require.cache[publicViewPath] = {
@@ -44,7 +44,7 @@ test("getAccessContext skips public view lookup for invalid share token", async 
   });
   setDenoEnv();
 
-  const { getAccessContext } = require("../insforge-src/shared/auth");
+  const { getAccessContext } = require("../supabase-src/shared/auth");
   const res = await getAccessContext({
     baseUrl: BASE_URL,
     bearer: "not-a-token",

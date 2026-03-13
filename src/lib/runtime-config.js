@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = "https://5tmappuk.us-east.insforge.app";
+const DEFAULT_BASE_URL = "https://5tmappuk.us-east.insforge.app /* TODO: update to Supabase URL */";
 const DEFAULT_DASHBOARD_URL = "https://www.vibeusage.cc";
 const DEFAULT_HTTP_TIMEOUT_MS = 20_000;
 
@@ -35,13 +35,13 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
   const debug = pickBoolean(cli.debug, config.debug, env?.VIBEUSAGE_DEBUG, defaults.debug, false);
   const supabaseAnonKey = pickString(
     cli.supabaseAnonKey,
-    cli.insforgeAnonKey,
+    cli.supabaseAnonKey,
     config.supabaseAnonKey,
-    config.insforgeAnonKey,
+    config.supabaseAnonKey,
     env?.VIBEUSAGE_SUPABASE_ANON_KEY,
     env?.VIBEUSAGE_INSFORGE_ANON_KEY,
     defaults.supabaseAnonKey,
-    defaults.insforgeAnonKey,
+    defaults.supabaseAnonKey,
     "",
   );
   if (supabaseAnonKey.value == null) supabaseAnonKey.value = "";
@@ -60,7 +60,7 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
     httpTimeoutMs: httpTimeoutMs.value,
     debug: debug.value,
     supabaseAnonKey: supabaseAnonKey.value,
-    insforgeAnonKey: supabaseAnonKey.value,
+    supabaseAnonKey: supabaseAnonKey.value,
     autoRetryNoSpawn: autoRetryNoSpawn.value,
     sources: {
       baseUrl: baseUrl.source,
@@ -69,7 +69,7 @@ function resolveRuntimeConfig({ cli = {}, config = {}, env = process.env, defaul
       httpTimeoutMs: httpTimeoutMs.source,
       debug: debug.source,
       supabaseAnonKey: supabaseAnonKey.source,
-      insforgeAnonKey: supabaseAnonKey.source,
+      supabaseAnonKey: supabaseAnonKey.source,
       autoRetryNoSpawn: autoRetryNoSpawn.source,
     },
   };

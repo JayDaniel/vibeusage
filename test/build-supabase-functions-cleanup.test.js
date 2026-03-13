@@ -4,16 +4,16 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { test } = require("node:test");
 
-test("build script removes stale insforge-functions artifacts", async () => {
+test("build script removes stale supabase-functions artifacts", async () => {
   const repoRoot = path.join(__dirname, "..");
-  const outDir = path.join(repoRoot, "insforge-functions");
+  const outDir = path.join(repoRoot, "supabase-functions");
   const stalePath = path.join(outDir, "vibescore-stale.js");
 
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(stalePath, "// stale artifact\n", "utf8");
 
   try {
-    const result = spawnSync("node", ["scripts/build-insforge-functions.cjs"], {
+    const result = spawnSync("node", ["scripts/build-supabase-functions.cjs"], {
       cwd: repoRoot,
       encoding: "utf8",
     });

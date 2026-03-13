@@ -2,7 +2,7 @@
 
 "use strict";
 
-const { computeBillableTotalTokens } = require("../../insforge-src/shared/usage-billable");
+const { computeBillableTotalTokens } = require("../../supabase-src/shared/usage-billable");
 
 const BILLABLE_RULE_VERSION = 1;
 const CURSOR_FIELDS = ["hour_start", "user_id", "device_id", "source", "model"];
@@ -256,16 +256,16 @@ async function main() {
     return;
   }
 
-  const baseUrl = process.env.INSFORGE_BASE_URL || process.env.VIBEUSAGE_INSFORGE_BASE_URL || "";
+  const baseUrl = process.env.SUPABASE_URL || process.env.VIBEUSAGE_SUPABASE_URL || "";
   const serviceRoleKey =
-    process.env.INSFORGE_SERVICE_ROLE_KEY || process.env.VIBEUSAGE_SERVICE_ROLE_KEY || "";
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VIBEUSAGE_SERVICE_ROLE_KEY || "";
 
   if (!baseUrl) {
-    throw new Error("Missing base URL: set INSFORGE_BASE_URL or VIBEUSAGE_INSFORGE_BASE_URL");
+    throw new Error("Missing base URL: set SUPABASE_URL or VIBEUSAGE_SUPABASE_URL");
   }
   if (!serviceRoleKey) {
     throw new Error(
-      "Missing service role key: set INSFORGE_SERVICE_ROLE_KEY or VIBEUSAGE_SERVICE_ROLE_KEY",
+      "Missing service role key: set SUPABASE_SERVICE_ROLE_KEY or VIBEUSAGE_SERVICE_ROLE_KEY",
     );
   }
 

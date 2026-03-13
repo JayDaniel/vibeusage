@@ -56,8 +56,8 @@ function buildRuntimeChecks(runtime = {}) {
     ? Number(runtime.httpTimeoutMs)
     : null;
   const debug = Boolean(runtime.debug);
-  const insforgeAnonKey =
-    typeof runtime.insforgeAnonKey === "string" && runtime.insforgeAnonKey.trim() ? "set" : "unset";
+  const supabaseAnonKey =
+    typeof runtime.supabaseAnonKey === "string" && runtime.supabaseAnonKey.trim() ? "set" : "unset";
   const autoRetryNoSpawn = Boolean(runtime.autoRetryNoSpawn);
 
   checks.push({
@@ -116,13 +116,13 @@ function buildRuntimeChecks(runtime = {}) {
   });
 
   checks.push({
-    id: "runtime.insforge_anon_key",
+    id: "runtime.supabase_anon_key",
     status: "ok",
-    detail: insforgeAnonKey === "set" ? "anon key set" : "anon key unset",
+    detail: supabaseAnonKey === "set" ? "anon key set" : "anon key unset",
     critical: false,
     meta: {
-      anon_key: insforgeAnonKey,
-      source: runtime?.sources?.insforgeAnonKey || null,
+      anon_key: supabaseAnonKey,
+      source: runtime?.sources?.supabaseAnonKey || null,
     },
   });
 

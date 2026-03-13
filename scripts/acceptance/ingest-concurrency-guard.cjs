@@ -4,17 +4,17 @@
 
 const assert = require("node:assert/strict");
 
-const BASE_URL = "http://insforge:7130";
+const BASE_URL = "http://supabase:7130";
 const ANON_KEY = "anon_test_123";
 
 setDenoEnv({
-  INSFORGE_INTERNAL_URL: BASE_URL,
+  SUPABASE_INTERNAL_URL: BASE_URL,
   ANON_KEY,
   VIBEUSAGE_INGEST_MAX_INFLIGHT: "1",
   VIBEUSAGE_INGEST_RETRY_AFTER_MS: "1000",
 });
 
-const fn = require("../../insforge-functions/vibeusage-ingest");
+const fn = require("../../supabase-functions/vibeusage-ingest");
 
 const tokenRow = {
   id: "token-id",

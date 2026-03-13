@@ -1,4 +1,4 @@
-import { useAuth as useInsforgeAuth } from "./lib/supabase-auth-provider.jsx";
+import { useAuth as useSupabaseAuth } from "./lib/supabase-auth-provider.jsx";
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
@@ -22,9 +22,9 @@ import {
   subscribeSessionSoftExpired,
 } from "./lib/auth-storage";
 import { isLikelyExpiredAccessToken } from "./lib/auth-token";
-import { getInsforgeBaseUrl } from "./lib/config";
-import { insforgeAuthClient } from "./lib/insforge-auth-client";
-import { clearInsforgePersistentStorage } from "./lib/insforge-client";
+import { getSupabaseUrl } from "./lib/config";
+import { supabaseAuthClient } from "./lib/supabase-auth-client";
+import { clearSupabasePersistentStorage } from "./lib/supabase-client";
 import { isMockEnabled } from "./lib/mock-data";
 import { fetchLatestTrackerVersion } from "./lib/npm-version";
 import { isScreenshotModeEnabled } from "./lib/screenshot-mode";
@@ -62,12 +62,12 @@ const LeaderboardProfilePage = React.lazy(() =>
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const baseUrl = useMemo(() => getInsforgeBaseUrl(), []);
+  const baseUrl = useMemo(() => getSupabaseUrl(), []);
   const {
-    isLoaded: insforgeLoaded,
-    isSignedIn: insforgeSignedIn,
-    signOut: insforgeSignOut,
-  } = useInsforgeAuth();
+    isLoaded: supabaseLoaded,
+    isSignedIn: supabaseSignedIn,
+    signOut: supabaseSignOut,
+  } = useSupabaseAuth();
   const mockEnabled = isMockEnabled();
   const screenshotMode = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -75,7 +75,7 @@ export default function App() {
   }, []);
   const appVersion = useMemo(() => getAppVersion(import.meta.env), []);
   const [latestVersion, setLatestVersion] = useState(null);
-  const [insforgeSession, setInsforgeSession] = useState();
+  const [supabaseSession, setSupabaseSession] = useState();
   const [sessionExpired, setSessionExpired] = useState(() => loadSessionExpired());
   const [sessionSoftExpired, setSessionSoftExpired] = useState(() => loadSessionSoftExpired());
 
@@ -100,13 +100,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!insforgeLoaded) {
-      setInsforgeSession(undefined);
+    if (!supabaseLoaded) {
+      setSupabaseSession(undefined);
       return;
     }
     let active = true;
     const refreshSession = () => {
-      return insforgeAuthClient.auth
+      return supabaseAuthClient.auth
         .getSession()
         .then(({ data }) => {
           if (!active) return;
@@ -115,7 +115,7 @@ export default function App() {
             accessToken: session.access_token ?? null,
             user: session.user ?? null,
           } : null;
-          setInsforgeSession(mappedSession);
+          setSupabaseSession(mappedSession);
 
           // Debug logging for mobile troubleshooting
           if (
@@ -132,7 +132,7 @@ export default function App() {
         })
         .catch((err) => {
           if (!active) return;
-          setInsforgeSession(null);
+          setSupabaseSession(null);
           if (
             process.env.NODE_ENV === "development" ||
             window.location.search.includes("debug=1")
@@ -146,7 +146,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [insforgeLoaded, insforgeSignedIn]);
+  }, [supabaseLoaded, supabaseSignedIn]);
 
   useEffect(() => {
     return subscribeSessionExpired((next) => {
@@ -161,33 +161,33 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!insforgeLoaded) return;
-    if (insforgeSession?.accessToken && !isLikelyExpiredAccessToken(insforgeSession.accessToken)) {
+    if (!supabaseLoaded) return;
+    if (supabaseSession?.accessToken && !isLikelyExpiredAccessToken(supabaseSession.accessToken)) {
       return;
     }
     if (!sessionSoftExpired) return;
     // Avoid getting stuck on dashboard without a usable session token.
     clearSessionSoftExpired();
-  }, [insforgeLoaded, insforgeSession, sessionSoftExpired]);
+  }, [supabaseLoaded, supabaseSession, sessionSoftExpired]);
 
-  const getInsforgeAccessToken = useCallback(async () => {
-    const fallbackToken = !isLikelyExpiredAccessToken(insforgeSession?.accessToken)
-      ? (insforgeSession?.accessToken ?? null)
+  const getSupabaseAccessToken = useCallback(async () => {
+    const fallbackToken = !isLikelyExpiredAccessToken(supabaseSession?.accessToken)
+      ? (supabaseSession?.accessToken ?? null)
       : null;
-    if (!insforgeSignedIn) {
+    if (!supabaseSignedIn) {
       return fallbackToken;
     }
-    const { data } = await insforgeAuthClient.auth.getSession();
+    const { data } = await supabaseAuthClient.auth.getSession();
     const sessionToken = data?.session?.access_token ?? null;
     if (!isLikelyExpiredAccessToken(sessionToken)) {
       return sessionToken;
     }
     return fallbackToken;
-  }, [insforgeSession, insforgeSignedIn]);
+  }, [supabaseSession, supabaseSignedIn]);
 
   useEffect(() => {
     if (!sessionSoftExpired) return () => {};
-    if (!insforgeSignedIn) return () => {};
+    if (!supabaseSignedIn) return () => {};
     let active = true;
     const revalidate = async () => {
       if (!active) return;
@@ -195,13 +195,13 @@ export default function App() {
         return;
       }
       try {
-        const { data } = await insforgeAuthClient.auth.getSession();
+        const { data } = await supabaseAuthClient.auth.getSession();
         const sess = data?.session ?? null;
         const mappedSession = sess ? {
           accessToken: sess.access_token ?? null,
           user: sess.user ?? null,
         } : null;
-        setInsforgeSession(mappedSession);
+        setSupabaseSession(mappedSession);
         if (!active) return;
         if (mappedSession?.accessToken) {
           clearSessionSoftExpired();
@@ -227,34 +227,34 @@ export default function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("focus", onFocus);
     };
-  }, [insforgeSignedIn, sessionSoftExpired]);
+  }, [supabaseSignedIn, sessionSoftExpired]);
 
-  const insforgeAuth = useMemo(() => {
-    const sessionToken = insforgeSession?.accessToken ?? null;
+  const supabaseAuth = useMemo(() => {
+    const sessionToken = supabaseSession?.accessToken ?? null;
     if (!sessionToken || isLikelyExpiredAccessToken(sessionToken)) return null;
-    const user = insforgeSession.user;
+    const user = supabaseSession.user;
     const profileName = user?.profile?.name;
     const displayName = profileName ?? user?.name ?? null;
     return {
       accessToken: sessionToken,
-      getAccessToken: getInsforgeAccessToken,
+      getAccessToken: getSupabaseAccessToken,
       userId: user?.id ?? null,
       email: user?.email ?? null,
       name: displayName,
       savedAt: new Date().toISOString(),
     };
-  }, [getInsforgeAccessToken, insforgeSession]);
+  }, [getSupabaseAccessToken, supabaseSession]);
 
   const redirectOnceRef = useRef(false);
   useEffect(() => {
     if (redirectOnceRef.current) return;
-    const sessionToken = insforgeSession?.accessToken ?? null;
+    const sessionToken = supabaseSession?.accessToken ?? null;
     if (!sessionToken || isLikelyExpiredAccessToken(sessionToken) || sessionExpired) {
       return;
     }
     const target = resolveRedirectTarget(window.location.search);
     if (target) {
-      const user = insforgeSession.user;
+      const user = supabaseSession.user;
       const profileName = user?.profile?.name;
       const displayName = profileName ?? user?.name ?? null;
       redirectOnceRef.current = true;
@@ -275,35 +275,35 @@ export default function App() {
     const destination = nextPath && nextPath !== "/auth/callback" ? nextPath : "/";
     redirectOnceRef.current = true;
     navigate(destination, { replace: true });
-  }, [insforgeSession, navigate, sessionExpired]);
+  }, [supabaseSession, navigate, sessionExpired]);
 
-  const hasInsforgeSession = Boolean(
-    insforgeSession?.accessToken && !isLikelyExpiredAccessToken(insforgeSession.accessToken),
+  const hasSupabaseSession = Boolean(
+    supabaseSession?.accessToken && !isLikelyExpiredAccessToken(supabaseSession.accessToken),
   );
-  const insforgeReady = insforgeLoaded && insforgeSignedIn;
-  const useInsforge = insforgeReady || (insforgeLoaded && hasInsforgeSession);
+  const supabaseReady = supabaseLoaded && supabaseSignedIn;
+  const useSupabase = supabaseReady || (supabaseLoaded && hasSupabaseSession);
   // Data API calls only require access token. User profile fields can be absent on
   // some mobile restore paths, so don't block signed-in state on `session.user`.
-  const signedIn = useInsforge && hasInsforgeSession;
+  const signedIn = useSupabase && hasSupabaseSession;
   const auth = useMemo(() => {
-    if (!useInsforge || !hasInsforgeSession) return null;
-    return insforgeAuth;
-  }, [hasInsforgeSession, insforgeAuth, useInsforge]);
+    if (!useSupabase || !hasSupabaseSession) return null;
+    return supabaseAuth;
+  }, [hasSupabaseSession, supabaseAuth, useSupabase]);
   const signOut = useMemo(() => {
     return async () => {
       try {
-        if (useInsforge) {
-          await insforgeSignOut();
+        if (useSupabase) {
+          await supabaseSignOut();
         }
       } finally {
-        clearInsforgePersistentStorage();
+        clearSupabasePersistentStorage();
         clearAuthStorage();
         clearSessionExpired();
         clearSessionSoftExpired();
-        setInsforgeSession(null);
+        setSupabaseSession(null);
       }
     };
-  }, [insforgeSignOut, useInsforge]);
+  }, [supabaseSignOut, useSupabase]);
 
   const pathname = location?.pathname || "/";
   const pageUrl = new URL(window.location.href);
@@ -334,24 +334,24 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!insforgeLoaded) return;
+    if (!supabaseLoaded) return;
     const shouldRedirect = shouldRedirectFromAuthCallback({
       pathname: window.location.pathname,
       search: window.location.search,
-      hasSession: Boolean(insforgeSession?.accessToken),
-      sessionResolved: insforgeSession !== undefined,
+      hasSession: Boolean(supabaseSession?.accessToken),
+      sessionResolved: supabaseSession !== undefined,
       storage: getSafeSessionStorage(),
     });
     if (!shouldRedirect) return;
     navigate(signInUrl, { replace: true });
-  }, [insforgeLoaded, insforgeSession, navigate, signInUrl]);
+  }, [supabaseLoaded, supabaseSession, navigate, signInUrl]);
 
   const loadingShell = <div className="min-h-screen bg-[#050505]" />;
   const authPending =
     !publicMode &&
     !mockEnabled &&
     !sessionSoftExpired &&
-    (!insforgeLoaded || insforgeSession === undefined);
+    (!supabaseLoaded || supabaseSession === undefined);
   const gate = resolveAuthGate({
     publicMode,
     mockEnabled,

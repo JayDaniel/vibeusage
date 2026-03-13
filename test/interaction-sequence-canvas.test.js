@@ -36,16 +36,16 @@ async function setupTrackerSyncFixtures(rootDir) {
   await writeFixture(rootDir, "src/lib/rollout.js", "module.exports = {};\n");
   await writeFixture(rootDir, "src/lib/uploader.js", "module.exports = {};\n");
   await writeFixture(rootDir, "src/lib/vibeusage-api.js", "module.exports = {};\n");
-  await writeFixture(rootDir, "insforge-src/functions/vibeusage-ingest.js", "export {};\n");
-  await writeFixture(rootDir, "insforge-src/functions/vibeusage-sync-ping.js", "export {};\n");
+  await writeFixture(rootDir, "supabase-src/functions/vibeusage-ingest.js", "export {};\n");
+  await writeFixture(rootDir, "supabase-src/functions/vibeusage-sync-ping.js", "export {};\n");
 }
 
 async function setupLinkCodeFixtures(rootDir) {
   await writeFixture(rootDir, "src/commands/init.js", "module.exports = {};\n");
-  await writeFixture(rootDir, "insforge-src/functions/vibeusage-link-code-init.js", "export {};\n");
+  await writeFixture(rootDir, "supabase-src/functions/vibeusage-link-code-init.js", "export {};\n");
   await writeFixture(
     rootDir,
-    "insforge-src/functions/vibeusage-link-code-exchange.js",
+    "supabase-src/functions/vibeusage-link-code-exchange.js",
     "export {};\n",
   );
 }

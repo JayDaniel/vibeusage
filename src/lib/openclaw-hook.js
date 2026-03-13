@@ -297,7 +297,7 @@ function buildHookHandler({ trackerDir, packageName = "vibeusage", openclawHome 
     `const fallbackPkg = ${JSON.stringify(fallbackPkg)};\n` +
     `const openclawHome = ${JSON.stringify(safeOpenclawHome)};\n` +
     `const throttlePath = path.join(trackerDir, 'openclaw.sync.throttle');\n` +
-    `const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@insforge', 'sdk', 'package.json');\n` +
+    `const depsMarkerPath = path.join(trackerDir, 'app', 'node_modules', '@supabase', 'supabase-js', 'package.json');\n` +
     `const THROTTLE_MS = 15_000;\n` +
     `\n` +
     `module.exports = async function handler(event) {\n` +

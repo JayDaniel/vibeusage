@@ -5,7 +5,7 @@ const {
   buildPublicShareToken,
   getPublicVisibilityState,
   setPublicVisibilityState,
-} = require('../insforge-src/shared/public-visibility');
+} = require('../supabase-src/shared/public-visibility');
 
 function makeEdgeClient({ userId, state, upsertSupported = true }) {
   return {

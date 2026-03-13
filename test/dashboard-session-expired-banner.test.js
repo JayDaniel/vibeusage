@@ -31,14 +31,14 @@ test("main wires Supabase hosted auth routes", () => {
   assert.match(src, /afterSignInUrl/);
 });
 
-test("insforge auth client wrapper uses base url and anon key", () => {
-  const wrapper = read("dashboard/src/lib/insforge-auth-client.ts");
-  assert.match(wrapper, /createInsforgeAuthClient/);
+test("supabase auth client wrapper uses base url and anon key", () => {
+  const wrapper = read("dashboard/src/lib/supabase-auth-client.ts");
+  assert.match(wrapper, /createSupabaseAuthClient/);
 
-  const src = read("dashboard/src/lib/insforge-client.ts");
-  assert.match(src, /createInsforgeAuthClient/);
-  assert.match(src, /getInsforgeBaseUrl/);
-  assert.match(src, /getInsforgeAnonKey/);
+  const src = read("dashboard/src/lib/supabase-client.ts");
+  assert.match(src, /createSupabaseAuthClient/);
+  assert.match(src, /getSupabaseUrl/);
+  assert.match(src, /getSupabaseAnonKey/);
 });
 
 test("App uses hosted auth routes for Landing login", () => {
@@ -62,13 +62,13 @@ test("App routes LandingPage when signed out", () => {
 test("App uses Supabase auth hook for signed-in gating", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /supabase-auth-provider/);
-  assert.match(src, /useInsforgeAuth/);
+  assert.match(src, /useSupabaseAuth/);
 });
 
-test("App derives signedIn from InsForge session state", () => {
+test("App derives signedIn from Supabase session state", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /const signedIn\s*=\s*useInsforge\s*&&\s*hasInsforgeSession/);
-  assert.doesNotMatch(src, /hasInsforgeIdentity/);
+  assert.match(src, /const signedIn\s*=\s*useSupabase\s*&&\s*hasSupabaseSession/);
+  assert.doesNotMatch(src, /hasSupabaseIdentity/);
 });
 
 test("App keeps auth while session is soft-expired", () => {
@@ -76,13 +76,13 @@ test("App keeps auth while session is soft-expired", () => {
   assert.doesNotMatch(src, /sessionSoftExpired[^;]*return\s+null/);
 });
 
-test("App provides InsForge access token resolver", () => {
+test("App provides Supabase access token resolver", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /getSession/);
   assert.match(src, /getAccessToken/);
 });
 
-test("App prefers InsForge profile name for identity", () => {
+test("App prefers Supabase profile name for identity", () => {
   const src = read("dashboard/src/App.jsx");
   assert.match(src, /profile\?\.name/);
   assert.match(src, /user\?\.name/);
@@ -94,19 +94,19 @@ test("App subscribes to sessionSoftExpired state", () => {
   assert.match(src, /subscribeSessionSoftExpired/);
 });
 
-test("App declares getInsforgeAccessToken before revalidate effect", () => {
+test("App declares getSupabaseAccessToken before revalidate effect", () => {
   const src = read("dashboard/src/App.jsx");
-  const tokenIndex = src.indexOf("const getInsforgeAccessToken");
+  const tokenIndex = src.indexOf("const getSupabaseAccessToken");
   const authMemoIndex = src.indexOf("const auth = useMemo");
-  assert.ok(tokenIndex !== -1, "expected getInsforgeAccessToken declaration");
+  assert.ok(tokenIndex !== -1, "expected getSupabaseAccessToken declaration");
   assert.ok(authMemoIndex !== -1, "expected auth memo");
   assert.ok(tokenIndex < authMemoIndex);
 });
 
-test("App does not require InsForge identity before signedIn", () => {
+test("App does not require Supabase identity before signedIn", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.doesNotMatch(src, /const hasInsforgeIdentity/);
-  assert.match(src, /const hasInsforgeSession/);
+  assert.doesNotMatch(src, /const hasSupabaseIdentity/);
+  assert.match(src, /const hasSupabaseSession/);
   assert.match(src, /don't block signed-in state on `session\.user`/);
 });
 
@@ -132,9 +132,9 @@ test("vibeusage-api resolves access token providers", () => {
   assert.match(authTokenSrc, /typeof\s+auth\s*===\s*\"function\"/);
 });
 
-test("App avoids legacy auth fallback before InsForge is ready", () => {
+test("App avoids legacy auth fallback before Supabase is ready", () => {
   const src = read("dashboard/src/App.jsx");
-  assert.match(src, /insforgeLoaded\s*&&\s*insforgeSignedIn/);
+  assert.match(src, /supabaseLoaded\s*&&\s*supabaseSignedIn/);
 });
 
 test("DashboardPage shows session expired banner and bypasses auth gate", () => {
