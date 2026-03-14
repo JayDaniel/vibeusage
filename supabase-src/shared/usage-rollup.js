@@ -78,8 +78,7 @@ function readEnvValue(key) {
 }
 
 function isRollupEnabled() {
-  // Rollup queries are disabled until the daily rollup table is deployed.
-  return false;
+  return true;
 }
 
 module.exports = {

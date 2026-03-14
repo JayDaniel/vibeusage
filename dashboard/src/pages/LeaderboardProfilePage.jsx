@@ -9,7 +9,7 @@ import { getLeaderboardProfile } from "../lib/vibeusage-api";
 import { AsciiBox } from "../ui/foundation/AsciiBox.jsx";
 import { MatrixButton } from "../ui/foundation/MatrixButton.jsx";
 import { MatrixShell } from "../ui/foundation/MatrixShell.jsx";
-import { GithubStar } from "../ui/matrix-a/components/GithubStar.jsx";
+import { GithubStar } from "../ui/views-components/components/GithubStar.jsx";
 
 function normalizeProfileError(err) {
   if (!err) return copy("shared.error.prefix", { error: copy("leaderboard.error.unknown") });
@@ -129,27 +129,27 @@ export function LeaderboardProfilePage({
   if (!userId) {
     body = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{copy("leaderboard.empty")}</p>
+        <p className="text-[12px] text-[#94A3B8] mt-0">{copy("leaderboard.empty")}</p>
       </div>
     );
   } else if (profileState.loading) {
     body = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{copy("leaderboard.loading")}</p>
+        <p className="text-[12px] text-[#94A3B8] mt-0">{copy("leaderboard.loading")}</p>
       </div>
     );
   } else if (profileState.error) {
     body = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{profileState.error}</p>
+        <p className="text-[12px] text-red-500 mt-0">{profileState.error}</p>
       </div>
     );
   } else if (entry) {
     body = (
       <div className="w-full overflow-x-auto">
-        <table className="w-full text-left text-[12px]">
-          <thead className="uppercase text-matrix-dim tracking-[0.25em] text-[10px]">
-            <tr className="border-b border-matrix-ghost">
+        <table className="w-full text-left text-[13px]">
+          <thead className="text-[11px] text-[#94A3B8] font-semibold">
+            <tr className="border-b border-[#E2E8F0]">
               <th className="px-4 py-3">{copy("leaderboard.column.rank")}</th>
               <th className="px-4 py-3">{copy("leaderboard.column.total")}</th>
               <th className="px-4 py-3">{copy("leaderboard.column.gpt")}</th>
@@ -158,7 +158,7 @@ export function LeaderboardProfilePage({
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-matrix-ghost/40 bg-transparent">
+            <tr className="border-b border-[#F1F5F9] bg-transparent">
               <td className="px-4 py-3 font-bold">
                 {entry?.rank ?? copy("shared.placeholder.short")}
               </td>
@@ -174,7 +174,7 @@ export function LeaderboardProfilePage({
   } else {
     body = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{copy("leaderboard.empty")}</p>
+        <p className="text-[12px] text-[#94A3B8] mt-0">{copy("leaderboard.empty")}</p>
       </div>
     );
   }
@@ -184,10 +184,10 @@ export function LeaderboardProfilePage({
       <div className="max-w-4xl mx-auto flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h1 className="text-xl md:text-2xl font-black tracking-tight glow-text">
+            <h1 className="text-xl md:text-2xl font-extrabold text-[#1E293B] tracking-tight">
               {displayName}
             </h1>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-matrix-muted">
+            <div className="text-[12px] text-[#94A3B8] font-medium">
               {period === "total"
                 ? copy("leaderboard.range.total")
                 : from && to
@@ -196,7 +196,7 @@ export function LeaderboardProfilePage({
             </div>
           </div>
           {generatedAt ? (
-            <div className="text-[10px] uppercase text-matrix-dim">
+            <div className="text-[11px] text-[#CBD5E1]">
               {copy("leaderboard.generated_at", { ts: generatedAt })}
             </div>
           ) : null}

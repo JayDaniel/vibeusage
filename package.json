@@ -42,7 +42,7 @@
     "validate:ui-hardcode": "node scripts/ops/validate-ui-hardcode.cjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.8"
+    "@supabase/supabase-js": "^2.99.1"
   },
   "devDependencies": {
     "@sourcegraph/scip-typescript": "^0.3.6",
@@ -53,5 +53,8 @@
   ],
   "engines": {
     "node": "20.x"
-  }
+  },
+  "bundleDependencies": [
+    "@supabase/supabase-js"
+  ]
 }

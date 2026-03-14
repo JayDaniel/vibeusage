@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   storePostAuthPathFromSearch,
@@ -65,7 +65,7 @@ export function SignInRedirect() {
         });
 
         if (signInError) {
-          setError(signInError.message || "LOGIN_FAILED");
+          setError(signInError.message || "Sign in failed");
           setLoading(false);
           return;
         }
@@ -73,7 +73,7 @@ export function SignInRedirect() {
         // 登录成功，导航到首页
         navigate("/", { replace: true });
       } catch (err) {
-        setError(err?.message || "UNEXPECTED_ERROR");
+        setError(err?.message || "An unexpected error occurred");
         setLoading(false);
       }
     },
@@ -81,41 +81,47 @@ export function SignInRedirect() {
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--flat-bg)" }}>
       <div className="w-full max-w-md">
         {/* 标题区域 */}
         <div className="text-center mb-8">
           <h1
-            className="text-2xl font-bold tracking-widest uppercase"
-            style={{ color: "var(--matrix-ink)" }}
+            className="text-2xl font-bold"
+            style={{ color: "var(--flat-text-primary)" }}
           >
-            SIGN_IN
+            Sign in
           </h1>
           <p
-            className="mt-2 text-sm tracking-wider uppercase"
-            style={{ color: "var(--matrix-ink-muted)" }}
+            className="mt-2 text-sm"
+            style={{ color: "var(--flat-text-secondary)" }}
           >
-            AUTHENTICATE_TO_ACCESS_DASHBOARD
+            Sign in to access your dashboard
           </p>
         </div>
 
         {/* 登录表单 */}
         <form
           onSubmit={handleSubmit}
-          className="matrix-panel p-6 space-y-5"
+          className="p-6 space-y-5 rounded-xl"
           id="sign-in-form"
+          style={{
+            background: "var(--flat-surface)",
+            border: "1px solid var(--flat-border)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+          }}
         >
           {/* 错误提示 */}
           {error ? (
             <div
-              className="p-3 text-sm tracking-wider uppercase border"
+              className="p-3 text-sm rounded-lg"
               style={{
-                color: "#ff4444",
-                borderColor: "rgba(255, 68, 68, 0.3)",
-                background: "rgba(255, 68, 68, 0.08)",
+                color: "var(--flat-error)",
+                borderColor: "rgba(239, 68, 68, 0.3)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                background: "rgba(239, 68, 68, 0.06)",
               }}
             >
-              ERROR: {error}
+              {error}
             </div>
           ) : null}
 
@@ -123,10 +129,10 @@ export function SignInRedirect() {
           <div>
             <label
               htmlFor="sign-in-email"
-              className="block text-xs tracking-widest uppercase mb-2"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="block text-sm font-medium mb-2"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              EMAIL_ADDRESS
+              Email
             </label>
             <input
               id="sign-in-email"
@@ -136,13 +142,12 @@ export function SignInRedirect() {
               required
               autoComplete="email"
               autoFocus
-              className="w-full px-4 py-3 text-sm tracking-wider outline-none"
+              className="w-full px-4 py-3 text-sm rounded-lg outline-none transition-colors"
               placeholder="user@example.com"
               style={{
-                background: "rgba(0, 10, 0, 0.6)",
-                border: "1px solid var(--matrix-panel-border)",
-                color: "var(--matrix-ink-bright)",
-                fontFamily: "inherit",
+                background: "var(--flat-surface-hover)",
+                border: "1px solid var(--flat-border)",
+                color: "var(--flat-text-primary)",
               }}
             />
           </div>
@@ -151,10 +156,10 @@ export function SignInRedirect() {
           <div>
             <label
               htmlFor="sign-in-password"
-              className="block text-xs tracking-widest uppercase mb-2"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="block text-sm font-medium mb-2"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              PASSWORD
+              Password
             </label>
             <input
               id="sign-in-password"
@@ -163,13 +168,12 @@ export function SignInRedirect() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full px-4 py-3 text-sm tracking-wider outline-none"
+              className="w-full px-4 py-3 text-sm rounded-lg outline-none transition-colors"
               placeholder="••••••••"
               style={{
-                background: "rgba(0, 10, 0, 0.6)",
-                border: "1px solid var(--matrix-panel-border)",
-                color: "var(--matrix-ink-bright)",
-                fontFamily: "inherit",
+                background: "var(--flat-surface-hover)",
+                border: "1px solid var(--flat-border)",
+                color: "var(--flat-text-primary)",
               }}
             />
           </div>
@@ -178,36 +182,35 @@ export function SignInRedirect() {
           <button
             type="submit"
             disabled={loading}
-            className="matrix-header-chip matrix-header-chip--solid matrix-header-action w-full justify-center"
+            className="w-full py-3 text-sm font-semibold rounded-lg transition-all"
             style={{
-              height: 48,
-              fontSize: "14px",
-              letterSpacing: "0.2em",
+              background: "var(--flat-accent)",
+              color: "#fff",
               cursor: loading ? "wait" : "pointer",
               opacity: loading ? 0.6 : 1,
             }}
           >
-            {loading ? "AUTHENTICATING..." : "$ SIGN_IN"}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           {/* 注册链接 */}
           <div className="text-center pt-2">
             <span
-              className="text-xs tracking-wider uppercase"
-              style={{ color: "var(--matrix-ink-dim)" }}
+              className="text-sm"
+              style={{ color: "var(--flat-text-secondary)" }}
             >
-              NO_ACCOUNT?{" "}
+              {"Don't have an account? "}
             </span>
             <a
               href="/sign-up"
-              className="text-xs tracking-wider uppercase hover:underline"
-              style={{ color: "var(--matrix-ink)" }}
+              className="text-sm font-medium hover:underline"
+              style={{ color: "var(--flat-accent)" }}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/sign-up");
               }}
             >
-              REGISTER_NEW
+              Sign up
             </a>
           </div>
 
@@ -215,14 +218,14 @@ export function SignInRedirect() {
           <div className="text-center">
             <a
               href="/"
-              className="text-xs tracking-wider uppercase hover:underline"
-              style={{ color: "var(--matrix-ink-dim)" }}
+              className="text-sm hover:underline"
+              style={{ color: "var(--flat-text-secondary)" }}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/");
               }}
             >
-              &lt; BACK_TO_HOME
+              &larr; Back to home
             </a>
           </div>
         </form>

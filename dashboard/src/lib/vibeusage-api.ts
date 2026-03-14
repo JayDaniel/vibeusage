@@ -33,8 +33,8 @@ const PATHS = {
   publicVisibility: "vibeusage-public-visibility",
 };
 
-const FUNCTION_PREFIX = "/functions";
-const LEGACY_FUNCTION_PREFIX = "/api/functions";
+const FUNCTION_PREFIX = "/functions/v1";
+const LEGACY_FUNCTION_PREFIX = "/functions/v1";
 const REQUEST_KIND = {
   business: "business",
   probe: "probe",

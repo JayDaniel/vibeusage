@@ -80,5 +80,5 @@ function AuthCallbackHandler() {
     // 实际的 redirect 逻辑由 App.jsx 中的 useEffect 处理。
   }, []);
 
-  return <div className="min-h-screen bg-[#050505]" />;
+  return <div className="min-h-screen" style={{ background: "var(--flat-bg)" }} />;
 }

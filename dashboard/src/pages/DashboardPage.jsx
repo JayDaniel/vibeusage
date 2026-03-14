@@ -41,11 +41,11 @@ import {
 } from "../lib/vibeusage-api";
 import { AsciiBox } from "../ui/foundation/AsciiBox.jsx";
 import { MatrixButton } from "../ui/foundation/MatrixButton.jsx";
-import { ActivityHeatmap } from "../ui/matrix-a/components/ActivityHeatmap.jsx";
-import { BootScreen } from "../ui/matrix-a/components/BootScreen.jsx";
-import { GithubStar } from "../ui/matrix-a/components/GithubStar.jsx";
-import { ProjectUsagePanel } from "../ui/matrix-a/components/ProjectUsagePanel.jsx";
-import { DashboardView } from "../ui/matrix-a/views/DashboardView.jsx";
+import { ActivityHeatmap } from "../ui/views-components/components/ActivityHeatmap.jsx";
+import { BootScreen } from "../ui/views-components/components/BootScreen.jsx";
+import { GithubStar } from "../ui/views-components/components/GithubStar.jsx";
+import { ProjectUsagePanel } from "../ui/views-components/components/ProjectUsagePanel.jsx";
+import { DashboardView } from "../ui/views-components/views/DashboardView.jsx";
 
 const PERIODS = ["day", "week", "month", "total"];
 const DETAILS_DATE_KEYS = new Set(["day", "hour", "month"]);
@@ -934,7 +934,7 @@ export function DashboardPage({
     try {
       const { toBlob, toPng } = await import("html-to-image");
       const blob = await toBlob(root, {
-        backgroundColor: "#050505",
+        backgroundColor: "#F1F5F9",
         pixelRatio: 2,
         cacheBust: true,
         width: scrollWidth,
@@ -948,7 +948,7 @@ export function DashboardPage({
       });
       if (blob) return blob;
       const dataUrl = await toPng(root, {
-        backgroundColor: "#050505",
+        backgroundColor: "#F1F5F9",
         pixelRatio: 2,
         cacheBust: true,
         width: scrollWidth,

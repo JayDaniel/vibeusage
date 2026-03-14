@@ -21,6 +21,8 @@ async function resolvePublicView({ baseUrl, shareToken }) {
       headers: { Authorization: `Bearer ${serviceRoleKey}` },
     },
   });
+  // 兼容 InsForge API 风格：dbClient.database.from(...) → dbClient.from(...)
+  dbClient.database = dbClient;
 
   const resolvedUserId = await resolvePublicUserId({ dbClient, token });
   if (!resolvedUserId) {

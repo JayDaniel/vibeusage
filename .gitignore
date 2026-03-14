@@ -14,9 +14,10 @@ pnpm-debug.log*
 .obsidian/
 .code/
 .worktrees/
-codex-pr-review-loop.skill
+*.skill
 index.scip
 /index.*.scip
+tsconfig.scip.json
 /graph.plan.json
 /data/graph.sqlite
 /data/graph.sqlite-*
@@ -30,6 +31,6 @@ index.scip
 .vercel
 .env*.local
 
-# Local-only canvas focus output
-architecture.focus.canvas
-.worktrees/
+# Obsidian canvas files (local-only)
+*.canvas
+interaction_sequence.config.json

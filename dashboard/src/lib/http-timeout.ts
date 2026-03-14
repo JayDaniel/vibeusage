@@ -1,6 +1,6 @@
-const DEFAULT_TIMEOUT_MS = 15_000;
+const DEFAULT_TIMEOUT_MS = 30_000;
 const MIN_TIMEOUT_MS = 1_000;
-const MAX_TIMEOUT_MS = 30_000;
+const MAX_TIMEOUT_MS = 60_000;
 
 type AnyRecord = Record<string, any>;
 type FetchLike = (input: any, init?: AnyRecord) => Promise<any>;

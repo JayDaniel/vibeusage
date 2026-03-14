@@ -6,38 +6,35 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        matrix: [
-          '"Geist Mono"',
-          "ui-monospace",
-          "SFMono-Regular",
-          "Menlo",
-          "Monaco",
-          "Consolas",
-          '"Liberation Mono"',
-          '"Courier New"',
-          "monospace",
+        sans: [
+          '"Fira Code"',
+          ...defaultTheme.fontFamily.mono,
         ],
-        mono: ['"Geist Mono"', ...defaultTheme.fontFamily.mono],
+        display: [
+          '"Bebas Neue"',
+          'sans-serif',
+        ],
+        mono: ['"Fira Code"', ...defaultTheme.fontFamily.mono],
       },
       fontSize: {
         display: [
-          "clamp(48px, 6vw, 72px)",
+          "clamp(36px, 5vw, 56px)",
           {
-            lineHeight: "1",
-            letterSpacing: "-0.02em",
-            fontWeight: "900",
+            lineHeight: "1.1",
+            letterSpacing: "-0.025em",
+            fontWeight: "800",
           },
         ],
         heading: [
-          "14px",
+          "13px",
           {
-            lineHeight: "1.25",
-            letterSpacing: "0.08em",
-            fontWeight: "700",
+            lineHeight: "1.3",
+            letterSpacing: "0.04em",
+            fontWeight: "600",
           },
         ],
         body: [
-          "16px",
+          "15px",
           {
             lineHeight: "1.5",
             fontWeight: "500",
@@ -47,30 +44,35 @@ module.exports = {
           "12px",
           {
             lineHeight: "1.3",
-            letterSpacing: "0.12em",
+            letterSpacing: "0.03em",
             fontWeight: "500",
           },
         ],
       },
       colors: {
-        matrix: {
-          primary: "#00FF41",
-          bright: "#E8FFE9",
-          muted: "rgba(0, 255, 65, 0.6)",
-          dim: "rgba(0, 255, 65, 0.35)",
-          ghost: "rgba(0, 255, 65, 0.18)",
-          panel: "rgba(0, 10, 0, 0.7)",
-          panelStrong: "rgba(0, 10, 0, 0.82)",
-          dark: "#050505",
+        flat: {
+          primary: "#2563EB",
+          dark: "#1E293B",
+          muted: "#64748B",
+          dim: "#94A3B8",
+          border: "#E2E8F0",
+          surface: "#FFFFFF",
+          surfaceAlt: "#F8FAFC",
+          bg: "#F1F5F9",
         },
-        gold: "#FFD700",
+        accent: "#F59E0B",
       },
       boxShadow: {
-        "matrix-glow": "0 0 24px rgba(0, 255, 65, 0.35)",
-        "matrix-gold": "0 0 18px rgba(255, 215, 0, 0.35)",
+        "flat-card": "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)",
+        "flat-card-hover": "0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)",
+        "flat-accent": "0 1px 3px rgba(245, 158, 11, 0.15)",
       },
       backdropBlur: {
         panel: "10px",
+      },
+      borderRadius: {
+        card: "12px",
+        btn: "8px",
       },
     },
   },

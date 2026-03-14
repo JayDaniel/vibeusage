@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { copy } from "../lib/copy";
 import { safeWriteClipboard } from "../lib/safe-browser";
 import { isScreenshotModeEnabled } from "../lib/screenshot-mode";
-import { LandingView } from "../ui/matrix-a/views/LandingView.jsx";
+import { LandingView } from "../ui/views-components/views/LandingView.jsx";
 import { shouldDeferMount } from "./should-defer-mount.js";
 
 function usePrefersReducedMotion() {

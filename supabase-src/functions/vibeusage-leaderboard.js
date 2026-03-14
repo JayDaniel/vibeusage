@@ -12,6 +12,7 @@ const { getBearerToken, getEdgeClientAndUserId } = require("../shared/auth");
 const { getAnonKey, getBaseUrl, getServiceRoleKey } = require("../shared/env");
 const { toUtcDay, addUtcDays, formatDateUTC } = require("../shared/date");
 const { toBigInt, toPositiveInt, toPositiveIntOrNull } = require("../shared/numbers");
+const { createClient } = require("@supabase/supabase-js");
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;

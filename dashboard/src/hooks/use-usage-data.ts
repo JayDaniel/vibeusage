@@ -109,7 +109,7 @@ export function useUsageData({
           to,
           timeZone,
           tzOffsetMinutes,
-          rolling: true,
+          rolling: false,
         });
       }
 

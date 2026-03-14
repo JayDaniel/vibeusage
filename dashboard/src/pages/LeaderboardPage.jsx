@@ -19,7 +19,7 @@ import {
 import { AsciiBox } from "../ui/foundation/AsciiBox.jsx";
 import { MatrixButton } from "../ui/foundation/MatrixButton.jsx";
 import { MatrixShell } from "../ui/foundation/MatrixShell.jsx";
-import { GithubStar } from "../ui/matrix-a/components/GithubStar.jsx";
+import { GithubStar } from "../ui/views-components/components/GithubStar.jsx";
 
 const PAGE_LIMIT = 20;
 
@@ -304,19 +304,19 @@ export function LeaderboardPage({
   if (listState.loading) {
     listBody = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{copy("leaderboard.loading")}</p>
+        <p className="text-[12px] text-[#94A3B8] mt-0">{copy("leaderboard.loading")}</p>
       </div>
     );
   } else if (listState.error) {
     listBody = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{listState.error}</p>
+        <p className="text-[12px] text-red-500 mt-0">{listState.error}</p>
       </div>
     );
   } else if (hasEntries) {
     listBody = (
       <div className="w-full overflow-x-auto">
-        <table className="w-full table-fixed text-left text-[12px]">
+        <table className="w-full table-fixed text-left text-[13px]">
           <colgroup>
             <col className="w-[72px]" />
             <col />
@@ -325,8 +325,8 @@ export function LeaderboardPage({
             <col className="w-[112px]" />
             <col className="w-[112px]" />
           </colgroup>
-          <thead className="uppercase text-matrix-dim tracking-[0.25em] text-[10px]">
-            <tr className="border-b border-matrix-ghost">
+          <thead className="text-[11px] text-[#94A3B8] font-semibold">
+            <tr className="border-b border-[#E2E8F0]">
               <th className="px-4 py-3">{copy("leaderboard.column.rank")}</th>
               <th className="px-4 py-3">{copy("leaderboard.column.user")}</th>
               <th className="px-4 py-3">{copy("leaderboard.column.total")}</th>
@@ -342,7 +342,6 @@ export function LeaderboardPage({
               const rawName = normalizeName(entry?.display_name);
               const entryName = isAnonymousName(rawName) ? anonLabel : rawName;
               const name = isMe ? meLabel : entryName;
-              // Only clickable when: not me, has user_id, AND is_public=true (backend verified)
               const userLinkEnabled = Boolean(profileUserId) && !isMe && Boolean(entry?.is_public);
               const publicViewPath = userLinkEnabled
                 ? buildPublicViewPath(profileUserId, periodSearch)
@@ -352,27 +351,27 @@ export function LeaderboardPage({
                 return (
                   <tr
                     key={`row-${entry?.rank}-${name}`}
-                    className="border-b border-matrix-ghost/40"
+                    className="border-b border-[#E2E8F0]"
                   >
                     <td colSpan={6} className="px-0 py-2">
-                      <div className="rounded-none ring-1 ring-inset ring-matrix-primary/40 bg-matrix-panelStrong/70 backdrop-blur-panel shadow-matrix-glow">
-                        <div className="grid grid-cols-[72px_minmax(0,1fr)_112px_112px_112px_112px] items-center text-[12px]">
-                          <div className="px-4 py-3 font-black text-matrix-ink-bright glow-text">
+                      <div className="rounded-lg ring-1 ring-inset ring-[#2563EB]/30 bg-[#EFF6FF]">
+                        <div className="grid grid-cols-[72px_minmax(0,1fr)_112px_112px_112px_112px] items-center text-[13px]">
+                          <div className="px-4 py-3 font-bold text-[#2563EB] font-display tracking-wide text-[16px]">
                             {entry?.rank ?? placeholder}
                           </div>
-                          <div className="px-4 py-3 font-black truncate text-matrix-ink-bright glow-text">
+                          <div className="px-4 py-3 font-bold truncate text-[#2563EB] font-display tracking-wide text-[16px]">
                             {name}
                           </div>
-                          <div className="px-4 py-3 font-bold">
+                          <div className="px-4 py-3 font-semibold">
                             {toDisplayNumber(entry?.total_tokens)}
                           </div>
-                          <div className="px-4 py-3 font-bold">
+                          <div className="px-4 py-3 font-semibold">
                             {toDisplayNumber(entry?.gpt_tokens)}
                           </div>
-                          <div className="px-4 py-3 font-bold">
+                          <div className="px-4 py-3 font-semibold">
                             {toDisplayNumber(entry?.claude_tokens)}
                           </div>
-                          <div className="px-4 py-3 font-bold">
+                          <div className="px-4 py-3 font-semibold">
                             {toDisplayNumber(entry?.other_tokens)}
                           </div>
                         </div>
@@ -384,8 +383,8 @@ export function LeaderboardPage({
               return (
                 <tr
                   key={`row-${entry?.rank}-${name}`}
-                  className={`border-b border-matrix-ghost/40 bg-transparent ${
-                    rowClickable ? "cursor-pointer hover:bg-matrix-panel/40" : ""
+                  className={`border-b border-[#F1F5F9] bg-transparent ${
+                    rowClickable ? "cursor-pointer hover:bg-[#F8FAFC]" : ""
                   }`}
                   onClick={
                     rowClickable
@@ -416,8 +415,8 @@ export function LeaderboardPage({
                   tabIndex={rowClickable ? 0 : undefined}
                   aria-label={rowClickable ? `Open public dashboard for ${name}` : undefined}
                 >
-                  <td className="px-4 py-3 font-bold">{entry?.rank ?? placeholder}</td>
-                  <td className="px-4 py-3 font-bold truncate max-w-[240px]">{name}</td>
+                  <td className="px-4 py-3 font-semibold">{entry?.rank ?? placeholder}</td>
+                  <td className="px-4 py-3 font-semibold truncate max-w-[240px]">{name}</td>
                   <td className="px-4 py-3">{toDisplayNumber(entry?.total_tokens)}</td>
                   <td className="px-4 py-3">{toDisplayNumber(entry?.gpt_tokens)}</td>
                   <td className="px-4 py-3">{toDisplayNumber(entry?.claude_tokens)}</td>
@@ -432,7 +431,7 @@ export function LeaderboardPage({
   } else {
     listBody = (
       <div className="px-4">
-        <p className="text-[10px] uppercase text-matrix-dim mt-0">{copy("leaderboard.empty")}</p>
+        <p className="text-[12px] text-[#94A3B8] mt-0">{copy("leaderboard.empty")}</p>
       </div>
     );
   }
@@ -444,7 +443,7 @@ export function LeaderboardPage({
         return (
           <span
             key={`ellipsis-${idx}`}
-            className="text-[10px] uppercase tracking-[0.25em] text-matrix-dim px-2"
+            className="text-[12px] text-[#CBD5E1] px-2"
           >
             {copy("leaderboard.pagination.ellipsis")}
           </span>
@@ -464,7 +463,7 @@ export function LeaderboardPage({
     });
   } else {
     pageButtons = (
-      <span className="text-[10px] uppercase tracking-[0.25em] text-matrix-dim">
+      <span className="text-[12px] text-[#94A3B8]">
         {copy("leaderboard.pagination.page_unknown", { page: String(currentPage) })}
       </span>
     );
@@ -475,10 +474,10 @@ export function LeaderboardPage({
       <div className="max-w-6xl mx-auto flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h1 className="text-xl md:text-2xl font-black tracking-tight glow-text">
+            <h1 className="text-xl md:text-2xl font-extrabold text-[#1E293B] tracking-tight">
               {copy("leaderboard.title")}
             </h1>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-matrix-muted">
+            <div className="text-[12px] text-[#94A3B8] font-medium">
               {period === "total"
                 ? copy("leaderboard.range.total")
                 : from && to
@@ -487,7 +486,7 @@ export function LeaderboardPage({
             </div>
           </div>
           {generatedAt ? (
-            <div className="text-[10px] uppercase text-matrix-dim">
+            <div className="text-[11px] text-[#CBD5E1]">
               {copy("leaderboard.generated_at", { ts: generatedAt })}
             </div>
           ) : null}
@@ -530,12 +529,12 @@ export function LeaderboardPage({
             {authTokenAllowed && authTokenReady ? (
               <div className="flex items-center justify-end gap-3">
                 {profileState.error ? (
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-matrix-dim">
+                  <span className="text-[11px] text-red-500">
                     {profileState.error}
                   </span>
                 ) : null}
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-matrix-dim">
+                  <span className="text-[12px] text-[#94A3B8] font-medium">
                     {publicProfileLabel}
                   </span>
                   <div className="flex items-center gap-3">
@@ -547,24 +546,24 @@ export function LeaderboardPage({
                       title={publicProfileLabel}
                       onClick={handleTogglePublicProfile}
                       disabled={publicProfileBusy}
-                      className={`relative inline-flex h-6 w-11 items-center border px-[3px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-matrix-primary/70 disabled:opacity-60 disabled:cursor-not-allowed ${
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full px-[3px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 disabled:opacity-60 disabled:cursor-not-allowed ${
                         publicProfileEnabled
-                          ? "border-matrix-primary bg-matrix-primary/10"
-                          : "border-matrix-ghost/60 bg-matrix-panelStrong/40"
+                          ? "bg-[#2563EB]"
+                          : "bg-[#CBD5E1]"
                       }`}
                     >
                       <span
                         aria-hidden="true"
-                        className={`inline-block h-3.5 w-3.5 bg-matrix-primary transition-transform ${
+                        className={`inline-block h-4 w-4 bg-white rounded-full shadow-sm transition-transform ${
                           publicProfileEnabled
-                            ? "translate-x-[18px] shadow-matrix-glow"
+                            ? "translate-x-[18px]"
                             : "translate-x-0"
                         }`}
                       />
                     </button>
                     <span
-                      className={`text-[10px] uppercase tracking-[0.2em] ${
-                        publicProfileEnabled ? "text-matrix-primary/80" : "text-matrix-dim"
+                      className={`text-[12px] font-medium ${
+                        publicProfileEnabled ? "text-[#2563EB]" : "text-[#94A3B8]"
                       }`}
                     >
                       {publicProfileStatusLabel}

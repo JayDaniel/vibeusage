@@ -35,10 +35,9 @@ export function Sparkline({ rows }) {
       aria-label={copy("sparkline.aria_label")}
     >
       <path
-        className="drop-shadow-[0_0_10px_rgba(0,255,65,0.22)]"
         d={d}
         fill="none"
-        stroke="#00FF41"
+        stroke="#2563EB"
         strokeWidth="2.5"
         vectorEffect="non-scaling-stroke"
       />

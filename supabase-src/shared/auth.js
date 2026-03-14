@@ -178,6 +178,8 @@ async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
       headers: bearer ? { Authorization: `Bearer ${bearer}` } : {},
     },
   });
+  // 兼容 InsForge API 风格：edgeClient.database.from(...) → edgeClient.from(...)
+  edgeClient.database = edgeClient;
   const local = await verifyUserJwtHs256({ token: bearer });
   const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
   if (!local.ok && !allowRemoteOnly) {

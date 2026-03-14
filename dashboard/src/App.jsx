@@ -29,8 +29,8 @@ import { isMockEnabled } from "./lib/mock-data";
 import { fetchLatestTrackerVersion } from "./lib/npm-version";
 import { isScreenshotModeEnabled } from "./lib/screenshot-mode";
 import { LandingPage } from "./pages/LandingPage.jsx";
-import { UpgradeAlertModal } from "./ui/matrix-a/components/UpgradeAlertModal.jsx";
-import { VersionBadge } from "./ui/matrix-a/components/VersionBadge.jsx";
+import { UpgradeAlertModal } from "./ui/views-components/components/UpgradeAlertModal.jsx";
+import { VersionBadge } from "./ui/views-components/components/VersionBadge.jsx";
 
 function buildAuthEntryUrl(basePath, nextPath) {
   if (typeof basePath !== "string" || basePath.length === 0) return "/";
@@ -346,7 +346,7 @@ export default function App() {
     navigate(signInUrl, { replace: true });
   }, [supabaseLoaded, supabaseSession, navigate, signInUrl]);
 
-  const loadingShell = <div className="min-h-screen bg-[#050505]" />;
+  const loadingShell = <div className="min-h-screen" style={{ background: "var(--flat-bg)" }} />;
   const authPending =
     !publicMode &&
     !mockEnabled &&

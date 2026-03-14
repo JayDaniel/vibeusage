@@ -52,12 +52,12 @@ export function SignUpRedirect() {
       if (!email.trim() || !password) return;
 
       if (password !== confirmPassword) {
-        setError("PASSWORD_MISMATCH");
+        setError("Passwords do not match");
         return;
       }
 
       if (password.length < 6) {
-        setError("PASSWORD_TOO_SHORT (MIN: 6)");
+        setError("Password must be at least 6 characters");
         return;
       }
 
@@ -78,7 +78,7 @@ export function SignUpRedirect() {
         });
 
         if (signUpError) {
-          setError(signUpError.message || "REGISTRATION_FAILED");
+          setError(signUpError.message || "Registration failed");
           setLoading(false);
           return;
         }
@@ -93,44 +93,56 @@ export function SignUpRedirect() {
           setLoading(false);
         }
       } catch (err) {
-        setError(err?.message || "UNEXPECTED_ERROR");
+        setError(err?.message || "An unexpected error occurred");
         setLoading(false);
       }
     },
     [email, password, confirmPassword, navigate],
   );
 
+  const formCardStyle = {
+    background: "var(--flat-surface)",
+    border: "1px solid var(--flat-border)",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+  };
+
+  const inputStyle = {
+    background: "var(--flat-surface-hover)",
+    border: "1px solid var(--flat-border)",
+    color: "var(--flat-text-primary)",
+  };
+
   // 邮箱验证提示
   if (success) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--flat-bg)" }}>
         <div className="w-full max-w-md">
-          <div className="matrix-panel p-6 text-center space-y-4">
+          <div className="p-6 text-center space-y-4 rounded-xl" style={formCardStyle}>
             <h2
-              className="text-xl font-bold tracking-widest uppercase"
-              style={{ color: "var(--matrix-ink)" }}
+              className="text-xl font-bold"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              VERIFICATION_SENT
+              Check your email
             </h2>
             <p
-              className="text-sm tracking-wider"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="text-sm"
+              style={{ color: "var(--flat-text-secondary)" }}
             >
               A confirmation link has been sent to{" "}
-              <span style={{ color: "var(--matrix-ink-bright)" }}>{email}</span>.
+              <span style={{ color: "var(--flat-text-primary)", fontWeight: 600 }}>{email}</span>.
               Please check your inbox and click the link to activate your account.
             </p>
             <div className="pt-4">
               <a
                 href="/sign-in"
-                className="text-sm tracking-wider uppercase hover:underline"
-                style={{ color: "var(--matrix-ink)" }}
+                className="text-sm font-medium hover:underline"
+                style={{ color: "var(--flat-accent)" }}
                 onClick={(e) => {
                   e.preventDefault();
                   navigate("/sign-in");
                 }}
               >
-                $ PROCEED_TO_SIGN_IN
+                Go to sign in
               </a>
             </div>
           </div>
@@ -140,41 +152,42 @@ export function SignUpRedirect() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--flat-bg)" }}>
       <div className="w-full max-w-md">
         {/* 标题区域 */}
         <div className="text-center mb-8">
           <h1
-            className="text-2xl font-bold tracking-widest uppercase"
-            style={{ color: "var(--matrix-ink)" }}
+            className="text-2xl font-bold"
+            style={{ color: "var(--flat-text-primary)" }}
           >
-            SIGN_UP
+            Create an account
           </h1>
           <p
-            className="mt-2 text-sm tracking-wider uppercase"
-            style={{ color: "var(--matrix-ink-muted)" }}
+            className="mt-2 text-sm"
+            style={{ color: "var(--flat-text-secondary)" }}
           >
-            REGISTER_NEW_IDENTITY
+            Sign up to start tracking your token usage
           </p>
         </div>
 
         {/* 注册表单 */}
         <form
           onSubmit={handleSubmit}
-          className="matrix-panel p-6 space-y-5"
+          className="p-6 space-y-5 rounded-xl"
           id="sign-up-form"
+          style={formCardStyle}
         >
           {/* 错误提示 */}
           {error ? (
             <div
-              className="p-3 text-sm tracking-wider uppercase border"
+              className="p-3 text-sm rounded-lg"
               style={{
-                color: "#ff4444",
-                borderColor: "rgba(255, 68, 68, 0.3)",
-                background: "rgba(255, 68, 68, 0.08)",
+                color: "var(--flat-error)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                background: "rgba(239, 68, 68, 0.06)",
               }}
             >
-              ERROR: {error}
+              {error}
             </div>
           ) : null}
 
@@ -182,10 +195,10 @@ export function SignUpRedirect() {
           <div>
             <label
               htmlFor="sign-up-email"
-              className="block text-xs tracking-widest uppercase mb-2"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="block text-sm font-medium mb-2"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              EMAIL_ADDRESS
+              Email
             </label>
             <input
               id="sign-up-email"
@@ -195,14 +208,9 @@ export function SignUpRedirect() {
               required
               autoComplete="email"
               autoFocus
-              className="w-full px-4 py-3 text-sm tracking-wider outline-none"
+              className="w-full px-4 py-3 text-sm rounded-lg outline-none transition-colors"
               placeholder="user@example.com"
-              style={{
-                background: "rgba(0, 10, 0, 0.6)",
-                border: "1px solid var(--matrix-panel-border)",
-                color: "var(--matrix-ink-bright)",
-                fontFamily: "inherit",
-              }}
+              style={inputStyle}
             />
           </div>
 
@@ -210,10 +218,10 @@ export function SignUpRedirect() {
           <div>
             <label
               htmlFor="sign-up-password"
-              className="block text-xs tracking-widest uppercase mb-2"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="block text-sm font-medium mb-2"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              PASSWORD
+              Password
             </label>
             <input
               id="sign-up-password"
@@ -223,14 +231,9 @@ export function SignUpRedirect() {
               required
               autoComplete="new-password"
               minLength={6}
-              className="w-full px-4 py-3 text-sm tracking-wider outline-none"
+              className="w-full px-4 py-3 text-sm rounded-lg outline-none transition-colors"
               placeholder="••••••••"
-              style={{
-                background: "rgba(0, 10, 0, 0.6)",
-                border: "1px solid var(--matrix-panel-border)",
-                color: "var(--matrix-ink-bright)",
-                fontFamily: "inherit",
-              }}
+              style={inputStyle}
             />
           </div>
 
@@ -238,10 +241,10 @@ export function SignUpRedirect() {
           <div>
             <label
               htmlFor="sign-up-confirm-password"
-              className="block text-xs tracking-widest uppercase mb-2"
-              style={{ color: "var(--matrix-ink-muted)" }}
+              className="block text-sm font-medium mb-2"
+              style={{ color: "var(--flat-text-primary)" }}
             >
-              CONFIRM_PASSWORD
+              Confirm password
             </label>
             <input
               id="sign-up-confirm-password"
@@ -251,14 +254,9 @@ export function SignUpRedirect() {
               required
               autoComplete="new-password"
               minLength={6}
-              className="w-full px-4 py-3 text-sm tracking-wider outline-none"
+              className="w-full px-4 py-3 text-sm rounded-lg outline-none transition-colors"
               placeholder="••••••••"
-              style={{
-                background: "rgba(0, 10, 0, 0.6)",
-                border: "1px solid var(--matrix-panel-border)",
-                color: "var(--matrix-ink-bright)",
-                fontFamily: "inherit",
-              }}
+              style={inputStyle}
             />
           </div>
 
@@ -266,36 +264,35 @@ export function SignUpRedirect() {
           <button
             type="submit"
             disabled={loading}
-            className="matrix-header-chip matrix-header-chip--solid matrix-header-action w-full justify-center"
+            className="w-full py-3 text-sm font-semibold rounded-lg transition-all"
             style={{
-              height: 48,
-              fontSize: "14px",
-              letterSpacing: "0.2em",
+              background: "var(--flat-accent)",
+              color: "#fff",
               cursor: loading ? "wait" : "pointer",
               opacity: loading ? 0.6 : 1,
             }}
           >
-            {loading ? "REGISTERING..." : "$ SIGN_UP"}
+            {loading ? "Creating account..." : "Sign up"}
           </button>
 
           {/* 登录链接 */}
           <div className="text-center pt-2">
             <span
-              className="text-xs tracking-wider uppercase"
-              style={{ color: "var(--matrix-ink-dim)" }}
+              className="text-sm"
+              style={{ color: "var(--flat-text-secondary)" }}
             >
-              HAVE_ACCOUNT?{" "}
+              {"Already have an account? "}
             </span>
             <a
               href="/sign-in"
-              className="text-xs tracking-wider uppercase hover:underline"
-              style={{ color: "var(--matrix-ink)" }}
+              className="text-sm font-medium hover:underline"
+              style={{ color: "var(--flat-accent)" }}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/sign-in");
               }}
             >
-              SIGN_IN
+              Sign in
             </a>
           </div>
 
@@ -303,14 +300,14 @@ export function SignUpRedirect() {
           <div className="text-center">
             <a
               href="/"
-              className="text-xs tracking-wider uppercase hover:underline"
-              style={{ color: "var(--matrix-ink-dim)" }}
+              className="text-sm hover:underline"
+              style={{ color: "var(--flat-text-secondary)" }}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/");
               }}
             >
-              &lt; BACK_TO_HOME
+              &larr; Back to home
             </a>
           </div>
         </form>
