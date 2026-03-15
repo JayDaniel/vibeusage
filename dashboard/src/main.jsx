@@ -3,6 +3,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.jsx";
+import { LocaleProvider } from "./lib/locale.jsx";
 import { supabaseAuthClient } from "./lib/supabase-auth-client";
 import { SignInRedirect } from "./pages/SignInRedirect.jsx";
 import { SignUpRedirect } from "./pages/SignUpRedirect.jsx";
@@ -22,8 +23,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <SupabaseAuthProvider client={supabaseAuthClient}>
-      <RouterProvider router={router} />
-    </SupabaseAuthProvider>
+    <LocaleProvider>
+      <SupabaseAuthProvider client={supabaseAuthClient}>
+        <RouterProvider router={router} />
+      </SupabaseAuthProvider>
+    </LocaleProvider>
   </React.StrictMode>,
 );

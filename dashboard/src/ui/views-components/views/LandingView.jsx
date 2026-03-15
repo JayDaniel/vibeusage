@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocale } from "../../../lib/locale.jsx";
 import { DecodingText } from "../../foundation/DecodingText.jsx";
 import { MatrixButton } from "../../foundation/MatrixButton.jsx";
 import { GithubStar } from "../components/GithubStar.jsx";
@@ -24,6 +25,8 @@ export function LandingView({
   copy,
   signUpUrl,
 }) {
+  const { locale, toggleLocale } = useLocale();
+
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] font-['Fira_Code',monospace] text-[#1E293B] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-blue-100 selection:text-blue-900">
@@ -34,6 +37,14 @@ export function LandingView({
       
       {/* Header */}
       <div className="fixed top-4 sm:top-6 right-4 sm:right-6 z-[70] flex items-center gap-3">
+        <button
+          onClick={toggleLocale}
+          className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#64748B] hover:text-[#1E293B] hover:bg-white/80 transition-colors border border-[#CBD5E1] cursor-pointer select-none backdrop-blur-sm"
+          title={locale === "en" ? "切换到中文" : "Switch to English"}
+          aria-label={locale === "en" ? "Switch to Chinese" : "Switch to English"}
+        >
+          {locale === "en" ? "中" : "EN"}
+        </button>
         <GithubStar isFixed={false} size="header" />
         <MatrixButton as="a" href={signUpUrl} size="header" className="ui-chip--solid">
           <span className="font-semibold text-[13px] text-white">

@@ -1,5 +1,6 @@
 import React from "react";
 import { copy } from "../../lib/copy";
+import { useLocale } from "../../lib/locale.jsx";
 
 export function MatrixShell({
   headerRight,
@@ -11,6 +12,7 @@ export function MatrixShell({
   rootClassName = "",
   hideHeader = false,
 }) {
+  const { locale, toggleLocale } = useLocale();
   const headerTitle = copy("shell.header.title");
   const titleParts = String(headerTitle || "")
     .trim()
@@ -67,7 +69,17 @@ export function MatrixShell({
 
               {headerRight ? (
                 <div className="w-full md:w-auto md:ml-4">
-                  <div className="min-w-0">{headerRight}</div>
+                  <div className="min-w-0 flex items-center gap-2">
+                    <button
+                      onClick={toggleLocale}
+                      className="shrink-0 px-2 py-1 rounded-md text-xs font-semibold text-[#64748B] hover:text-[#1E293B] hover:bg-[#F1F5F9] transition-colors border border-[#E2E8F0] cursor-pointer select-none"
+                      title={locale === "en" ? "切换到中文" : "Switch to English"}
+                      aria-label={locale === "en" ? "Switch to Chinese" : "Switch to English"}
+                    >
+                      {locale === "en" ? "中" : "EN"}
+                    </button>
+                    {headerRight}
+                  </div>
                 </div>
               ) : null}
             </div>
