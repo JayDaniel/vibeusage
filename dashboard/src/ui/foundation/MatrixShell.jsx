@@ -20,13 +20,18 @@ export function MatrixShell({
 
   return (
     <div
-      className={`min-h-screen bg-[#F1F5F9] text-[#1E293B] font-['Fira_Code',monospace] p-4 md:p-8 flex flex-col leading-normal text-body selection:bg-blue-100 selection:text-blue-900 overflow-hidden ${rootClassName}`}
+      className={`min-h-screen dynamic-bg text-[#0f172a] font-sans p-3 md:p-5 flex flex-col leading-normal text-body selection:bg-blue-200 selection:text-blue-900 overflow-hidden relative ${rootClassName}`}
     >
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 -left-4 h-72 w-72 rounded-full bg-purple-300 opacity-30 mix-blend-multiply blur-2xl filter animate-blob"></div>
+        <div className="absolute top-0 -right-4 h-72 w-72 rounded-full bg-blue-300 opacity-30 mix-blend-multiply blur-2xl filter animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 h-72 w-72 rounded-full bg-pink-300 opacity-30 mix-blend-multiply blur-2xl filter animate-blob animation-delay-4000"></div>
+      </div>
       <div
-        className={`relative z-10 flex flex-col min-h-screen ui-shell-content ${contentClassName}`}
+        className={`relative z-10 flex min-h-screen flex-col ui-shell-content ${contentClassName}`}
       >
         {!hideHeader ? (
-          <header className="border-b border-[#E2E8F0] pb-4 mb-6 shrink-0">
+          <header className="border-b border-[#E2E8F0] pb-3 mb-4 shrink-0">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex min-w-0 items-center gap-3 md:gap-4">
                 <img
@@ -62,7 +67,7 @@ export function MatrixShell({
 
               {headerRight ? (
                 <div className="w-full md:w-auto md:ml-4">
-                  <div className="w-full md:w-auto overflow-x-auto no-scrollbar">{headerRight}</div>
+                  <div className="min-w-0">{headerRight}</div>
                 </div>
               ) : null}
             </div>
@@ -71,11 +76,11 @@ export function MatrixShell({
 
         <main className="flex-1">{children}</main>
 
-        <footer className="mt-6 pt-4 border-t border-[#E2E8F0] flex justify-between text-caption font-medium text-[#94A3B8] shrink-0">
-          <div className="flex space-x-10 items-center">
+        <footer className="mt-4 flex shrink-0 flex-col gap-2 border-t border-[#E2E8F0] pt-3 text-caption font-medium text-[#94A3B8] sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {footerLeft || <span>{copy("shell.footer.help")}</span>}
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:justify-end">
             {footerRight || <span className="font-semibold">{copy("shell.footer.neural_index")}</span>}
           </div>
         </footer>

@@ -22,15 +22,15 @@ describe("ProjectUsagePanel", () => {
     document.documentElement.classList.remove("screenshot-capture");
   });
 
-  it("renders a repo card with a corner star slot and three info lines", () => {
+  it("renders a repo card with identity, repo, and metric rows", () => {
     const { container } = render(<ProjectUsagePanel entries={[entry]} />);
     const card = container.querySelector('[data-project-card="true"]');
 
     expect(card).toBeTruthy();
-    expect(card?.querySelector('[data-star-slot="corner"]')).toBeTruthy();
     expect(card?.querySelector('[data-card-line="identity"]')).toBeTruthy();
     expect(card?.querySelector('[data-card-line="repo"]')).toBeTruthy();
     expect(card?.querySelector('[data-card-line="tokens"]')).toBeTruthy();
+    expect(card?.querySelector('[data-card-line="stars"]')).toBeTruthy();
   });
 
   it("prefers total tokens when billable tokens are zero", () => {

@@ -91,16 +91,16 @@ export function IdentityCard({
   return (
     <AsciiBox title={titleNode} subtitle={subtitle} className={className}>
       <div className="relative overflow-hidden">
-        <div className="relative z-10 flex items-center space-x-5 px-1">
+        <div className="relative z-10 flex items-start gap-4 px-1">
           {showAvatar ? (
             <div
               style={{ width: avatarSize, height: avatarSize }}
-              className="relative rounded-xl overflow-hidden shrink-0"
+              className="relative shrink-0 rounded-2xl overflow-hidden ring-4 ring-white/60 shadow-xl shadow-blue-500/10 transition-all duration-300 hover:shadow-blue-500/20"
             >
               <img
                 src={safeAvatarUrl}
                 alt={displayName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                 onError={() => setAvatarFailed(true)}
               />
             </div>
@@ -108,9 +108,9 @@ export function IdentityCard({
             <MatrixAvatar name={avatarName} isAnon={!isPublic} size={avatarSize} />
           )}
 
-          <div className="flex-1 space-y-2 min-w-0">
+          <div className="min-w-0 flex-1 space-y-3">
             <div>
-              <div className="text-xl md:text-2xl font-bold text-[#1E293B] tracking-wide leading-none font-display">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E293B] tracking-wide leading-none font-display">
                 {animate ? (
                   <ScrambleText
                     text={displayName}
@@ -137,24 +137,24 @@ export function IdentityCard({
             ) : null}
 
             {shouldShowStats ? (
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="bg-[#F8FAFC] p-2.5 border border-[#E2E8F0] rounded-lg text-center">
-                  <div className="text-[11px] text-[#94A3B8] font-medium mb-0.5">
+              <div className="grid w-full grid-cols-2 gap-2.5 pt-1.5">
+                <div className="group rounded-2xl border border-white/80 bg-white/50 p-2.5 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-3">
+                  <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
                     {copy("identity_card.rank_label")}
                   </div>
-                  <div className="text-amber-600 font-bold text-[16px] font-display tracking-wide">{rankValue}</div>
+                  <div className="text-amber-600 font-extrabold text-[18px] font-display tracking-wide">{rankValue}</div>
                 </div>
-                <div className="bg-[#F8FAFC] p-2.5 border border-[#E2E8F0] rounded-lg text-center">
-                  <div className="text-[11px] text-[#94A3B8] font-medium mb-0.5">
+                <div className="group rounded-2xl border border-white/80 bg-white/50 p-2.5 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-3">
+                  <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
                     {copy("identity_card.streak_label")}
                   </div>
-                  <div className="text-amber-600 font-bold tracking-wide text-[16px] font-display">{streakValue}</div>
+                  <div className="text-amber-600 font-extrabold tracking-wide text-[18px] font-display">{streakValue}</div>
                 </div>
               </div>
             ) : null}
 
             {subscriptionItems.length !== 0 ? (
-              <div className="pt-2">
+              <div className="pt-1.5">
                 <div className="mb-1 text-[11px] text-[#94A3B8] font-medium">
                   {copy("identity_card.subscriptions_label")}
                 </div>
@@ -162,7 +162,7 @@ export function IdentityCard({
                   {subscriptionItems.map((entry, index) => (
                     <span
                       key={`${entry.tool}:${entry.plan}:${index}`}
-                      className="inline-flex items-center px-2.5 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-md text-[11px] font-medium text-[#475569]"
+                      className="inline-flex items-center px-2.5 py-1 bg-fuchsia-50/50 border border-fuchsia-200/50 shadow-sm rounded-lg text-[11px] font-bold text-fuchsia-700 backdrop-blur-md transition-all hover:bg-fuchsia-100/50 hover:border-fuchsia-300/50"
                     >
                       {copy("identity_card.subscription_item", {
                         tool: entry.tool,

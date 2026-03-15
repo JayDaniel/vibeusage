@@ -7,8 +7,8 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          '"Fira Code"',
-          ...defaultTheme.fontFamily.mono,
+          '"Inter"',
+          ...defaultTheme.fontFamily.sans,
         ],
         display: [
           '"Bebas Neue"',

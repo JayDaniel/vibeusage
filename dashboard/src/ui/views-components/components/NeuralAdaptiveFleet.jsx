@@ -24,11 +24,11 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
   });
 
   return (
-    <div className="w-full space-y-4">
-      <div className="flex justify-between items-baseline border-b border-[#E2E8F0] pb-2">
+    <div className="w-full space-y-4 p-4 bg-white/40 shadow-sm border border-slate-200/60 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60">
+      <div className="flex justify-between items-baseline border-b border-slate-200/60 pb-2">
         <div className="flex items-baseline gap-2">
-          <span className="text-[13px] font-bold text-[#1E293B]">{label}</span>
-          <span className="text-[12px] text-[#94A3B8]">{usageLabel}</span>
+          <span className="text-[13px] font-bold text-slate-800">{label}</span>
+          <span className="text-[12px] text-slate-500">{usageLabel}</span>
         </div>
         <div className="flex items-baseline space-x-1">
           <span className="text-[18px] font-bold text-[#2563EB] font-display tracking-wide">{totalPercent}</span>
@@ -36,7 +36,7 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
         </div>
       </div>
 
-      <div className="h-2 w-full bg-[#F1F5F9] flex overflow-hidden rounded-full relative">
+      <div className="h-2 w-full bg-slate-100/50 shadow-inner flex overflow-hidden rounded-full relative">
         {models.map((model, index) => {
           const styleConfig = TEXTURES[index % TEXTURES.length];
           const modelKey = model?.id ? String(model.id) : `${model.name}-${index}`;
@@ -67,12 +67,12 @@ export const NeuralAdaptiveFleet = React.memo(function NeuralAdaptiveFleet({
               />
               <div className="flex items-baseline space-x-2 min-w-0">
                 <span
-                  className="text-[12px] truncate text-[#1E293B] font-semibold"
+                  className="text-[12px] truncate text-slate-700 font-semibold"
                   title={model.name}
                 >
                   {model.name}
                 </span>
-                <span className="text-[12px] text-[#94A3B8] font-medium">
+                <span className="text-[12px] text-slate-500 font-medium">
                   {model.share}
                   {percentSymbol}
                 </span>

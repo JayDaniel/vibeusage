@@ -35,23 +35,23 @@ export const TopModelsPanel = React.memo(function TopModelsPanel({ rows = [], cl
           return (
             <div
               key={rowKey}
-              className="flex items-center justify-between border-b border-[#F1F5F9] py-2.5 px-2 last:border-b-0"
+              className="flex items-center justify-between bg-white/40 border border-slate-200/50 py-3 px-3.5 mb-2 hover:bg-white/70 hover:shadow-md hover:shadow-blue-500/5 hover:border-blue-300/50 transition-all duration-300 rounded-xl group last:mb-0"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className="flex items-center justify-center w-6 h-6 bg-[#F1F5F9] rounded-md text-[11px] text-[#64748B] font-bold">
+                <span className="flex items-center justify-center w-7 h-7 bg-white shadow-sm border border-slate-100 rounded-lg text-[11px] text-slate-500 font-extrabold group-hover:text-blue-600 group-hover:scale-105 transition-all">
                   {rankLabel}
                 </span>
                 <span
-                  className="text-[14px] font-semibold text-[#1E293B] truncate"
+                  className="text-[14px] font-bold text-[#1E293B] truncate group-hover:text-blue-900 transition-colors"
                   title={name}
                 >
                   {name}
                 </span>
               </div>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-[16px] font-bold text-[#2563EB] font-display tracking-wide">{percent}</span>
+                <span className="text-[16px] font-extrabold text-[#2563EB] font-display tracking-wide">{percent}</span>
                 {showPercentSymbol ? (
-                  <span className="text-[11px] text-[#2563EB] font-medium">
+                  <span className="text-[11px] text-[#2563EB] font-medium opacity-80">
                     {percentSymbol}
                   </span>
                 ) : null}

@@ -1212,26 +1212,26 @@ export function DashboardPage({
     ) : null;
 
   const headerRight = (
-    <div className="ml-auto flex w-max min-w-max items-center gap-2 sm:gap-3 md:gap-4">
+    <div className="ml-auto flex w-full flex-wrap items-center justify-stretch gap-2 sm:w-max sm:min-w-max sm:flex-nowrap sm:justify-end sm:gap-3 md:gap-4">
       <GithubStar isFixed={false} size="header" className="hidden sm:inline-flex" />
       {!publicMode && signedIn ? (
-        <MatrixButton as="a" size="header" href="/leaderboard">
+        <MatrixButton as="a" size="header" href="/leaderboard" className="flex-1 justify-center sm:flex-none">
           {copy("leaderboard.nav.open")}
         </MatrixButton>
       ) : null}
 
       {publicMode ? (
         signedIn ? (
-          <MatrixButton onClick={signOut} size="header">
+          <MatrixButton onClick={signOut} size="header" className="flex-1 justify-center sm:flex-none">
             {copy("dashboard.sign_out")}
           </MatrixButton>
         ) : (
-          <MatrixButton as="a" size="header" href={signInUrl}>
+          <MatrixButton as="a" size="header" href={signInUrl} className="flex-1 justify-center sm:flex-none">
             {copy("landing.nav.login")}
           </MatrixButton>
         )
       ) : signedIn ? (
-        <MatrixButton onClick={signOut} size="header">
+        <MatrixButton onClick={signOut} size="header" className="flex-1 justify-center sm:flex-none">
           {copy("dashboard.sign_out")}
         </MatrixButton>
       ) : (

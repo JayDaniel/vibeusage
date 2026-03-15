@@ -14,7 +14,7 @@ export const NeuralDivergenceMap = React.memo(function NeuralDivergenceMap({
 
   return (
     <AsciiBox title={title} className={className}>
-      <div className={`${gridClass} gap-4 py-1 overflow-y-auto no-scrollbar`}>
+      <div className={`${gridClass} gap-4 py-1`}>
         {fleetData.map((fleet, index) => {
           const isFirstAndOdd = count > 1 && count % 2 !== 0 && index === 0;
           const itemClass = isFirstAndOdd ? "md:col-span-2" : "";
@@ -32,7 +32,7 @@ export const NeuralDivergenceMap = React.memo(function NeuralDivergenceMap({
         })}
       </div>
       {footer ? (
-        <div className="mt-auto pt-3 border-t border-[#E2E8F0] text-[11px] text-center italic leading-none text-[#94A3B8]">
+        <div className="mt-auto pt-3 border-t border-slate-200/60 text-[11px] text-center italic leading-none text-slate-400">
           {footer}
         </div>
       ) : null}

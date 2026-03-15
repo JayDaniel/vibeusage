@@ -15,6 +15,12 @@ function normalizePeriods(periods) {
   });
 }
 
+function isPlaceholderValue(value) {
+  if (value == null) return true;
+  const normalized = String(value).trim();
+  return normalized === "" || normalized === "-" || normalized === "--" || normalized === "—";
+}
+
 export const UsagePanel = React.memo(function UsagePanel({
   title = copy("usage.panel.title"),
   period,
@@ -55,6 +61,7 @@ export const UsagePanel = React.memo(function UsagePanel({
   const costLabelText = typeof costInfoIcon === "string" ? costInfoIcon : "";
   const costLabelMatch = costLabelText.match(/^\[\s*(.+?)\s*\]$/);
   const costLabelCore = costLabelMatch ? costLabelMatch[1] : null;
+  const summaryPlaceholder = isPlaceholderValue(summaryValue);
   const breakdownRows =
     breakdown && breakdown.length
       ? breakdown
@@ -87,15 +94,15 @@ export const UsagePanel = React.memo(function UsagePanel({
     <AsciiBox title={title} className={className}>
       {!hideHeader ? (
         <div className="flex flex-wrap items-center justify-between border-b border-[#E2E8F0] mb-4 pb-3 gap-4 px-1">
-          <div className="flex flex-wrap gap-1 bg-[#F1F5F9] rounded-lg p-1">
+          <div className="flex flex-wrap gap-1 bg-slate-100/50 backdrop-blur-sm rounded-lg p-1 border border-slate-200/50">
             {tabs.map((p) => (
               <Button
                 key={p.key}
                 type="button"
-                className={`text-[12px] font-semibold px-3 py-1.5 rounded-md transition-all ${
+                className={`text-[12px] font-bold px-4 py-1.5 rounded-lg transition-all duration-300 ${
                   period === p.key
-                    ? "text-[#2563EB] bg-white shadow-sm"
-                    : "text-[#64748B] hover:text-[#1E293B]"
+                    ? "text-blue-700 bg-white shadow-md shadow-blue-500/10 border border-blue-200/50 transform scale-105"
+                    : "text-[#64748B] hover:text-[#1E293B] hover:bg-slate-200/50"
                 }`}
                 onClick={() => onPeriodChange?.(p.key)}
               >
@@ -137,92 +144,96 @@ export const UsagePanel = React.memo(function UsagePanel({
       ) : null}
 
       {showSummary || useSummaryLayout ? (
-        <div className="flex-1 flex flex-col items-center justify-center space-y-6 py-6">
-          <div className="text-center relative">
-            <div className="text-[13px] text-[#64748B] font-medium mb-3">{summaryLabel}</div>
-            <div className="text-5xl md:text-7xl font-extrabold text-[#1E293B] tracking-[0.02em] tabular-nums leading-none select-none font-display">
-              {summaryValue && summaryValue !== "—" ? (
-                <span className="relative inline-block leading-none">
-                  {summaryAnimate ? (
-                    <ScrambleText
-                      text={summaryValue}
-                      durationMs={summaryScrambleDurationMs}
-                      startScrambled
-                      respectReducedMotion
-                    />
-                  ) : (
+        <div className={`grid gap-4 py-1 ${!breakdownCollapsed && breakdownRows.length ? "xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : ""}`}>
+          <div className="rounded-[26px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(239,246,255,0.9))] p-4 shadow-sm shadow-blue-500/5 sm:p-5">
+            <div className="flex flex-col gap-3">
+              <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#64748B]">
+                {summaryLabel}
+              </div>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className={`${summaryPlaceholder ? "text-4xl md:text-5xl" : "text-5xl md:text-6xl"} font-extrabold tracking-[0.02em] tabular-nums leading-none select-none font-display ${summaryPlaceholder ? "text-slate-500" : "bg-gradient-to-br from-slate-900 via-slate-700 to-blue-700 bg-clip-text text-transparent"}`}>
+                  {summaryPlaceholder ? (
                     summaryValue
+                  ) : (
+                    <span className="relative inline-block leading-none">
+                      {summaryAnimate ? (
+                        <ScrambleText
+                          text={summaryValue}
+                          durationMs={summaryScrambleDurationMs}
+                          startScrambled
+                          respectReducedMotion
+                        />
+                      ) : (
+                        summaryValue
+                      )}
+                    </span>
                   )}
-                </span>
-              ) : (
-                summaryValue
-              )}
-            </div>
-            {summaryCostValue ? (
-              <div className="flex items-center justify-center gap-3 mt-4 md:mt-6">
-                <span className="sr-only">{copy("usage.metric.total_cost")}</span>
-                <span className="text-xl md:text-2xl font-bold text-amber-600 leading-none font-display">
-                  {summaryCostValue}
-                </span>
-                {onCostInfo ? (
-                  <Button
-                    type="button"
-                    onClick={onCostInfo}
-                    title={costInfoLabel}
-                    aria-label={costInfoLabel}
-                    className="group inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 transition-all hover:text-amber-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded"
-                  >
-                    {costLabelCore ? (
-                      <span className="group-hover:underline">{costLabelCore}</span>
-                    ) : (
-                      <span>{costInfoIcon}</span>
-                    )}
-                  </Button>
+                </div>
+                {summaryCostValue ? (
+                  <div className="flex items-center gap-2">
+                    <span className="sr-only">{copy("usage.metric.total_cost")}</span>
+                    <span className="text-lg font-bold leading-none text-amber-600 md:text-xl font-display">
+                      {summaryCostValue}
+                    </span>
+                    {onCostInfo ? (
+                      <Button
+                        type="button"
+                        onClick={onCostInfo}
+                        title={costInfoLabel}
+                        aria-label={costInfoLabel}
+                        className="group inline-flex items-center gap-1 rounded text-[11px] font-semibold text-amber-600 transition-all hover:text-amber-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                      >
+                        {costLabelCore ? (
+                          <span className="group-hover:underline">{costLabelCore}</span>
+                        ) : (
+                          <span>{costInfoIcon}</span>
+                        )}
+                      </Button>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
-            ) : null}
-            {summarySubLabel ? (
-              <div className="text-[12px] text-[#94A3B8] mt-2">{summarySubLabel}</div>
-            ) : null}
+              {summarySubLabel ? (
+                <div className="text-[12px] text-[#94A3B8]">{summarySubLabel}</div>
+              ) : null}
+            </div>
           </div>
 
           {!breakdownCollapsed && breakdownRows.length ? (
-            <div className="w-full px-4">
-              <div className="grid grid-cols-2 gap-3 border-t border-[#E2E8F0] pt-4">
-                {breakdownRows.map((row, idx) => (
-                  <div
-                    key={`${row.label}-${idx}`}
-                    className="flex flex-col items-center p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg"
-                  >
-                    <span className="text-[11px] text-[#94A3B8] font-medium mb-1">
-                      {row.label}
-                    </span>
-                    <span className="text-[18px] font-bold text-[#2563EB] tracking-wide font-display">
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              {breakdownRows.map((row, idx) => (
+                <div
+                  key={`${row.label}-${idx}`}
+                  className="group flex flex-col justify-between rounded-2xl border border-white/80 bg-white/50 p-3.5 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/50 hover:shadow-lg hover:shadow-blue-500/10"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8] transition-colors group-hover:text-blue-600/70">
+                    {row.label}
+                  </span>
+                  <span className="mt-2 text-[18px] font-extrabold tracking-wide text-[#2563EB] font-display">
+                    {row.value}
+                  </span>
+                </div>
+              ))}
             </div>
           ) : null}
         </div>
       ) : (
-        <div className="flex flex-col gap-3 px-2 py-2">
+        <div className="grid grid-cols-2 gap-3 px-2 py-2 md:grid-cols-3 xl:grid-cols-5">
           {metrics.map((row, idx) => (
             <div
               key={`${row.label}-${idx}`}
-              className="border border-[#E2E8F0] bg-[#F8FAFC] rounded-lg p-4 text-center"
+              className={`group rounded-2xl border p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                row.valueClassName
+                  ? "col-span-2 border-blue-400/30 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-700 shadow-blue-500/15 md:col-span-3 xl:col-span-1"
+                  : "border-white/80 bg-white/50 shadow-sm backdrop-blur-md hover:border-blue-300/50 hover:shadow-blue-500/10"
+              }`}
             >
-              <div className="text-[11px] text-[#94A3B8] font-medium mb-2">{row.label}</div>
-              <div
-                className={`text-[18px] font-bold text-[#1E293B] font-display ${
-                  row.valueClassName || ""
-                }`}
-              >
+              <div className={`mb-2 text-[10px] font-bold uppercase tracking-wider transition-colors ${row.valueClassName ? "text-blue-100/75" : "text-[#94A3B8] group-hover:text-[#1E293B]/70"}`}>{row.label}</div>
+              <div className={row.valueClassName ? `text-[20px] font-extrabold text-white font-display ${row.valueClassName}` : "text-[20px] font-extrabold bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-transparent font-display"}>
                 {row.value}
               </div>
               {row.subValue ? (
-                <div className="text-[12px] text-[#94A3B8] mt-1">{row.subValue}</div>
+                <div className={`mt-1 text-[12px] ${row.valueClassName ? "text-blue-100/70" : "text-[#94A3B8]"}`}>{row.subValue}</div>
               ) : null}
             </div>
           ))}

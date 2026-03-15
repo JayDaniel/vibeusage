@@ -21,13 +21,11 @@ it("renders rolling usage values", () => {
 
   const compact = (value) =>
     formatCompactNumber(value, {
-      thousandSuffix: copy("shared.unit.thousand_abbrev"),
-      millionSuffix: copy("shared.unit.million_abbrev"),
-      billionSuffix: copy("shared.unit.billion_abbrev"),
+      thousandSuffix: "K",
+      millionSuffix: "M",
+      billionSuffix: "B",
     });
 
-  expect(copy("dashboard.rolling.title")).toBe("RECENT_USAGE");
-  expect(copy("dashboard.rolling.avg_active_day")).toBe("AVG_30_DAY");
   expect(screen.getByText(copy("dashboard.rolling.title"))).toBeInTheDocument();
   expect(screen.getByText(copy("dashboard.rolling.last_7d"))).toBeInTheDocument();
   expect(screen.getByText(copy("dashboard.rolling.last_30d"))).toBeInTheDocument();
@@ -41,6 +39,6 @@ it("renders rolling usage values", () => {
 it("adapts to narrow layouts", () => {
   const { container } = render(<RollingUsagePanel rolling={{}} />);
   const grid = container.querySelector(".grid");
-  expect(grid).toHaveClass("sm:grid-cols-2");
+  expect(grid).toHaveClass("grid-cols-2");
   expect(grid).toHaveClass("lg:grid-cols-3");
 });

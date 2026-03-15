@@ -130,7 +130,7 @@ function normalizeText(text: any) {
 export function copy(key: any, params?: AnyRecord) {
   const registry = getRegistry();
   const record = registry.map.get(key);
-  const value = record?.text || key;
+  const value = record ? record.text : key;
 
   if (!record && import.meta?.env?.DEV) {
     // eslint-disable-next-line no-console

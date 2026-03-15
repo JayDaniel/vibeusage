@@ -157,14 +157,14 @@ export function ProjectUsagePanel({
           >
             <Select.Trigger
               aria-label={limitAria}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-[12px] font-medium text-[#475569] bg-white border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-[12px] font-bold text-slate-600 bg-white/50 border border-white/80 shadow-sm backdrop-blur-md rounded-lg hover:bg-white/70 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300"
             >
               <Select.Value />
               <span className="text-[#94A3B8]">▾</span>
             </Select.Trigger>
             <Select.Portal>
               <Select.Positioner align="end" side="bottom" sideOffset={8} className="z-50">
-                <Select.Popup className="w-40 border border-[#E2E8F0] bg-white rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.08)] pointer-events-auto overflow-hidden">
+                <Select.Popup className="w-40 border border-slate-200/60 bg-white/90 backdrop-blur-xl rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] pointer-events-auto overflow-hidden">
                   <Select.List aria-label={limitAria} role="listbox">
                     {LIMIT_OPTIONS.map((value) => (
                       <Select.Item
@@ -247,39 +247,11 @@ function ProjectUsageCard({
       href={projectRef || (repoId ? `https://github.com/${repoId}` : "#")}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full min-h-[152px] flex-col gap-3 border border-[#E2E8F0] bg-white px-4 py-5 rounded-xl transition-all duration-200 hover:border-[#2563EB] hover:shadow-[0_2px_8px_rgba(37,99,235,0.12)]"
+      className="group relative flex h-full min-h-[142px] flex-col gap-4 rounded-2xl border border-white/80 bg-white/50 px-4 py-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/60 hover:bg-white/70 hover:shadow-xl hover:shadow-blue-500/10"
       data-project-card="true"
     >
-      <div
-        className="absolute right-4 top-4 flex items-center gap-1 text-[11px] text-[#94A3B8]"
-        data-card-line="stars"
-        data-star-slot="corner"
-        data-star-position="top-right"
-      >
-        <span className="sr-only">{starsLabel}</span>
-        <span className="inline-flex items-center justify-center h-[1.3em] w-[1.3em]">
-          <svg
-            viewBox="0 0 16 16"
-            className="h-full w-full fill-[#F59E0B]"
-            data-star-icon="true"
-            aria-hidden="true"
-          >
-            <path d="M8 1.1 10.1 5.4l4.8.7-3.5 3.4.8 4.8L8 11.9l-4.2 2.4.8-4.8L1.1 6.1l4.8-.7L8 1.1z" />
-          </svg>
-        </span>
-        <span
-          className="inline-flex items-center h-[1.3em] tabular-nums text-[#475569] font-medium font-display tracking-wide"
-          title={starsFull}
-        >
-          {starsCompact}
-        </span>
-      </div>
-
-      <div
-        className="flex items-center gap-3 min-w-0 pr-12"
-        data-card-line="identity"
-      >
-        <div className="relative h-12 w-12 rounded-full border border-[#E2E8F0] overflow-hidden">
+      <div className="flex items-start gap-3 min-w-0" data-card-line="identity">
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-white/50 ring-4 ring-white/60 shadow-md shadow-blue-500/5 transition-transform duration-300 group-hover:scale-105 group-hover:shadow-blue-500/10">
           {avatarUrl ? (
             <img
               src={avatarUrl}
@@ -291,38 +263,44 @@ function ProjectUsageCard({
           )}
         </div>
         <div className="min-w-0 flex-1">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#94A3B8]" data-card-field="owner">
+            {owner || placeholder}
+          </div>
           <div
-            className="flex items-center gap-3"
-            data-owner-row="true"
+            className="mt-1 text-[15px] font-bold text-[#1E293B] truncate group-hover:text-blue-700 transition-colors"
+            title={repo || repoKey}
+            data-card-line="repo"
+            data-card-field="repo"
           >
-            <div
-              className="text-[11px] text-[#94A3B8] font-medium leading-none h-[1.3em] flex items-center truncate max-w-[10rem] sm:max-w-[12rem]"
-              data-card-field="owner"
-            >
-              {owner || placeholder}
-            </div>
+            {repo || repoKey || placeholder}
           </div>
         </div>
       </div>
-      <div
-        className="text-[15px] font-bold text-[#1E293B] truncate max-w-[14rem] sm:max-w-[16rem] pr-12"
-        title={repo || repoKey}
-        data-card-line="repo"
-        data-card-field="repo"
-      >
-        {repo || repoKey || placeholder}
-      </div>
-      <div
-        className="flex items-center justify-between gap-3 text-[11px] text-[#94A3B8] font-medium"
-        data-card-line="tokens"
-      >
-        <span>{tokensLabel}</span>
-        <span
-          className="text-[18px] font-bold text-[#2563EB] tabular-nums font-display tracking-wide"
-          title={tokensFull}
-        >
-          {tokensCompact}
-        </span>
+
+      <div className="mt-auto grid grid-cols-2 gap-2.5">
+        <div className="rounded-xl border border-white/80 bg-white/70 px-3 py-2 shadow-sm" data-card-line="tokens">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{tokensLabel}</div>
+          <div
+            className="mt-1 text-[16px] font-extrabold tracking-wide text-[#2563EB] tabular-nums font-display"
+            title={tokensFull}
+          >
+            {tokensCompact}
+          </div>
+        </div>
+        <div className="rounded-xl border border-white/80 bg-white/70 px-3 py-2 shadow-sm" data-card-line="stars">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{starsLabel}</div>
+          <div className="mt-1 inline-flex items-center gap-1.5 text-[16px] font-extrabold tracking-wide text-slate-700 font-display" title={starsFull}>
+            <svg
+              viewBox="0 0 16 16"
+              className="h-[0.95em] w-[0.95em] fill-[#F59E0B]"
+              data-star-icon="true"
+              aria-hidden="true"
+            >
+              <path d="M8 1.1 10.1 5.4l4.8.7-3.5 3.4.8 4.8L8 11.9l-4.2 2.4.8-4.8L1.1 6.1l4.8-.7L8 1.1z" />
+            </svg>
+            <span className="tabular-nums">{starsCompact}</span>
+          </div>
+        </div>
       </div>
     </a>
   );

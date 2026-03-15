@@ -175,11 +175,12 @@ export function DashboardView(props) {
             </AsciiBox>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
+          <div className="flex flex-col gap-3 md:gap-4">
+            {/* -- Row 1: Identity + Quick Stats -- */}
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
+              <div className="lg:col-span-5 animate-fade-in-up min-w-0">
                 {screenshotMode ? (
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex flex-col gap-1">
                       <span className="text-3xl md:text-4xl font-extrabold text-[#1E293B] tracking-[-0.03em] leading-none">
                         {screenshotTitleLine1}
@@ -202,127 +203,60 @@ export function DashboardView(props) {
                   animateTitle={false}
                   scrambleDurationMs={identityScrambleDurationMs}
                 />
+              </div>
+              <div className="lg:col-span-7 flex flex-col gap-4 animate-fade-in-up-d1 min-w-0">
+                <RollingUsagePanel rolling={rollingUsage} className="animate-pulse-glow" />
+                {projectUsageBlock}
+              </div>
+            </div>
 
-                <RollingUsagePanel rolling={rollingUsage} />
+            {/* -- Row 2: Usage Overview (Full Width, Hero Section) -- */}
+            <div className="animate-fade-in-up-d2">
+              <UsagePanel
+                title={copy("usage.panel.title")}
+                period={period}
+                periods={periodsForDisplay}
+                onPeriodChange={setSelectedPeriod}
+                metrics={metricsRows}
+                showSummary={period === "total"}
+                useSummaryLayout
+                summaryLabel={summaryLabel}
+                summaryValue={summaryValue}
+                summaryCostValue={summaryCostValue}
+                onCostInfo={costInfoEnabled ? openCostModal : null}
+                breakdownCollapsed={allowBreakdownToggle ? coreIndexCollapsed : true}
+                onToggleBreakdown={
+                  allowBreakdownToggle ? () => setCoreIndexCollapsed((value) => !value) : null
+                }
+                collapseLabel={allowBreakdownToggle ? coreIndexCollapseLabel : undefined}
+                expandLabel={allowBreakdownToggle ? coreIndexExpandLabel : undefined}
+                collapseAriaLabel={allowBreakdownToggle ? coreIndexCollapseAria : undefined}
+                expandAriaLabel={allowBreakdownToggle ? coreIndexExpandAria : undefined}
+                onRefresh={screenshotMode ? null : refreshAll}
+                loading={usageLoadingState}
+                error={usageError}
+                rangeLabel={screenshotMode ? null : rangeLabel}
+                rangeTimeZoneLabel={timeZoneRangeLabel}
+                statusLabel={screenshotMode ? null : usageSourceLabel}
+                summaryScrambleDurationMs={identityScrambleDurationMs}
+                summaryAnimate={false}
+              />
+            </div>
 
+            {/* -- Row 3: Top Models + Model Breakdown (side by side) -- */}
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
+              <div className="lg:col-span-5 animate-fade-in-up-d3 min-w-0">
                 <TopModelsPanel rows={topModels} />
+              </div>
+              <div className="lg:col-span-7 animate-fade-in-up-d4 min-w-0">
+                <NeuralDivergenceMap fleetData={fleetData} className="min-w-0" footer={null} />
+              </div>
+            </div>
 
-                {!screenshotMode && !signedIn && !publicMode ? (
-                  <AsciiBox
-                    title={copy("dashboard.auth_optional.title")}
-                    subtitle={copy("dashboard.auth_optional.subtitle")}
-                  >
-                    <p className="text-[12px] text-[#64748B] mt-0">
-                      {copy("dashboard.auth_optional.body")}
-                    </p>
-                    <div className="flex flex-wrap gap-3 mt-4">
-                      <MatrixButton as="a" primary href={signInUrl}>
-                        {copy("shared.button.sign_in")}
-                      </MatrixButton>
-                      <MatrixButton as="a" href={signUpUrl}>
-                        {copy("shared.button.sign_up")}
-                      </MatrixButton>
-                    </div>
-                  </AsciiBox>
-                ) : null}
-
-                {shouldShowInstall ? (
-                  <AsciiBox
-                    title={copy("dashboard.install.title")}
-                    subtitle={copy("dashboard.install.subtitle")}
-                    className="relative"
-                  >
-                    <div className="text-[13px] font-medium text-[#64748B]">
-                      {installPrompt}
-                    </div>
-                    <div className="mt-3 flex flex-col gap-2">
-                      <MatrixButton
-                        onClick={handleCopyInstall}
-                        aria-label={installCopied ? installCopiedLabel : installCopyLabel}
-                        title={installCopied ? installCopiedLabel : installCopyLabel}
-                        className="w-full justify-between gap-3 normal-case px-3"
-                      >
-                        <span className="font-mono text-[12px] tracking-[0.02em] normal-case text-left text-[#1E293B]">
-                          {installInitCmdDisplay}
-                        </span>
-                        <span className="inline-flex items-center justify-center w-7 h-7 bg-[#F1F5F9] border border-[#E2E8F0] rounded-md">
-                          {installCopied ? (
-                            <svg
-                              viewBox="0 0 16 16"
-                              className="w-4 h-4 text-emerald-600"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path d="M6.4 11.2 3.2 8l1.1-1.1 2.1 2.1 5-5L12.5 5z" />
-                            </svg>
-                          ) : (
-                            <svg
-                              viewBox="0 0 16 16"
-                              className="w-4 h-4 text-[#64748B]"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path d="M11 1H4a1 1 0 0 0-1 1v9h1V2h7V1z" />
-                              <path d="M5 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4zm1 0v9h6V4H6z" />
-                            </svg>
-                          )}
-                        </span>
-                      </MatrixButton>
-                      {linkCodeLoading ? (
-                        <span className="text-[12px] text-[#94A3B8]">
-                          {copy("dashboard.install.link_code.loading")}
-                        </span>
-                      ) : linkCodeError ? (
-                        <span className="text-[12px] text-red-500">
-                          {copy("dashboard.install.link_code.failed")}
-                        </span>
-                      ) : null}
-                    </div>
-                  </AsciiBox>
-                ) : null}
-
-                {!screenshotMode && signedIn && !publicMode ? (
-                  <AsciiBox title={publicViewTitle} className="relative">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <Button
-                            type="button"
-                            onClick={handleTogglePublicView}
-                            disabled={publicViewBusy}
-                            aria-pressed={publicViewEnabled}
-                            aria-label={publicViewToggleLabel}
-                            title={publicViewToggleLabel}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full px-[3px] transition-colors ${
-                              publicViewEnabled
-                                ? "bg-[#2563EB]"
-                                : "bg-[#CBD5E1]"
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className={`inline-block h-4 w-4 bg-white rounded-full shadow-sm transition-transform ${
-                                publicViewEnabled ? "translate-x-[18px]" : "translate-x-0"
-                              }`}
-                            />
-                          </Button>
-                          <span className="text-[12px] font-medium text-[#64748B]">
-                            {publicViewStatusLabel}
-                          </span>
-                        </div>
-                        <MatrixButton
-                          onClick={handleCopyPublicView}
-                          disabled={!publicViewEnabled || publicViewBusy}
-                          className="px-3 py-2 text-[11px]"
-                        >
-                          {publicViewCopyButtonLabel}
-                        </MatrixButton>
-                      </div>
-                    </div>
-                  </AsciiBox>
-                ) : null}
-
-                {!screenshotMode ? (
+            {/* -- Row 4: Trend Chart + Heatmap (full width) -- */}
+            {!screenshotMode ? (
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
+                <div className="lg:col-span-7 animate-fade-in-up-d5 min-w-0">
                   <TrendMonitor
                     rows={trendRowsForDisplay}
                     from={trendFromForDisplay}
@@ -332,180 +266,275 @@ export function DashboardView(props) {
                     showTimeZoneLabel={false}
                     className="h-auto min-h-[280px]"
                   />
-                ) : null}
-
+                </div>
+                <div className="lg:col-span-5 animate-fade-in-up-d6 min-w-0">
+                  {activityHeatmapBlock}
+                </div>
+              </div>
+            ) : (
+              <>
                 {activityHeatmapBlock}
-                {screenshotMode ? (
-                  <div
-                    className="mt-4 flex flex-col items-center gap-2"
-                    data-screenshot-exclude="true"
-                    style={isCapturing ? { display: "none" } : undefined}
-                  >
-                    <MatrixButton
-                      type="button"
-                      onClick={handleShareToX}
-                      aria-label={screenshotTwitterLabel}
-                      title={screenshotTwitterLabel}
-                      className="h-12 md:h-14 px-6 text-base"
-                      primary
-                      disabled={isCapturing}
-                    >
-                      {screenshotTwitterButton}
+              </>
+            )}
+
+            {/* -- Row 5: Auth / Install / Public Profile -- */}
+            {!screenshotMode && !signedIn && !publicMode ? (
+              <div className="animate-fade-in-up-d6">
+                <AsciiBox
+                  title={copy("dashboard.auth_optional.title")}
+                  subtitle={copy("dashboard.auth_optional.subtitle")}
+                >
+                  <p className="text-[12px] text-[#64748B] mt-0">
+                    {copy("dashboard.auth_optional.body")}
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    <MatrixButton as="a" primary href={signInUrl}>
+                      {copy("shared.button.sign_in")}
                     </MatrixButton>
-                    <span className="text-[11px] text-[#94A3B8]">
-                      {screenshotTwitterHint}
-                    </span>
+                    <MatrixButton as="a" href={signUpUrl}>
+                      {copy("shared.button.sign_up")}
+                    </MatrixButton>
                   </div>
-                ) : null}
+                </AsciiBox>
               </div>
+            ) : null}
 
-              <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
-                {projectUsageBlock}
-
-                <UsagePanel
-                  title={copy("usage.panel.title")}
-                  period={period}
-                  periods={periodsForDisplay}
-                  onPeriodChange={setSelectedPeriod}
-                  metrics={metricsRows}
-                  showSummary={period === "total"}
-                  useSummaryLayout
-                  summaryLabel={summaryLabel}
-                  summaryValue={summaryValue}
-                  summaryCostValue={summaryCostValue}
-                  onCostInfo={costInfoEnabled ? openCostModal : null}
-                  breakdownCollapsed={allowBreakdownToggle ? coreIndexCollapsed : true}
-                  onToggleBreakdown={
-                    allowBreakdownToggle ? () => setCoreIndexCollapsed((value) => !value) : null
-                  }
-                  collapseLabel={allowBreakdownToggle ? coreIndexCollapseLabel : undefined}
-                  expandLabel={allowBreakdownToggle ? coreIndexExpandLabel : undefined}
-                  collapseAriaLabel={allowBreakdownToggle ? coreIndexCollapseAria : undefined}
-                  expandAriaLabel={allowBreakdownToggle ? coreIndexExpandAria : undefined}
-                  onRefresh={screenshotMode ? null : refreshAll}
-                  loading={usageLoadingState}
-                  error={usageError}
-                  rangeLabel={screenshotMode ? null : rangeLabel}
-                  rangeTimeZoneLabel={timeZoneRangeLabel}
-                  statusLabel={screenshotMode ? null : usageSourceLabel}
-                  summaryScrambleDurationMs={identityScrambleDurationMs}
-                  summaryAnimate={false}
-                />
-
-                <NeuralDivergenceMap fleetData={fleetData} className="min-w-0" footer={null} />
-
-                {!screenshotMode ? (
-                  <AsciiBox
-                    title={copy("dashboard.daily.title")}
-                    subtitle={copy("dashboard.daily.subtitle")}
-                  >
-                    {!hasDetailsActual ? (
-                      <div className="text-[12px] text-[#94A3B8] mb-2">
-                        {dailyEmptyPrefix}
-                        <code className="px-1.5 py-0.5 bg-[#F1F5F9] border border-[#E2E8F0] rounded text-[#1E293B] text-[11px]">
-                          {installSyncCmd}
-                        </code>
-                        {dailyEmptySuffix}
-                      </div>
-                    ) : null}
-                    <div
-                      className="overflow-auto max-h-[520px] border border-[#E2E8F0] rounded-lg"
-                      role="region"
-                      aria-label={copy("daily.table.aria_label")}
-                      tabIndex={0}
+            {shouldShowInstall ? (
+              <div className="animate-fade-in-up-d6">
+                <AsciiBox
+                  title={copy("dashboard.install.title")}
+                  subtitle={copy("dashboard.install.subtitle")}
+                  className="relative"
+                >
+                  <div className="text-[13px] font-medium text-[#64748B]">
+                    {installPrompt}
+                  </div>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <MatrixButton
+                      onClick={handleCopyInstall}
+                      aria-label={installCopied ? installCopiedLabel : installCopyLabel}
+                      title={installCopied ? installCopiedLabel : installCopyLabel}
+                      className="w-full justify-between gap-3 normal-case px-3"
                     >
-                      <table className="w-full border-collapse">
-                        <thead className="sticky top-0 bg-[#F8FAFC]">
-                          <tr className="border-b border-[#E2E8F0]">
-                            {detailsColumns.map((c) => (
-                              <th
-                                key={c.key}
-                                aria-sort={ariaSortFor(c.key)}
-                                className="text-left p-0"
-                              >
-                                <Button
-                                  type="button"
-                                  onClick={() => toggleSort(c.key)}
-                                  title={c.title}
-                                  className="w-full px-3 py-2.5 text-left text-[11px] font-semibold text-[#64748B] hover:text-[#1E293B] hover:bg-[#F1F5F9] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 flex items-center justify-start"
-                                >
-                                  <span className="inline-flex items-center gap-2">
-                                    <span>{c.label}</span>
-                                    <span className="text-[#CBD5E1]">{sortIconFor(c.key)}</span>
-                                  </span>
-                                </Button>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {pagedDetails.map((r) => (
-                            <tr
-                              key={String(
-                                r?.[detailsDateKey] || r?.day || r?.hour || r?.month || "",
-                              )}
-                              className={`border-b border-[#F1F5F9] hover:bg-[#F8FAFC] ${
-                                r.missing
-                                  ? "text-[#94A3B8]"
-                                  : r.future
-                                    ? "text-[#CBD5E1]"
-                                    : ""
-                              }`}
-                            >
-                              <td className="px-3 py-2.5 text-[12px] text-[#64748B] font-mono">
-                                {renderDetailDate(r)}
-                              </td>
-                              <td className="px-3 py-2.5 text-[12px] font-mono font-semibold">
-                                {renderDetailCell(r, "total_tokens")}
-                              </td>
-                              <td className="px-3 py-2.5 text-[12px] font-mono">
-                                {renderDetailCell(r, "input_tokens")}
-                              </td>
-                              <td className="px-3 py-2.5 text-[12px] font-mono">
-                                {renderDetailCell(r, "output_tokens")}
-                              </td>
-                              <td className="px-3 py-2.5 text-[12px] font-mono">
-                                {renderDetailCell(r, "cached_input_tokens")}
-                              </td>
-                              <td className="px-3 py-2.5 text-[12px] font-mono">
-                                {renderDetailCell(r, "reasoning_output_tokens")}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {DETAILS_PAGED_PERIODS.has(period) && detailsPageCount > 1 ? (
-                      <div className="flex items-center justify-between mt-3 text-[11px] font-semibold">
-                        <MatrixButton
-                          type="button"
-                          onClick={() => setDetailsPage((prev) => Math.max(0, prev - 1))}
-                          disabled={detailsPage === 0}
-                        >
-                          {copy("details.pagination.prev")}
-                        </MatrixButton>
-                        <span className="text-[#94A3B8]">
-                          {copy("details.pagination.page", {
-                            page: detailsPage + 1,
-                            total: detailsPageCount,
-                          })}
-                        </span>
-                        <MatrixButton
-                          type="button"
-                          onClick={() =>
-                            setDetailsPage((prev) => Math.min(detailsPageCount - 1, prev + 1))
-                          }
-                          disabled={detailsPage + 1 >= detailsPageCount}
-                        >
-                          {copy("details.pagination.next")}
-                        </MatrixButton>
-                      </div>
+                      <span className="font-mono text-[12px] tracking-[0.02em] normal-case text-left text-[#1E293B]">
+                        {installInitCmdDisplay}
+                      </span>
+                      <span className="inline-flex items-center justify-center w-7 h-7 bg-[#F1F5F9] border border-[#E2E8F0] rounded-md">
+                        {installCopied ? (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-4 h-4 text-emerald-600"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path d="M6.4 11.2 3.2 8l1.1-1.1 2.1 2.1 5-5L12.5 5z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-4 h-4 text-[#64748B]"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path d="M11 1H4a1 1 0 0 0-1 1v9h1V2h7V1z" />
+                            <path d="M5 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4zm1 0v9h6V4H6z" />
+                          </svg>
+                        )}
+                      </span>
+                    </MatrixButton>
+                    {linkCodeLoading ? (
+                      <span className="text-[12px] text-[#94A3B8]">
+                        {copy("dashboard.install.link_code.loading")}
+                      </span>
+                    ) : linkCodeError ? (
+                      <span className="text-[12px] text-red-500">
+                        {copy("dashboard.install.link_code.failed")}
+                      </span>
                     ) : null}
-                  </AsciiBox>
-                ) : null}
+                  </div>
+                </AsciiBox>
               </div>
-            </div>
-          </>
+            ) : null}
+
+            {!screenshotMode && signedIn && !publicMode ? (
+              <div className="animate-fade-in-up-d7">
+                <AsciiBox title={publicViewTitle} className="relative">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          type="button"
+                          onClick={handleTogglePublicView}
+                          disabled={publicViewBusy}
+                          aria-pressed={publicViewEnabled}
+                          aria-label={publicViewToggleLabel}
+                          title={publicViewToggleLabel}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full px-[3px] transition-colors ${
+                            publicViewEnabled
+                              ? "bg-[#2563EB]"
+                              : "bg-[#CBD5E1]"
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={`inline-block h-4 w-4 bg-white rounded-full shadow-sm transition-transform ${
+                              publicViewEnabled ? "translate-x-[18px]" : "translate-x-0"
+                            }`}
+                          />
+                        </Button>
+                        <span className="text-[12px] font-medium text-[#64748B]">
+                          {publicViewStatusLabel}
+                        </span>
+                      </div>
+                      <MatrixButton
+                        onClick={handleCopyPublicView}
+                        disabled={!publicViewEnabled || publicViewBusy}
+                        className="px-3 py-2 text-[11px]"
+                      >
+                        {publicViewCopyButtonLabel}
+                      </MatrixButton>
+                    </div>
+                  </div>
+                </AsciiBox>
+              </div>
+            ) : null}
+
+            {screenshotMode ? (
+              <div
+                className="mt-4 flex flex-col items-center gap-2"
+                data-screenshot-exclude="true"
+                style={isCapturing ? { display: "none" } : undefined}
+              >
+                <MatrixButton
+                  type="button"
+                  onClick={handleShareToX}
+                  aria-label={screenshotTwitterLabel}
+                  title={screenshotTwitterLabel}
+                  className="h-12 md:h-14 px-6 text-base"
+                  primary
+                  disabled={isCapturing}
+                >
+                  {screenshotTwitterButton}
+                </MatrixButton>
+                <span className="text-[11px] text-[#94A3B8]">
+                  {screenshotTwitterHint}
+                </span>
+              </div>
+            ) : null}
+
+            {/* -- Row 6: Daily Details Table -- */}
+            {!screenshotMode ? (
+              <div className="animate-fade-in-up-d8">
+                <AsciiBox
+                  title={copy("dashboard.daily.title")}
+                  subtitle={copy("dashboard.daily.subtitle")}
+                >
+                  {!hasDetailsActual ? (
+                    <div className="text-[12px] text-[#94A3B8] mb-2">
+                      {dailyEmptyPrefix}
+                      <code className="px-1.5 py-0.5 bg-[#F1F5F9] border border-[#E2E8F0] rounded text-[#1E293B] text-[11px]">
+                        {installSyncCmd}
+                      </code>
+                      {dailyEmptySuffix}
+                    </div>
+                  ) : null}
+                  <div
+                    className="overflow-x-auto border border-white/80 shadow-md rounded-2xl bg-white/50 backdrop-blur-md ui-scrollbar"
+                    role="region"
+                    aria-label={copy("daily.table.aria_label")}
+                    tabIndex={0}
+                  >
+                    <table className="w-full border-collapse">
+                      <thead className="sticky top-0 bg-white/60 backdrop-blur-md z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                        <tr>
+                          {detailsColumns.map((c) => (
+                            <th
+                              key={c.key}
+                              aria-sort={ariaSortFor(c.key)}
+                              className="text-left p-0"
+                            >
+                              <Button
+                                type="button"
+                                onClick={() => toggleSort(c.key)}
+                                title={c.title}
+                                className="w-full px-3 py-2.5 text-left text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:bg-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 flex items-center justify-start transition-colors rounded-md"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <span>{c.label}</span>
+                                  <span className="text-[#CBD5E1]">{sortIconFor(c.key)}</span>
+                                </span>
+                              </Button>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pagedDetails.map((r) => (
+                          <tr
+                            key={String(
+                              r?.[detailsDateKey] || r?.day || r?.hour || r?.month || "",
+                            )}
+                            className={`border-b border-white/50 hover:bg-white/80 transition-all duration-300 ${
+                              r.missing
+                                ? "text-slate-400"
+                                : r.future
+                                  ? "text-slate-300"
+                                  : ""
+                            }`}
+                          >
+                            <td className="px-3 py-2.5 text-[12px] text-slate-500 font-mono">
+                              {renderDetailDate(r)}
+                            </td>
+                            <td className="px-3 py-2.5 text-[12px] font-mono font-semibold">
+                              {renderDetailCell(r, "total_tokens")}
+                            </td>
+                            <td className="px-3 py-2.5 text-[12px] font-mono">
+                              {renderDetailCell(r, "input_tokens")}
+                            </td>
+                            <td className="px-3 py-2.5 text-[12px] font-mono">
+                              {renderDetailCell(r, "output_tokens")}
+                            </td>
+                            <td className="px-3 py-2.5 text-[12px] font-mono">
+                              {renderDetailCell(r, "cached_input_tokens")}
+                            </td>
+                            <td className="px-3 py-2.5 text-[12px] font-mono">
+                              {renderDetailCell(r, "reasoning_output_tokens")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {DETAILS_PAGED_PERIODS.has(period) && detailsPageCount > 1 ? (
+                    <div className="flex items-center justify-between mt-3 text-[11px] font-semibold">
+                      <MatrixButton
+                        type="button"
+                        onClick={() => setDetailsPage((prev) => Math.max(0, prev - 1))}
+                        disabled={detailsPage === 0}
+                      >
+                        {copy("details.pagination.prev")}
+                      </MatrixButton>
+                      <span className="text-[#94A3B8]">
+                        {copy("details.pagination.page", {
+                          page: detailsPage + 1,
+                          total: detailsPageCount,
+                        })}
+                      </span>
+                      <MatrixButton
+                        type="button"
+                        onClick={() =>
+                          setDetailsPage((prev) => Math.min(detailsPageCount - 1, prev + 1))
+                        }
+                        disabled={detailsPage + 1 >= detailsPageCount}
+                      >
+                        {copy("details.pagination.next")}
+                      </MatrixButton>
+                    </div>
+                  ) : null}
+                </AsciiBox>
+              </div>
+            ) : null}
+          </div>
         )}
       </MatrixShell>
       <CostAnalysisModal isOpen={costModalOpen} onClose={closeCostModal} fleetData={fleetData} />
