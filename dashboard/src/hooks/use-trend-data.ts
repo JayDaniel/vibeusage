@@ -218,8 +218,7 @@ export function useTrendData({
           setError(err?.message || String(err));
         }
       } else {
-        setRows([]);
-        setRange({ from, to });
+        // Stale-while-revalidate: 保留旧 rows，不重置
         setSource("edge");
         setFetchedAt(null);
         const err = e as any;

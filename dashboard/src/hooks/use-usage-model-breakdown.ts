@@ -98,7 +98,7 @@ export function useUsageModelBreakdown({
           setError(err?.message || String(err));
         }
       } else {
-        setBreakdown(null);
+        // Stale-while-revalidate: 保留旧 breakdown，不重置
         setSource("edge");
         const err = e as any;
         setError(err?.message || String(err));

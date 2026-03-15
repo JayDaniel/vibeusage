@@ -182,18 +182,14 @@ export function useUsageData({
         } else {
           const err = e as any;
           setError(err?.message || String(err));
-          setDaily([]);
-          setSummary(null);
-          setRolling(null);
+          // Stale-while-revalidate: 保留旧数据，不重置 daily/summary/rolling
           setSource("edge");
           setFetchedAt(null);
         }
       } else {
         const err = e as any;
         setError(err?.message || String(err));
-        setDaily([]);
-        setSummary(null);
-        setRolling(null);
+        // Stale-while-revalidate: 保留旧数据，不重置 daily/summary/rolling
         setSource("edge");
         setFetchedAt(null);
       }

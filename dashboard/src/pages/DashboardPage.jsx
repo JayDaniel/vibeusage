@@ -15,6 +15,7 @@ import { copy } from "../lib/copy";
 import { getDetailsSortColumns, sortDailyRows } from "../lib/daily";
 import { getRangeForPeriod } from "../lib/date-range";
 import { DETAILS_PAGE_SIZE, paginateRows, trimLeadingZeroMonths } from "../lib/details";
+import { sumDailyRowsToTotals } from "../lib/usage-aggregate";
 import {
   formatCompactNumber,
   formatUsdCurrency,
@@ -875,8 +876,19 @@ export function DashboardPage({
     return `${from}..${to}`;
   }, [from, period, to]);
 
+  // Phase 2: total 模式 fallback — 后端 summary 超时时从 monthly rows 客户端聚合
+  const effectiveSummary = useMemo(() => {
+    if (summary) return summary;
+    if (period !== "total") return summary;
+    const monthlyRows = Array.isArray(trendRows)
+      ? trendRows.filter((row) => row?.month && !row?.future)
+      : [];
+    if (!monthlyRows.length) return null;
+    return sumDailyRowsToTotals(monthlyRows);
+  }, [summary, period, trendRows]);
+
   const summaryLabel = copy("usage.summary.total");
-  const summaryTotalTokens = getBillableTotal(summary);
+  const summaryTotalTokens = getBillableTotal(effectiveSummary);
   const thousandSuffix = copy("shared.unit.thousand_abbrev");
   const millionSuffix = copy("shared.unit.million_abbrev");
   const billionSuffix = copy("shared.unit.billion_abbrev");
@@ -1073,35 +1085,35 @@ export function DashboardPage({
       },
       {
         label: copy("usage.metric.input"),
-        value: toDisplayNumber(summary?.input_tokens),
+        value: toDisplayNumber(effectiveSummary?.input_tokens),
       },
       {
         label: copy("usage.metric.output"),
-        value: toDisplayNumber(summary?.output_tokens),
+        value: toDisplayNumber(effectiveSummary?.output_tokens),
       },
       {
         label: copy("usage.metric.cached_input"),
-        value: toDisplayNumber(summary?.cached_input_tokens),
+        value: toDisplayNumber(effectiveSummary?.cached_input_tokens),
       },
       {
         label: copy("usage.metric.reasoning_output"),
-        value: toDisplayNumber(summary?.reasoning_output_tokens),
+        value: toDisplayNumber(effectiveSummary?.reasoning_output_tokens),
       },
     ],
     [
-      summary?.cached_input_tokens,
-      summary?.input_tokens,
-      summary?.output_tokens,
-      summary?.reasoning_output_tokens,
+      effectiveSummary?.cached_input_tokens,
+      effectiveSummary?.input_tokens,
+      effectiveSummary?.output_tokens,
+      effectiveSummary?.reasoning_output_tokens,
       summaryTotalTokens,
     ],
   );
 
   const summaryCostValue = useMemo(() => {
-    const formatted = formatUsdCurrency(summary?.total_cost_usd);
+    const formatted = formatUsdCurrency(effectiveSummary?.total_cost_usd);
     if (!formatted || formatted === "-" || formatted.startsWith("$")) return formatted;
     return `$${formatted}`;
-  }, [summary?.total_cost_usd]);
+  }, [effectiveSummary?.total_cost_usd]);
 
   const fleetData = useMemo(
     () => buildFleetData(modelBreakdown, { copyFn: copy }),

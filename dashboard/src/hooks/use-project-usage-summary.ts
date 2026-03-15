@@ -44,7 +44,7 @@ export function useProjectUsageSummary({
     } catch (err) {
       const message = (err as any)?.message || String(err);
       setError(message);
-      setEntries([]);
+      // Stale-while-revalidate: 保留旧 entries，不重置
     } finally {
       setLoading(false);
     }
