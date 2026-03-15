@@ -20,7 +20,7 @@ export function MatrixShell({
 
   return (
     <div
-      className={`min-h-screen dynamic-bg text-[#0f172a] font-sans p-3 md:p-5 flex flex-col leading-normal text-body selection:bg-blue-200 selection:text-blue-900 overflow-hidden relative ${rootClassName}`}
+      className={`min-h-screen dynamic-bg text-[#0f172a] font-sans p-2 md:p-4 flex flex-col leading-normal text-body selection:bg-blue-200 selection:text-blue-900 overflow-hidden relative ${rootClassName}`}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-0 -left-4 h-72 w-72 rounded-full bg-purple-300 opacity-30 mix-blend-multiply blur-2xl filter animate-blob"></div>
@@ -31,7 +31,7 @@ export function MatrixShell({
         className={`relative z-10 flex min-h-screen flex-col ui-shell-content ${contentClassName}`}
       >
         {!hideHeader ? (
-          <header className="border-b border-[#E2E8F0] pb-3 mb-4 shrink-0">
+          <header className="border-b border-[#E2E8F0] pb-2 mb-3 shrink-0">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex min-w-0 items-center gap-3 md:gap-4">
                 <img
@@ -76,7 +76,7 @@ export function MatrixShell({
 
         <main className="flex-1">{children}</main>
 
-        <footer className="mt-4 flex shrink-0 flex-col gap-2 border-t border-[#E2E8F0] pt-3 text-caption font-medium text-[#94A3B8] sm:flex-row sm:items-center sm:justify-between">
+        <footer className="mt-3 flex shrink-0 flex-col gap-1.5 border-t border-[#E2E8F0] pt-2 text-caption font-medium text-[#94A3B8] sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {footerLeft || <span>{copy("shell.footer.help")}</span>}
           </div>

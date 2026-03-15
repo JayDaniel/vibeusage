@@ -38,7 +38,8 @@ export function TrendMonitor({
         future: false,
       }));
   const statsValues = seriesValues.filter((val) => Number.isFinite(val));
-  const max = Math.max(...(statsValues.length ? statsValues : [0]), 100);
+  const rawMax = Math.max(...(statsValues.length ? statsValues : [0]), 100);
+  const max = rawMax * 1.1;
   const avg = statsValues.length ? statsValues.reduce((a, b) => a + b, 0) / statsValues.length : 0;
 
   const width = 100;
@@ -249,6 +250,10 @@ export function TrendMonitor({
       return `M ${a.x},${a.y} L ${b.x},${b.y}`;
     }
 
+    const yMin = plotTop;
+    const yMax = plotTop + plotHeight;
+    const clampY = (y) => Math.max(yMin, Math.min(yMax, y));
+
     let d = `M ${points[0].x},${points[0].y}`;
     for (let i = 0; i < points.length - 1; i += 1) {
       const p0 = points[Math.max(i - 1, 0)];
@@ -257,9 +262,9 @@ export function TrendMonitor({
       const p3 = points[Math.min(i + 2, points.length - 1)];
 
       const cp1x = p1.x + (p2.x - p0.x) * 0.16;
-      const cp1y = p1.y + (p2.y - p0.y) * 0.16;
+      const cp1y = clampY(p1.y + (p2.y - p0.y) * 0.16);
       const cp2x = p2.x - (p3.x - p1.x) * 0.16;
-      const cp2y = p2.y - (p3.y - p1.y) * 0.16;
+      const cp2y = clampY(p2.y - (p3.y - p1.y) * 0.16);
 
       d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
     }
@@ -342,7 +347,7 @@ export function TrendMonitor({
     <AsciiBox title={label} className={`w-full ${className}`} bodyClassName="flex flex-col gap-3">
       <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-medium px-1">
         <div className="flex gap-4">
-          <span>{copy("trend.monitor.max_label", { value: Math.round(max) })}</span>
+          <span>{copy("trend.monitor.max_label", { value: Math.round(rawMax) })}</span>
           <span>{copy("trend.monitor.avg_label", { value: Math.round(avg) })}</span>
         </div>
       </div>

@@ -148,6 +148,7 @@ dashboard.rolling.title,ui,RollingUsagePanel,RollingUsagePanel,title,"Recent Usa
 dashboard.rolling.last_7d,ui,RollingUsagePanel,RollingUsagePanel,label_last_7d,"Last 7 days",,active
 dashboard.rolling.last_30d,ui,RollingUsagePanel,RollingUsagePanel,label_last_30d,"Last 30 days",,active
 dashboard.rolling.avg_active_day,ui,RollingUsagePanel,RollingUsagePanel,label_avg_active_day,"Avg / day (30d)",,active
+dashboard.rolling.total_cost,ui,RollingUsagePanel,RollingUsagePanel,label_total_cost,"Total Cost",,active
 
 dashboard.model_breakdown.title,ui,NeuralDivergenceMap,NeuralDivergenceMap,title,"Model Breakdown",,active
 dashboard.model_breakdown.footer,ui,NeuralDivergenceMap,NeuralDivergenceMap,footer,"Token distribution across all models",,active
@@ -247,6 +248,19 @@ heatmap.day.wed,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Wed",,active
 heatmap.day.thu,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Thu",,active
 heatmap.day.fri,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Fri",,active
 heatmap.day.sat,ui,ActivityHeatmap,ActivityHeatmap,day_label,"Sat",,active
+
+source_heatmap.title,ui,SourceHeatmapCard,SourceHeatmapCard,title,"Source Activity",,active
+source_heatmap.subtitle,ui,SourceHeatmapCard,SourceHeatmapCard,subtitle,"Per-source heatmaps",,active
+activity_panel.tab.all,ui,ActivityPanel,ActivityPanel,tab_label,"All",,active
+activity_panel.tab.by_source,ui,ActivityPanel,ActivityPanel,tab_label,"By Source",,active
+source_heatmap.input_tokens,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"INPUT TOKENS",,active
+source_heatmap.output_tokens,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"OUTPUT TOKENS",,active
+source_heatmap.total_tokens,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"TOTAL TOKENS",,active
+source_heatmap.most_used_model,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"MOST USED MODEL",,active
+source_heatmap.recent_use,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"RECENT USE (LAST 30 DAYS)",,active
+source_heatmap.longest_streak,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"LONGEST STREAK",,active
+source_heatmap.current_streak,ui,SourceHeatmapCard,SourceHeatmapCard,stat_label,"CURRENT STREAK",,active
+source_heatmap.days,ui,SourceHeatmapCard,SourceHeatmapCard,unit,"days",,active
 
 archive.title,ui,ArchiveHeatmap,ArchiveHeatmap,title,"Archive",,active
 archive.footer.left,ui,ArchiveHeatmap,ArchiveHeatmap,footer_left,"Yearly overview",,active

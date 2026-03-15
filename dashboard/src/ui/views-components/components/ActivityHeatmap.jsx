@@ -3,7 +3,7 @@ import { buildActivityHeatmap } from "../../../lib/activity-heatmap";
 import { copy } from "../../../lib/copy";
 
 const OPACITY_BY_LEVEL = [0.12, 0.32, 0.5, 0.7, 1];
-const CELL_SIZE = 12;
+const CELL_SIZE = 14;
 const CELL_GAP = 3;
 const LABEL_WIDTH = 26;
 const MONTH_LABELS = [

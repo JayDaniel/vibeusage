@@ -187,3 +187,48 @@ export function computeActiveStreakDays({ dailyRows, to }: ActiveStreakOptions =
   }
   return streak;
 }
+
+/// 遍历全部日数据行，找出历史上最长的连续活跃天数
+/// - Parameters:
+///   - dailyRows: 包含 day / billable_total_tokens 的每日行数据
+/// - Returns: 最长连续活跃天数
+export function computeLongestStreakDays({ dailyRows }: { dailyRows?: any[] } = {}) {
+  const rows = Array.isArray(dailyRows) ? dailyRows : [];
+  if (!rows.length) return 0;
+
+  const valuesByDay = new Map<string, number>();
+  for (const row of rows) {
+    const day = typeof row?.day === "string" ? row.day : null;
+    if (!day) continue;
+    const value = toFiniteNumber(row?.billable_total_tokens ?? row?.total_tokens) ?? 0;
+    valuesByDay.set(day, Math.max(0, value));
+  }
+
+  const sortedDays = Array.from(valuesByDay.keys()).sort();
+  if (!sortedDays.length) return 0;
+
+  let longest = 0;
+  let current = 0;
+
+  for (let i = 0; i < sortedDays.length; i++) {
+    const value = valuesByDay.get(sortedDays[i]) ?? 0;
+    if (value <= 0) {
+      current = 0;
+      continue;
+    }
+    if (i === 0) {
+      current = 1;
+    } else {
+      const prevDate = parseDateString(sortedDays[i - 1]);
+      const currDate = parseDateString(sortedDays[i]);
+      if (prevDate && currDate && diffUtcDays(prevDate, currDate) === 1) {
+        current += 1;
+      } else {
+        current = 1;
+      }
+    }
+    if (current > longest) longest = current;
+  }
+
+  return longest;
+}

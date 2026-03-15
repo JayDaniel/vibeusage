@@ -91,89 +91,44 @@ export function IdentityCard({
   return (
     <AsciiBox title={titleNode} subtitle={subtitle} className={className}>
       <div className="relative overflow-hidden">
-        <div className="relative z-10 flex items-start gap-4 px-1">
-          {showAvatar ? (
-            <div
-              style={{ width: avatarSize, height: avatarSize }}
-              className="relative shrink-0 rounded-2xl overflow-hidden ring-4 ring-white/60 shadow-xl shadow-blue-500/10 transition-all duration-300 hover:shadow-blue-500/20"
-            >
-              <img
-                src={safeAvatarUrl}
-                alt={displayName}
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                onError={() => setAvatarFailed(true)}
-              />
-            </div>
-          ) : (
-            <MatrixAvatar name={avatarName} isAnon={!isPublic} size={avatarSize} />
-          )}
-
-          <div className="min-w-0 flex-1 space-y-3">
-            <div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E293B] tracking-wide leading-none font-display">
-                {animate ? (
-                  <ScrambleText
-                    text={displayName}
-                    durationMs={scrambleDurationMs}
-                    loop={scrambleLoop}
-                    loopDelayMs={scrambleLoopDelayMs}
-                    startScrambled={scrambleStartScrambled}
-                    respectReducedMotion={scrambleRespectReducedMotion}
-                  />
-                ) : (
-                  displayName
-                )}
+        <div className="relative z-10 px-0.5">
+          {shouldShowStats ? (
+            <div className="grid w-full grid-cols-2 gap-2">
+              <div className="group rounded-xl border border-white/80 bg-white/50 p-2 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-2.5">
+                <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
+                  {copy("identity_card.rank_label")}
+                </div>
+                <div className="text-amber-600 font-extrabold text-[16px] font-display tracking-wide">{rankValue}</div>
+              </div>
+              <div className="group rounded-xl border border-white/80 bg-white/50 p-2 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-2.5">
+                <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
+                  {copy("identity_card.streak_label")}
+                </div>
+                <div className="text-amber-600 font-extrabold tracking-wide text-[16px] font-display">{streakValue}</div>
               </div>
             </div>
+          ) : null}
 
-            {!isPublic && onDecrypt ? (
-              <Button
-                type="button"
-                onClick={onDecrypt}
-                className="text-[12px] text-white bg-[#2563EB] px-3 py-1.5 font-semibold rounded-md hover:bg-[#1D4ED8] transition-colors"
-              >
-                {copy("identity_card.decrypt")}
-              </Button>
-            ) : null}
-
-            {shouldShowStats ? (
-              <div className="grid w-full grid-cols-2 gap-2.5 pt-1.5">
-                <div className="group rounded-2xl border border-white/80 bg-white/50 p-2.5 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-3">
-                  <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
-                    {copy("identity_card.rank_label")}
-                  </div>
-                  <div className="text-amber-600 font-extrabold text-[18px] font-display tracking-wide">{rankValue}</div>
-                </div>
-                <div className="group rounded-2xl border border-white/80 bg-white/50 p-2.5 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/30 hover:shadow-lg hover:shadow-amber-500/10 sm:p-3">
-                  <div className="text-[10px] text-[#64748B] font-bold mb-1 uppercase tracking-wider group-hover:text-amber-600/70 transition-colors">
-                    {copy("identity_card.streak_label")}
-                  </div>
-                  <div className="text-amber-600 font-extrabold tracking-wide text-[18px] font-display">{streakValue}</div>
-                </div>
+          {subscriptionItems.length !== 0 ? (
+            <div className={shouldShowStats ? "pt-2" : ""}>
+              <div className="mb-1 text-[11px] text-[#94A3B8] font-medium">
+                {copy("identity_card.subscriptions_label")}
               </div>
-            ) : null}
-
-            {subscriptionItems.length !== 0 ? (
-              <div className="pt-1.5">
-                <div className="mb-1 text-[11px] text-[#94A3B8] font-medium">
-                  {copy("identity_card.subscriptions_label")}
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {subscriptionItems.map((entry, index) => (
-                    <span
-                      key={`${entry.tool}:${entry.plan}:${index}`}
-                      className="inline-flex items-center px-2.5 py-1 bg-fuchsia-50/50 border border-fuchsia-200/50 shadow-sm rounded-lg text-[11px] font-bold text-fuchsia-700 backdrop-blur-md transition-all hover:bg-fuchsia-100/50 hover:border-fuchsia-300/50"
-                    >
-                      {copy("identity_card.subscription_item", {
-                        tool: entry.tool,
-                        plan: entry.plan,
-                      })}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap gap-1.5">
+                {subscriptionItems.map((entry, index) => (
+                  <span
+                    key={`${entry.tool}:${entry.plan}:${index}`}
+                    className="inline-flex items-center px-2.5 py-1 bg-fuchsia-50/50 border border-fuchsia-200/50 shadow-sm rounded-lg text-[11px] font-bold text-fuchsia-700 backdrop-blur-md transition-all hover:bg-fuchsia-100/50 hover:border-fuchsia-300/50"
+                  >
+                    {copy("identity_card.subscription_item", {
+                      tool: entry.tool,
+                      plan: entry.plan,
+                    })}
+                  </span>
+                ))}
               </div>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </AsciiBox>

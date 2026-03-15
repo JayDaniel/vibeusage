@@ -49,13 +49,13 @@ function AnimatedStatCard({ label, rawValue, formattedValue, delay = 0, classNam
 
   return (
     <div
-      className={`flex flex-col items-center text-center gap-1 bg-white/40 border border-white/60 shadow-sm rounded-xl px-2.5 py-3 transition-all duration-300 hover:bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-200/60 ${className}`}
+      className={`flex flex-col items-center text-center gap-0.5 bg-white/40 border border-white/60 shadow-sm rounded-lg px-2 py-2 transition-all duration-300 hover:bg-white/70 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-200/60 ${className}`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <span className="text-[11px] font-semibold tracking-wider uppercase text-[#94A3B8]">
+      <span className="text-[10px] font-semibold tracking-wider uppercase text-[#94A3B8]">
         {label}
       </span>
-      <span className="text-xl md:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-blue-800 to-slate-600 tabular-nums font-mono tracking-tight transition-colors">
+      <span className="text-lg md:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-blue-800 to-slate-600 tabular-nums font-mono tracking-tight transition-colors">
         {displayValue}
       </span>
     </div>
@@ -64,6 +64,7 @@ function AnimatedStatCard({ label, rawValue, formattedValue, delay = 0, classNam
 
 export const RollingUsagePanel = React.memo(function RollingUsagePanel({
   rolling,
+  costValue,
   className = "",
 }) {
   const placeholder = copy("shared.placeholder.short");
@@ -79,6 +80,12 @@ export const RollingUsagePanel = React.memo(function RollingUsagePanel({
   };
 
   const items = [
+    {
+      key: "total_cost",
+      label: copy("dashboard.rolling.total_cost"),
+      rawValue: null,
+      value: costValue || placeholder,
+    },
     {
       key: "last_7d",
       label: copy("dashboard.rolling.last_7d"),
@@ -101,7 +108,7 @@ export const RollingUsagePanel = React.memo(function RollingUsagePanel({
 
   return (
     <AsciiBox title={copy("dashboard.rolling.title")} className={className} bodyClassName="py-2">
-      <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {items.map((item, idx) => (
           <AnimatedStatCard
             key={item.key}
@@ -109,7 +116,6 @@ export const RollingUsagePanel = React.memo(function RollingUsagePanel({
             rawValue={item.rawValue}
             formattedValue={item.value}
             delay={idx * 150}
-            className={idx === items.length - 1 ? "col-span-2 lg:col-span-1" : ""}
           />
         ))}
       </div>

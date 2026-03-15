@@ -2,8 +2,8 @@ import { Button } from "@base-ui/react/button";
 import React from "react";
 import { copy } from "../../../lib/copy";
 import { AsciiBox } from "../../foundation/AsciiBox.jsx";
+import { JumpingNumber } from "../../foundation/JumpingNumber.jsx";
 import { MatrixButton } from "../../foundation/MatrixButton.jsx";
-import { ScrambleText } from "../../foundation/ScrambleText.jsx";
 
 function normalizePeriods(periods) {
   if (!Array.isArray(periods)) return [];
@@ -93,7 +93,7 @@ export const UsagePanel = React.memo(function UsagePanel({
   return (
     <AsciiBox title={title} className={className}>
       {!hideHeader ? (
-        <div className="flex flex-wrap items-center justify-between border-b border-[#E2E8F0] mb-4 pb-3 gap-4 px-1">
+        <div className="flex flex-wrap items-center justify-between border-b border-[#E2E8F0] mb-3 pb-2 gap-3 px-1">
           <div className="flex flex-wrap gap-1 bg-slate-100/50 backdrop-blur-sm rounded-lg p-1 border border-slate-200/50">
             {tabs.map((p) => (
               <Button
@@ -144,36 +144,29 @@ export const UsagePanel = React.memo(function UsagePanel({
       ) : null}
 
       {showSummary || useSummaryLayout ? (
-        <div className={`grid gap-4 py-1 ${!breakdownCollapsed && breakdownRows.length ? "xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : ""}`}>
-          <div className="rounded-[26px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(239,246,255,0.9))] p-4 shadow-sm shadow-blue-500/5 sm:p-5">
+        <div className={`grid gap-3 py-0.5 ${!breakdownCollapsed && breakdownRows.length ? "xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : ""}`}>
+          <div className="rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(239,246,255,0.9))] p-3 shadow-sm shadow-blue-500/5 sm:p-4">
             <div className="flex flex-col gap-3">
               <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#64748B]">
                 {summaryLabel}
               </div>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div className={`${summaryPlaceholder ? "text-4xl md:text-5xl" : "text-5xl md:text-6xl"} font-extrabold tracking-[0.02em] tabular-nums leading-none select-none font-display ${summaryPlaceholder ? "text-slate-500" : "bg-gradient-to-br from-slate-900 via-slate-700 to-blue-700 bg-clip-text text-transparent"}`}>
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div className={`${summaryPlaceholder ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl"} font-extrabold tracking-[0.02em] tabular-nums leading-none select-none font-display ${summaryPlaceholder ? "text-slate-500" : "text-[#0F172A]"}`}>
                   {summaryPlaceholder ? (
                     summaryValue
                   ) : (
-                    <span className="relative inline-block leading-none">
-                      {summaryAnimate ? (
-                        <ScrambleText
-                          text={summaryValue}
-                          durationMs={summaryScrambleDurationMs}
-                          startScrambled
-                          respectReducedMotion
-                        />
-                      ) : (
-                        summaryValue
-                      )}
-                    </span>
+                    <JumpingNumber
+                      value={summaryValue}
+                      staggerMs={45}
+                      durationMs={650}
+                    />
                   )}
                 </div>
                 {summaryCostValue ? (
                   <div className="flex items-center gap-2">
                     <span className="sr-only">{copy("usage.metric.total_cost")}</span>
                     <span className="text-lg font-bold leading-none text-amber-600 md:text-xl font-display">
-                      {summaryCostValue}
+                      <JumpingNumber value={summaryCostValue} staggerMs={35} durationMs={500} />
                     </span>
                     {onCostInfo ? (
                       <Button
@@ -204,13 +197,13 @@ export const UsagePanel = React.memo(function UsagePanel({
               {breakdownRows.map((row, idx) => (
                 <div
                   key={`${row.label}-${idx}`}
-                  className="group flex flex-col justify-between rounded-2xl border border-white/80 bg-white/50 p-3.5 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/50 hover:shadow-lg hover:shadow-blue-500/10"
+                  className="group flex flex-col justify-between rounded-xl border border-white/80 bg-white/50 p-2.5 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-300/50 hover:shadow-lg hover:shadow-blue-500/10"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8] transition-colors group-hover:text-blue-600/70">
                     {row.label}
                   </span>
-                  <span className="mt-2 text-[18px] font-extrabold tracking-wide text-[#2563EB] font-display">
-                    {row.value}
+                  <span className="mt-1.5 text-[16px] font-extrabold tracking-wide text-[#2563EB] font-display">
+                    <JumpingNumber value={row.value} staggerMs={30} durationMs={500} />
                   </span>
                 </div>
               ))}
@@ -241,7 +234,7 @@ export const UsagePanel = React.memo(function UsagePanel({
       )}
 
       {rangeLabel ? (
-        <div className="mt-3 text-[11px] text-[#94A3B8] font-medium px-2">
+        <div className="mt-2 text-[10px] text-[#94A3B8] font-medium px-1">
           {copy("usage.range_label", { range: rangeLabel })}
           {rangeTimeZoneLabel ? ` ${rangeTimeZoneLabel}` : ""}
         </div>

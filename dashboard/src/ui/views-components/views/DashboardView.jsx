@@ -114,7 +114,7 @@ export function DashboardView(props) {
   return (
     <>
       <MatrixShell
-        hideHeader={screenshotMode}
+        hideHeader
         headerStatus={headerStatus}
         headerRight={headerRight}
         footerLeft={footerLeftContent ? <span>{footerLeftContent}</span> : null}
@@ -175,12 +175,12 @@ export function DashboardView(props) {
             </AsciiBox>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 md:gap-4">
-            {/* -- Row 1: Identity + Quick Stats -- */}
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
-              <div className="lg:col-span-5 animate-fade-in-up min-w-0">
+          <div className="flex flex-col gap-2 md:gap-2.5">
+            {/* -- Row 1: Account + Stats (left) | Usage Overview (right) -- */}
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-2.5">
+              <div className="lg:col-span-6 animate-fade-in-up min-w-0 flex flex-col gap-2">
                 {screenshotMode ? (
-                  <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex items-start justify-between gap-4 mb-2">
                     <div className="flex flex-col gap-1">
                       <span className="text-3xl md:text-4xl font-extrabold text-[#1E293B] tracking-[-0.03em] leading-none">
                         {screenshotTitleLine1}
@@ -203,60 +203,46 @@ export function DashboardView(props) {
                   animateTitle={false}
                   scrambleDurationMs={identityScrambleDurationMs}
                 />
+                <RollingUsagePanel rolling={rollingUsage} costValue={summaryCostValue} className="animate-pulse-glow flex-1" />
               </div>
-              <div className="lg:col-span-7 flex flex-col gap-4 animate-fade-in-up-d1 min-w-0">
-                <RollingUsagePanel rolling={rollingUsage} className="animate-pulse-glow" />
-                {projectUsageBlock}
-              </div>
-            </div>
-
-            {/* -- Row 2: Usage Overview (Full Width, Hero Section) -- */}
-            <div className="animate-fade-in-up-d2">
-              <UsagePanel
-                title={copy("usage.panel.title")}
-                period={period}
-                periods={periodsForDisplay}
-                onPeriodChange={setSelectedPeriod}
-                metrics={metricsRows}
-                showSummary={period === "total"}
-                useSummaryLayout
-                summaryLabel={summaryLabel}
-                summaryValue={summaryValue}
-                summaryCostValue={summaryCostValue}
-                onCostInfo={costInfoEnabled ? openCostModal : null}
-                breakdownCollapsed={allowBreakdownToggle ? coreIndexCollapsed : true}
-                onToggleBreakdown={
-                  allowBreakdownToggle ? () => setCoreIndexCollapsed((value) => !value) : null
-                }
-                collapseLabel={allowBreakdownToggle ? coreIndexCollapseLabel : undefined}
-                expandLabel={allowBreakdownToggle ? coreIndexExpandLabel : undefined}
-                collapseAriaLabel={allowBreakdownToggle ? coreIndexCollapseAria : undefined}
-                expandAriaLabel={allowBreakdownToggle ? coreIndexExpandAria : undefined}
-                onRefresh={screenshotMode ? null : refreshAll}
-                loading={usageLoadingState}
-                error={usageError}
-                rangeLabel={screenshotMode ? null : rangeLabel}
-                rangeTimeZoneLabel={timeZoneRangeLabel}
-                statusLabel={screenshotMode ? null : usageSourceLabel}
-                summaryScrambleDurationMs={identityScrambleDurationMs}
-                summaryAnimate={false}
-              />
-            </div>
-
-            {/* -- Row 3: Top Models + Model Breakdown (side by side) -- */}
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
-              <div className="lg:col-span-5 animate-fade-in-up-d3 min-w-0">
-                <TopModelsPanel rows={topModels} />
-              </div>
-              <div className="lg:col-span-7 animate-fade-in-up-d4 min-w-0">
-                <NeuralDivergenceMap fleetData={fleetData} className="min-w-0" footer={null} />
+              <div className="lg:col-span-6 animate-fade-in-up-d1 min-w-0">
+                <UsagePanel
+                  title={copy("usage.panel.title")}
+                  period={period}
+                  periods={periodsForDisplay}
+                  onPeriodChange={setSelectedPeriod}
+                  metrics={metricsRows}
+                  showSummary={period === "total"}
+                  useSummaryLayout
+                  summaryLabel={summaryLabel}
+                  summaryValue={summaryValue}
+                  summaryCostValue={summaryCostValue}
+                  onCostInfo={costInfoEnabled ? openCostModal : null}
+                  breakdownCollapsed={allowBreakdownToggle ? coreIndexCollapsed : true}
+                  onToggleBreakdown={
+                    allowBreakdownToggle ? () => setCoreIndexCollapsed((value) => !value) : null
+                  }
+                  collapseLabel={allowBreakdownToggle ? coreIndexCollapseLabel : undefined}
+                  expandLabel={allowBreakdownToggle ? coreIndexExpandLabel : undefined}
+                  collapseAriaLabel={allowBreakdownToggle ? coreIndexCollapseAria : undefined}
+                  expandAriaLabel={allowBreakdownToggle ? coreIndexExpandAria : undefined}
+                  onRefresh={screenshotMode ? null : refreshAll}
+                  loading={usageLoadingState}
+                  error={usageError}
+                  rangeLabel={screenshotMode ? null : rangeLabel}
+                  rangeTimeZoneLabel={timeZoneRangeLabel}
+                  statusLabel={screenshotMode ? null : usageSourceLabel}
+                  summaryScrambleDurationMs={identityScrambleDurationMs}
+                  summaryAnimate={false}
+                  className="h-full"
+                />
               </div>
             </div>
 
-            {/* -- Row 4: Trend Chart + Heatmap (full width) -- */}
-            {!screenshotMode ? (
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
-                <div className="lg:col-span-7 animate-fade-in-up-d5 min-w-0">
+            {/* -- Row 2: Trend Chart | Model Breakdown -- */}
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-2.5">
+              <div className="lg:col-span-8 animate-fade-in-up-d2 min-w-0">
+                {!screenshotMode ? (
                   <TrendMonitor
                     rows={trendRowsForDisplay}
                     from={trendFromForDisplay}
@@ -264,11 +250,23 @@ export function DashboardView(props) {
                     period={period}
                     timeZoneLabel={trendTimeZoneLabel}
                     showTimeZoneLabel={false}
-                    className="h-auto min-h-[280px]"
+                    className="h-full min-h-[200px]"
                   />
-                </div>
-                <div className="lg:col-span-5 animate-fade-in-up-d6 min-w-0">
+                ) : null}
+              </div>
+              <div className="lg:col-span-4 animate-fade-in-up-d2 min-w-0">
+                <NeuralDivergenceMap fleetData={fleetData} className="min-w-0 h-full" footer={null} />
+              </div>
+            </div>
+
+            {/* -- Row 3: Activity Heatmap | Top Models -- */}
+            {!screenshotMode ? (
+              <div className="grid grid-cols-1 gap-2 lg:grid-cols-12 lg:gap-2.5">
+                <div className="lg:col-span-8 animate-fade-in-up-d3 min-w-0">
                   {activityHeatmapBlock}
+                </div>
+                <div className="lg:col-span-4 animate-fade-in-up-d3 min-w-0">
+                  <TopModelsPanel rows={topModels} />
                 </div>
               </div>
             ) : (
@@ -276,6 +274,9 @@ export function DashboardView(props) {
                 {activityHeatmapBlock}
               </>
             )}
+
+
+
 
             {/* -- Row 5: Auth / Install / Public Profile -- */}
             {!screenshotMode && !signedIn && !publicMode ? (
@@ -356,48 +357,6 @@ export function DashboardView(props) {
               </div>
             ) : null}
 
-            {!screenshotMode && signedIn && !publicMode ? (
-              <div className="animate-fade-in-up-d7">
-                <AsciiBox title={publicViewTitle} className="relative">
-                  <div className="flex flex-col gap-3">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Button
-                          type="button"
-                          onClick={handleTogglePublicView}
-                          disabled={publicViewBusy}
-                          aria-pressed={publicViewEnabled}
-                          aria-label={publicViewToggleLabel}
-                          title={publicViewToggleLabel}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full px-[3px] transition-colors ${
-                            publicViewEnabled
-                              ? "bg-[#2563EB]"
-                              : "bg-[#CBD5E1]"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={`inline-block h-4 w-4 bg-white rounded-full shadow-sm transition-transform ${
-                              publicViewEnabled ? "translate-x-[18px]" : "translate-x-0"
-                            }`}
-                          />
-                        </Button>
-                        <span className="text-[12px] font-medium text-[#64748B]">
-                          {publicViewStatusLabel}
-                        </span>
-                      </div>
-                      <MatrixButton
-                        onClick={handleCopyPublicView}
-                        disabled={!publicViewEnabled || publicViewBusy}
-                        className="px-3 py-2 text-[11px]"
-                      >
-                        {publicViewCopyButtonLabel}
-                      </MatrixButton>
-                    </div>
-                  </div>
-                </AsciiBox>
-              </div>
-            ) : null}
 
             {screenshotMode ? (
               <div

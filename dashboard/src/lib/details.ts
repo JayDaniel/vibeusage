@@ -1,6 +1,6 @@
 import { sortDetailRows } from "./detail-sort";
 
-export const DETAILS_PAGE_SIZE = 12;
+export const DETAILS_PAGE_SIZE = 15;
 
 const TOKEN_KEYS = [
   "total_tokens",

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BackendStatus } from "../components/BackendStatus.jsx";
 import { useActivityHeatmap } from "../hooks/use-activity-heatmap.js";
 import { useProjectUsageSummary } from "../hooks/use-project-usage-summary";
+import { useSourceHeatmaps } from "../hooks/use-source-heatmaps";
 import { useTrendData } from "../hooks/use-trend-data.js";
 import { useUsageData } from "../hooks/use-usage-data.js";
 import { useUsageModelBreakdown } from "../hooks/use-usage-model-breakdown.js";
@@ -42,9 +43,10 @@ import {
 import { AsciiBox } from "../ui/foundation/AsciiBox.jsx";
 import { MatrixButton } from "../ui/foundation/MatrixButton.jsx";
 import { ActivityHeatmap } from "../ui/views-components/components/ActivityHeatmap.jsx";
+import { ActivityPanel } from "../ui/views-components/components/ActivityPanel.jsx";
 import { BootScreen } from "../ui/views-components/components/BootScreen.jsx";
-import { GithubStar } from "../ui/views-components/components/GithubStar.jsx";
 import { ProjectUsagePanel } from "../ui/views-components/components/ProjectUsagePanel.jsx";
+import { SourceHeatmapCard } from "../ui/views-components/components/SourceHeatmapCard.jsx";
 import { DashboardView } from "../ui/views-components/views/DashboardView.jsx";
 
 const PERIODS = ["day", "week", "month", "total"];
@@ -483,6 +485,28 @@ export function DashboardPage({
     tzOffsetMinutes,
   });
 
+  const sourceKeys = useMemo(() => {
+    const sources = Array.isArray(modelBreakdown?.sources) ? modelBreakdown.sources : [];
+    return sources
+      .map((s) => (typeof s?.source === "string" ? s.source.trim().toLowerCase() : ""))
+      .filter(Boolean);
+  }, [modelBreakdown?.sources]);
+
+  const {
+    entries: sourceHeatmapEntries,
+    loading: sourceHeatmapsLoading,
+  } = useSourceHeatmaps({
+    sources: sourceKeys,
+    baseUrl,
+    accessToken,
+    guestAllowed,
+    weeks: 52,
+    weekStartsOn: "sun",
+    timeZone,
+    tzOffsetMinutes,
+    now: mockNow,
+  });
+
   const [projectUsageLimit, setProjectUsageLimit] = useState(3);
   const {
     entries: projectUsageEntries,
@@ -801,18 +825,48 @@ export function DashboardPage({
     return normalized.slice(0, 6);
   }, [publicMode, userStatus]);
 
+  const sourceCards = useMemo(() => {
+    if (!sourceHeatmapEntries.length && !sourceHeatmapsLoading) return null;
+    const breakdownSources = Array.isArray(modelBreakdown?.sources) ? modelBreakdown.sources : [];
+    const breakdownBySource = new Map();
+    for (const s of breakdownSources) {
+      if (typeof s?.source === "string") {
+        breakdownBySource.set(s.source.trim().toLowerCase(), s);
+      }
+    }
+    const filtered = sourceHeatmapEntries.filter((entry) => entry.heatmap);
+    if (!filtered.length) return null;
+    return filtered.map((entry) => (
+      <SourceHeatmapCard
+        key={entry.source}
+        source={entry.source}
+        heatmap={entry.heatmap}
+        daily={entry.daily}
+        sourceBreakdown={breakdownBySource.get(entry.source) || null}
+        timeZoneShortLabel={timeZoneShortLabel}
+      />
+    ));
+  }, [modelBreakdown?.sources, sourceHeatmapEntries, sourceHeatmapsLoading, timeZoneShortLabel]);
+
   const activityHeatmapBlock = (
     <AsciiBox
       title={copy("dashboard.activity.title")}
-      subtitle={accessEnabled ? copy("dashboard.activity.subtitle") : "—"}
+      subtitle={!sourceCards ? (accessEnabled ? copy("dashboard.activity.subtitle") : "—") : undefined}
       className="min-w-0 overflow-hidden"
     >
-      <ActivityHeatmap
-        heatmap={heatmap}
-        timeZoneLabel={timeZoneLabel}
-        timeZoneShortLabel={timeZoneShortLabel}
-        hideLegend={screenshotMode}
-        defaultToLatestMonth={screenshotMode}
+      <ActivityPanel
+        globalHeatmap={
+          <ActivityHeatmap
+            heatmap={heatmap}
+            timeZoneLabel={timeZoneLabel}
+            timeZoneShortLabel={timeZoneShortLabel}
+            hideLegend={screenshotMode}
+            defaultToLatestMonth={screenshotMode}
+          />
+        }
+        sourceCards={sourceCards}
+        subtitle={accessEnabled ? copy("dashboard.activity.subtitle") : "—"}
+        hasSourceData={!!sourceCards}
       />
     </AsciiBox>
   );
@@ -1213,7 +1267,6 @@ export function DashboardPage({
 
   const headerRight = (
     <div className="ml-auto flex w-full flex-wrap items-center justify-stretch gap-2 sm:w-max sm:min-w-max sm:flex-nowrap sm:justify-end sm:gap-3 md:gap-4">
-      <GithubStar isFixed={false} size="header" className="hidden sm:inline-flex" />
       {!publicMode && signedIn ? (
         <MatrixButton as="a" size="header" href="/leaderboard" className="flex-1 justify-center sm:flex-none">
           {copy("leaderboard.nav.open")}

@@ -93,6 +93,18 @@ body {
   to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes digitJump {
+  0% { opacity: 0; transform: translateY(80%) scale(0.6); }
+  50% { opacity: 1; transform: translateY(-12%) scale(1.05); }
+  70% { transform: translateY(4%) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes charFade {
+  0% { opacity: 0; transform: translateY(30%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .animate-blob {
   animation: blob 7s infinite;
 }
