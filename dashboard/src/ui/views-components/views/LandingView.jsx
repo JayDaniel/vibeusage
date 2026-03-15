@@ -1,14 +1,8 @@
-import React, { Suspense, useState } from "react";
+import React from "react";
 import { DecodingText } from "../../foundation/DecodingText.jsx";
 import { MatrixButton } from "../../foundation/MatrixButton.jsx";
 import { GithubStar } from "../components/GithubStar.jsx";
 import { ClientLogoRow } from "../components/ClientLogoRow.jsx";
-
-const LandingExtras = React.lazy(() =>
-  import("../components/LandingExtras.jsx").then((mod) => ({
-    default: mod.LandingExtras,
-  })),
-);
 
 function FlatCard({ children, className = "", header }) {
   return (
@@ -23,84 +17,13 @@ function FlatCard({ children, className = "", header }) {
   );
 }
 
-function CommandBlock({ command, copied, onCopy, label, helper }) {
-  return (
-    <div className="space-y-3">
-      {label && (
-        <p className="text-[12px] font-medium text-[#64748B]">
-          {label}
-        </p>
-      )}
-      <div className="relative">
-        <div className="relative flex items-center gap-0 border border-[#E2E8F0] bg-[#F8FAFC] rounded-lg overflow-hidden">
-          <div className="shrink-0 px-3 py-3 border-r border-[#E2E8F0] bg-[#F1F5F9]">
-            <span className="text-[#64748B] font-mono text-sm font-bold">$</span>
-          </div>
 
-          <div className="flex-1 min-w-0 px-4 py-3 overflow-x-auto">
-            <code className="font-mono text-sm text-[#1E293B] whitespace-nowrap block">
-              {command}
-            </code>
-          </div>
 
-          <button
-            type="button"
-            onClick={onCopy}
-            className="shrink-0 px-4 py-3 border-l border-[#E2E8F0] text-[#94A3B8] hover:text-[#1E293B] hover:bg-[#F1F5F9] transition-colors duration-200"
-            title={copied ? "Copied!" : "Copy to clipboard"}
-          >
-            {copied ? (
-              <svg viewBox="0 0 16 16" className="w-4 h-4 text-emerald-600" fill="currentColor">
-                <path d="M6 10.5L3.5 8l-1 1L6 13l7-7-1-1-6 5.5z" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="5" y="5" width="8" height="8" rx="1.5" />
-                <path d="M3 11V3h8" strokeLinecap="round" />
-              </svg>
-            )}
-          </button>
-        </div>
-      </div>
-      
-      {helper && (
-        <p className="text-[11px] text-[#94A3B8] font-medium pl-1">
-          {helper}
-        </p>
-      )}
-    </div>
-  );
-}
 
 export function LandingView({
   copy,
-  effectsReady,
-  signInUrl,
   signUpUrl,
-  loginLabel,
-  signupLabel,
-  handle,
-  onHandleChange,
-  specialHandle,
-  handlePlaceholder,
-  rankLabel,
-  installCommand,
-  installCopied,
-  onCopyInstallCommand,
 }) {
-  const [aiAgentCopied, setAiAgentCopied] = useState(false);
-  
-  const handleAiAgentCopy = () => {
-    navigator.clipboard.writeText(copy("landing.ai_agent.guide_url"));
-    setAiAgentCopied(true);
-    setTimeout(() => setAiAgentCopied(false), 2000);
-  };
-  const extrasSkeleton = (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-      <div className="h-44 bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl animate-pulse" />
-      <div className="h-44 bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl animate-pulse" />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] font-['Fira_Code',monospace] text-[#1E293B] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-blue-100 selection:text-blue-900">
@@ -139,47 +62,7 @@ export function LandingView({
           </div>
         </div>
 
-        {/* Landing extras */}
-        {effectsReady ? (
-          <Suspense fallback={extrasSkeleton}>
-            <LandingExtras
-              handle={handle}
-              onHandleChange={onHandleChange}
-              specialHandle={specialHandle}
-              handlePlaceholder={handlePlaceholder}
-              rankLabel={rankLabel}
-            />
-          </Suspense>
-        ) : (
-          extrasSkeleton
-        )}
 
-        {/* AI Agent Install Card */}
-        <FlatCard className="w-full max-w-2xl" header={copy("landing.ai_agent.title")}>
-          <div className="space-y-4">
-            <p className="text-[14px] text-[#64748B] leading-relaxed">
-              {copy("landing.ai_agent.description")}
-            </p>
-            
-            <CommandBlock
-              command={copy("landing.ai_agent.command")}
-              copied={aiAgentCopied}
-              onCopy={handleAiAgentCopy}
-              helper={copy("landing.ai_agent.helper")}
-            />
-          </div>
-        </FlatCard>
-
-        {/* Quick Install Card */}
-        <FlatCard className="w-full max-w-2xl" header="Quick Install">
-          <CommandBlock
-            command={installCommand}
-            copied={installCopied}
-            onCopy={onCopyInstallCommand}
-            label={copy("landing.install.prompt")}
-            helper={copy("landing.install.helper")}
-          />
-        </FlatCard>
 
 
         {/* Features Card */}
