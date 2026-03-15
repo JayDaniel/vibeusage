@@ -1,6 +1,7 @@
 import { Button } from "@base-ui/react/button";
 import React from "react";
 import { copy } from "../../../lib/copy";
+import { useLocale } from "../../../lib/locale.jsx";
 import { AsciiBox } from "../../foundation/AsciiBox.jsx";
 import { JumpingNumber } from "../../foundation/JumpingNumber.jsx";
 import { MatrixButton } from "../../foundation/MatrixButton.jsx";
@@ -9,7 +10,9 @@ function normalizePeriods(periods) {
   if (!Array.isArray(periods)) return [];
   return periods.map((p) => {
     if (typeof p === "string") {
-      return { key: p, label: p.charAt(0).toUpperCase() + p.slice(1) };
+      const translated = copy(`usage.period.${p}`);
+      const label = translated && translated !== `usage.period.${p}` ? translated : p.charAt(0).toUpperCase() + p.slice(1);
+      return { key: p, label };
     }
     return { key: p.key, label: p.label || String(p.key).charAt(0).toUpperCase() + String(p.key).slice(1) };
   });
@@ -54,6 +57,7 @@ export const UsagePanel = React.memo(function UsagePanel({
   hideHeader = false,
   className = "",
 }) {
+  useLocale(); // subscribe to locale changes for period label translation
   const tabs = normalizePeriods(periods);
   const toggleLabel = breakdownCollapsed ? expandLabel : collapseLabel;
   const toggleAriaLabel = breakdownCollapsed ? expandAriaLabel : collapseAriaLabel;

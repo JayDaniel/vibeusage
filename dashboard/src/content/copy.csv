@@ -123,6 +123,10 @@ identity_panel.streak_label,ui,IdentityPanel,IdentityPanel,streak_label,"Active"
 identity_panel.rank_placeholder,ui,IdentityPanel,IdentityPanel,rank_placeholder,"—","—",,active
 identity_panel.streak_value,ui,IdentityPanel,IdentityPanel,streak_value,"{{days}} days","{{days}} 天",,active
 
+usage.period.day,ui,UsagePanel,UsagePanel,period_label,"Day","日",,active
+usage.period.week,ui,UsagePanel,UsagePanel,period_label,"Week","周",,active
+usage.period.month,ui,UsagePanel,UsagePanel,period_label,"Month","月",,active
+usage.period.total,ui,UsagePanel,UsagePanel,period_label,"Total","全部",,active
 usage.panel.title,ui,UsagePanel,UsagePanel,title,"Usage Overview","用量概览",,active
 dashboard.core_index.collapse_label,dashboard,DashboardPage,UsagePanel,toggle,"▾","▾",,active
 dashboard.core_index.expand_label,dashboard,DashboardPage,UsagePanel,toggle,"▸","▸",,active
