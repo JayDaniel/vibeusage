@@ -36,8 +36,8 @@ function toNonNegativeInt(value) {
 }
 
 async function fetchDeviceTokenRow({ serviceClient, baseUrl, anonKey, tokenHash, fetcher }) {
-  if (serviceClient?.database?.from) {
-    const { data: tokenRow, error } = await serviceClient.database
+  if (serviceClient?.from) {
+    const { data: tokenRow, error } = await serviceClient
       .from("vibeusage_tracker_device_tokens")
       .select(DEVICE_TOKEN_SELECT)
       .eq("token_hash", tokenHash)
@@ -102,8 +102,8 @@ async function touchDeviceTokenAndDevice({
     : { last_used_at: nowIso };
 
   try {
-    if (serviceClient?.database?.from) {
-      await serviceClient.database
+    if (serviceClient?.from) {
+      await serviceClient
         .from("vibeusage_tracker_device_tokens")
         .update(tokenUpdate)
         .eq("id", tokenRow.id);
@@ -121,8 +121,8 @@ async function touchDeviceTokenAndDevice({
   } catch (_e) {}
 
   try {
-    if (serviceClient?.database?.from) {
-      await serviceClient.database
+    if (serviceClient?.from) {
+      await serviceClient
         .from("vibeusage_tracker_devices")
         .update({ last_seen_at: nowIso })
         .eq("id", tokenRow.device_id);
@@ -177,8 +177,8 @@ async function upsertHourlyUsage({
     }
   }
 
-  if (serviceClient?.database?.from) {
-    const { error } = await serviceClient.database
+  if (serviceClient?.from) {
+    const { error } = await serviceClient
       .from("vibeusage_tracker_hourly")
       .upsert(rows, { onConflict: "user_id,device_id,source,model,hour_start" });
     if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
@@ -259,8 +259,8 @@ async function upsertProjectUsage({
     }
   }
 
-  if (serviceClient?.database?.from) {
-    const { error } = await serviceClient.database
+  if (serviceClient?.from) {
+    const { error } = await serviceClient
       .from("vibeusage_project_usage_hourly")
       .upsert(rows, { onConflict: "user_id,project_key,hour_start,source" });
     if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
@@ -338,8 +338,8 @@ async function upsertProjectRegistry({
     }
   }
 
-  if (serviceClient?.database?.from) {
-    const { error } = await serviceClient.database
+  if (serviceClient?.from) {
+    const { error } = await serviceClient
       .from("vibeusage_projects")
       .upsert(rows, { onConflict: "user_id,project_key" });
     if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
@@ -414,8 +414,8 @@ async function upsertDeviceSubscriptions({
     }
   }
 
-  if (serviceClient?.database?.from) {
-    const { error } = await serviceClient.database
+  if (serviceClient?.from) {
+    const { error } = await serviceClient
       .from("vibeusage_tracker_subscriptions")
       .upsert(rows, { onConflict: "user_id,tool,provider,product" });
     if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
@@ -481,8 +481,8 @@ async function recordIngestBatchMetrics({
   };
 
   try {
-    if (serviceClient?.database?.from) {
-      const { error } = await serviceClient.database
+    if (serviceClient?.from) {
+      const { error } = await serviceClient
         .from("vibeusage_tracker_ingest_batches")
         .insert(row);
       if (error) throw new Error(error.message);

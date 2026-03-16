@@ -3,8 +3,8 @@ import { buildActivityHeatmap, computeActiveStreakDays, computeLongestStreakDays
 import { copy } from "../../../lib/copy";
 import { formatCompactNumber, toFiniteNumber } from "../../../lib/format";
 
-const CELL_SIZE = 10;
-const CELL_GAP = 2;
+const CELL_SIZE = 13;
+const CELL_GAP = 3;
 const LABEL_WIDTH = 0;
 
 /**
@@ -311,7 +311,7 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
   // Day labels（只显示 Mon 和 Sun，其他留空，参照截图样式）
   const dayLabels = weekStartsOn === "mon"
     ? ["Mon", "", "", "", "", "", "Sun"]
-    : ["", "Mon", "", "", "", "", "Sun"];
+    : ["Sun", "Mon", "", "", "", "", ""];
 
   if (!weeks.length) {
     return null;
@@ -337,31 +337,37 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
   };
 
   return (
-    <div className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
+    <div className="flex flex-col gap-2.5 py-6 first:pt-0 last:pb-0 border-b border-slate-100 last:border-b-0">
       {/* Header: Source Name + Token Stats */}
-      <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-[15px] font-extrabold text-slate-800 tracking-tight leading-none">
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="text-[26px] font-extrabold text-slate-800 tracking-tight leading-none">
           {sourceLabel}
         </h3>
-        <div className="flex items-baseline gap-3">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider leading-none">
-            {copy("source_heatmap.input_tokens")}
-            <span className="ml-1 text-[13px] font-bold text-slate-700 tabular-nums">
+        <div className="flex items-end gap-6">
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] text-slate-400 uppercase tracking-[0.15em] font-semibold leading-none">
+              {copy("source_heatmap.input_tokens")}
+            </span>
+            <span className="text-[18px] font-extrabold text-slate-700 tabular-nums leading-tight mt-0.5">
               {formatTokenCompact(inputTokens)}
             </span>
-          </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider leading-none">
-            {copy("source_heatmap.output_tokens")}
-            <span className="ml-1 text-[13px] font-bold text-slate-700 tabular-nums">
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] text-slate-400 uppercase tracking-[0.15em] font-semibold leading-none">
+              {copy("source_heatmap.output_tokens")}
+            </span>
+            <span className="text-[18px] font-extrabold text-slate-700 tabular-nums leading-tight mt-0.5">
               {formatTokenCompact(outputTokens)}
             </span>
-          </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider leading-none">
-            {copy("source_heatmap.total_tokens")}
-            <span className="ml-1 text-[15px] font-extrabold text-slate-800 tabular-nums">
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] text-slate-400 uppercase tracking-[0.15em] font-semibold leading-none">
+              {copy("source_heatmap.total_tokens")}
+            </span>
+            <span className="text-[22px] font-black text-slate-800 tabular-nums leading-tight mt-0.5">
               {formatTokenCompact(totalTokens)}
             </span>
-          </span>
+          </div>
         </div>
       </div>
 
@@ -375,7 +381,7 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
               gridTemplateColumns: `24px repeat(${weeks.length}, ${CELL_SIZE}px)`,
               columnGap: `${CELL_GAP}px`,
             }}
-            className="text-[9px] font-medium text-slate-400 mb-0.5"
+            className="text-[10px] font-medium text-slate-400 mb-1"
           >
             <span></span>
             {monthMarkers.map((marker) => (
@@ -398,7 +404,7 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
             }}
           >
             {/* Day labels column */}
-            <div style={labelRows} className="text-[9px] font-medium text-slate-400">
+            <div style={labelRows} className="text-[10px] font-medium text-slate-400">
               {dayLabels.map((label, i) => (
                 <span key={i} className="leading-none flex items-center">
                   {label}
@@ -443,16 +449,16 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium">
+      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-1">
         <span>{copy("heatmap.legend.less")}</span>
-        <div className="flex gap-[2px]">
+        <div className="flex gap-[3px]">
           {[0, 1, 2, 3, 4].map((level) => (
             <span
               key={level}
-              className="rounded-[1.5px]"
+              className="rounded-[2px]"
               style={{
-                width: 8,
-                height: 8,
+                width: 10,
+                height: 10,
                 background: theme.levels[level],
               }}
             />
@@ -462,38 +468,38 @@ export const SourceHeatmapCard = React.memo(function SourceHeatmapCard({
       </div>
 
       {/* Bottom Stats Row */}
-      <div className="grid grid-cols-4 gap-2 pt-1.5 border-t border-slate-100">
-        <div className="flex flex-col">
-          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider leading-tight">
+      <div className="grid grid-cols-4 gap-4 pt-3 mt-1">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.15em] leading-tight">
             {copy("source_heatmap.most_used_model")}
           </span>
-          <span className="text-[11px] font-bold text-slate-800 truncate leading-snug" title={topModelName}>
+          <span className="text-[14px] font-extrabold text-slate-800 truncate leading-snug" title={topModelName}>
             {topModelName}
-            <span className="text-[10px] font-normal text-slate-400 ml-1">({formatTokenCompact(topModelTokens)})</span>
+            <span className="text-[12px] font-normal text-slate-400 ml-1">({formatTokenCompact(topModelTokens)})</span>
           </span>
         </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider leading-tight">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.15em] leading-tight">
             {copy("source_heatmap.recent_use")}
           </span>
-          <span className="text-[11px] font-bold text-slate-800 truncate leading-snug" title={recentModelName}>
+          <span className="text-[14px] font-extrabold text-slate-800 truncate leading-snug" title={recentModelName}>
             {recentModelName}
-            <span className="text-[10px] font-normal text-slate-400 ml-1">({formatTokenCompact(recentModelTokens)})</span>
+            <span className="text-[12px] font-normal text-slate-400 ml-1">({formatTokenCompact(recentModelTokens)})</span>
           </span>
         </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider leading-tight">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.15em] leading-tight">
             {copy("source_heatmap.longest_streak")}
           </span>
-          <span className="text-[13px] font-extrabold text-slate-800 tabular-nums leading-snug">
+          <span className="text-[16px] font-black text-slate-800 tabular-nums leading-snug">
             {longestStreak} {copy("source_heatmap.days")}
           </span>
         </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider leading-tight">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.15em] leading-tight">
             {copy("source_heatmap.current_streak")}
           </span>
-          <span className="text-[13px] font-extrabold text-slate-800 tabular-nums leading-snug">
+          <span className="text-[16px] font-black text-slate-800 tabular-nums leading-snug">
             {currentStreak} {copy("source_heatmap.days")}
           </span>
         </div>

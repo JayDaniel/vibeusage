@@ -79,10 +79,10 @@ var require_env = __commonJS({
       return Deno.env.get("SUPABASE_URL") || Deno.env.get("SUPABASE_INTERNAL_URL") || "http://supabase:7130";
     }
     function getServiceRoleKey() {
-      return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("API_KEY") || null;
+      return Deno.env.get("SERVICE_ROLE_KEY") || Deno.env.get("API_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || null;
     }
     function getAnonKey() {
-      return Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
+      return Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
     }
     function getJwtSecret() {
       return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("SUPABASE_JWT_SECRET") || null;
@@ -100,7 +100,7 @@ var require_env = __commonJS({
 var require_public_view = __commonJS({
   "supabase-src/shared/public-view.js"(exports, module) {
     "use strict";
-    var { createClient: createClient2 } = { createClient: __supabase_createClient__ };
+    var { createClient } = { createClient: __supabase_createClient__ };
     var { getAnonKey, getServiceRoleKey } = require_env();
     var PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
     async function resolvePublicView({ baseUrl, shareToken }) {
@@ -111,7 +111,7 @@ var require_public_view = __commonJS({
       const serviceRoleKey = getServiceRoleKey();
       if (!serviceRoleKey) return { ok: false, edgeClient: null, userId: null };
       const anonKey = getAnonKey();
-      const dbClient = createClient2(baseUrl, anonKey || serviceRoleKey, {
+      const dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
         auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
         global: {
           headers: { Authorization: `Bearer ${serviceRoleKey}` }
@@ -166,7 +166,7 @@ var require_public_view = __commonJS({
 var require_auth = __commonJS({
   "supabase-src/shared/auth.js"(exports, module) {
     "use strict";
-    var { createClient: createClient2 } = { createClient: __supabase_createClient__ };
+    var { createClient } = { createClient: __supabase_createClient__ };
     var { getAnonKey, getJwtSecret } = require_env();
     var { resolvePublicView, isPublicShareToken } = require_public_view();
     function getBearerToken(headerValue) {
@@ -324,7 +324,7 @@ var require_auth = __commonJS({
     }
     async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
       const anonKey = getAnonKey();
-      const edgeClient = createClient2(baseUrl, anonKey || "", {
+      const edgeClient = createClient(baseUrl, anonKey || "", {
         auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
         global: {
           headers: bearer ? { Authorization: `Bearer ${bearer}` } : {}
@@ -858,6 +858,7 @@ var require_vibeusage_leaderboard = __commonJS({
     var { getAnonKey, getBaseUrl, getServiceRoleKey } = require_env();
     var { toUtcDay, addUtcDays, formatDateUTC } = require_date();
     var { toBigInt, toPositiveInt, toPositiveIntOrNull } = require_numbers();
+    var { createClient } = { createClient: __supabase_createClient__ };
     var DEFAULT_LIMIT = 20;
     var MAX_LIMIT = 100;
     var DEFAULT_OFFSET = 0;

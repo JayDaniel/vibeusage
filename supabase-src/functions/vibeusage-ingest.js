@@ -11,6 +11,7 @@ const { withRequestLogging } = require("../shared/logging");
 const { createConcurrencyGuard } = require("../shared/concurrency");
 const { getBearerToken } = require("../shared/auth");
 const { getAnonKey, getBaseUrl, getServiceRoleKey } = require("../shared/env");
+const { createClient } = require("@supabase/supabase-js");
 const { sha256Hex } = require("../shared/crypto");
 const {
   BILLABLE_RULE_VERSION,

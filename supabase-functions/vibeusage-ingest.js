@@ -291,10 +291,10 @@ var require_env = __commonJS({
       return Deno.env.get("SUPABASE_URL") || Deno.env.get("SUPABASE_INTERNAL_URL") || "http://supabase:7130";
     }
     function getServiceRoleKey() {
-      return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("API_KEY") || null;
+      return Deno.env.get("SERVICE_ROLE_KEY") || Deno.env.get("API_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || null;
     }
     function getAnonKey() {
-      return Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
+      return Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
     }
     function getJwtSecret() {
       return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("SUPABASE_JWT_SECRET") || null;
@@ -312,7 +312,7 @@ var require_env = __commonJS({
 var require_public_view = __commonJS({
   "supabase-src/shared/public-view.js"(exports, module) {
     "use strict";
-    var { createClient: createClient2 } = __require("https://esm.sh/@supabase/supabase-js@2");
+    var { createClient } = __require("https://esm.sh/@supabase/supabase-js@2");
     var { getAnonKey, getServiceRoleKey } = require_env();
     var PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
     async function resolvePublicView({ baseUrl, shareToken }) {
@@ -323,7 +323,7 @@ var require_public_view = __commonJS({
       const serviceRoleKey = getServiceRoleKey();
       if (!serviceRoleKey) return { ok: false, edgeClient: null, userId: null };
       const anonKey = getAnonKey();
-      const dbClient = createClient2(baseUrl, anonKey || serviceRoleKey, {
+      const dbClient = createClient(baseUrl, anonKey || serviceRoleKey, {
         auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
         global: {
           headers: { Authorization: `Bearer ${serviceRoleKey}` }
@@ -378,7 +378,7 @@ var require_public_view = __commonJS({
 var require_auth = __commonJS({
   "supabase-src/shared/auth.js"(exports, module) {
     "use strict";
-    var { createClient: createClient2 } = __require("https://esm.sh/@supabase/supabase-js@2");
+    var { createClient } = __require("https://esm.sh/@supabase/supabase-js@2");
     var { getAnonKey, getJwtSecret } = require_env();
     var { resolvePublicView, isPublicShareToken } = require_public_view();
     function getBearerToken(headerValue) {
@@ -536,7 +536,7 @@ var require_auth = __commonJS({
     }
     async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
       const anonKey = getAnonKey();
-      const edgeClient = createClient2(baseUrl, anonKey || "", {
+      const edgeClient = createClient(baseUrl, anonKey || "", {
         auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
         global: {
           headers: bearer ? { Authorization: `Bearer ${bearer}` } : {}
@@ -1296,8 +1296,8 @@ var require_ingest2 = __commonJS({
       return value;
     }
     async function fetchDeviceTokenRow({ serviceClient, baseUrl, anonKey, tokenHash, fetcher }) {
-      if (serviceClient?.database?.from) {
-        const { data: tokenRow2, error: error2 } = await serviceClient.database.from("vibeusage_tracker_device_tokens").select(DEVICE_TOKEN_SELECT).eq("token_hash", tokenHash).maybeSingle();
+      if (serviceClient?.from) {
+        const { data: tokenRow2, error: error2 } = await serviceClient.from("vibeusage_tracker_device_tokens").select(DEVICE_TOKEN_SELECT).eq("token_hash", tokenHash).maybeSingle();
         if (error2) throw new Error(error2.message);
         if (!tokenRow2 || tokenRow2.revoked_at) return null;
         return tokenRow2;
@@ -1349,8 +1349,8 @@ var require_ingest2 = __commonJS({
       const shouldUpdateSync = !lastSyncAt || !isWithinInterval(lastSyncAt, minIntervalMinutes, nowIso);
       const tokenUpdate = shouldUpdateSync ? { last_used_at: nowIso, last_sync_at: nowIso } : { last_used_at: nowIso };
       try {
-        if (serviceClient?.database?.from) {
-          await serviceClient.database.from("vibeusage_tracker_device_tokens").update(tokenUpdate).eq("id", tokenRow.id);
+        if (serviceClient?.from) {
+          await serviceClient.from("vibeusage_tracker_device_tokens").update(tokenUpdate).eq("id", tokenRow.id);
         } else if (baseUrl && anonKey) {
           await updateRecord({
             baseUrl,
@@ -1365,8 +1365,8 @@ var require_ingest2 = __commonJS({
       } catch (_e) {
       }
       try {
-        if (serviceClient?.database?.from) {
-          await serviceClient.database.from("vibeusage_tracker_devices").update({ last_seen_at: nowIso }).eq("id", tokenRow.device_id);
+        if (serviceClient?.from) {
+          await serviceClient.from("vibeusage_tracker_devices").update({ last_seen_at: nowIso }).eq("id", tokenRow.device_id);
         } else if (baseUrl && anonKey) {
           await updateRecord({
             baseUrl,
@@ -1415,8 +1415,8 @@ var require_ingest2 = __commonJS({
           return { ok: false, error: res2.error || `HTTP ${res2.status}`, inserted: 0, skipped: 0 };
         }
       }
-      if (serviceClient?.database?.from) {
-        const { error } = await serviceClient.database.from("vibeusage_tracker_hourly").upsert(rows, { onConflict: "user_id,device_id,source,model,hour_start" });
+      if (serviceClient?.from) {
+        const { error } = await serviceClient.from("vibeusage_tracker_hourly").upsert(rows, { onConflict: "user_id,device_id,source,model,hour_start" });
         if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
         await touchDeviceTokenAndDevice({ serviceClient, tokenRow, nowIso });
         return { ok: true, inserted: rows.length, skipped: 0 };
@@ -1486,8 +1486,8 @@ var require_ingest2 = __commonJS({
           return { ok: false, error: res2.error || `HTTP ${res2.status}`, inserted: 0, skipped: 0 };
         }
       }
-      if (serviceClient?.database?.from) {
-        const { error } = await serviceClient.database.from("vibeusage_project_usage_hourly").upsert(rows, { onConflict: "user_id,project_key,hour_start,source" });
+      if (serviceClient?.from) {
+        const { error } = await serviceClient.from("vibeusage_project_usage_hourly").upsert(rows, { onConflict: "user_id,project_key,hour_start,source" });
         if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
         await touchDeviceTokenAndDevice({ serviceClient, tokenRow, nowIso });
         return { ok: true, inserted: rows.length, skipped: 0 };
@@ -1554,8 +1554,8 @@ var require_ingest2 = __commonJS({
           return { ok: false, error: res2.error || `HTTP ${res2.status}`, inserted: 0, skipped: 0 };
         }
       }
-      if (serviceClient?.database?.from) {
-        const { error } = await serviceClient.database.from("vibeusage_projects").upsert(rows, { onConflict: "user_id,project_key" });
+      if (serviceClient?.from) {
+        const { error } = await serviceClient.from("vibeusage_projects").upsert(rows, { onConflict: "user_id,project_key" });
         if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
         return { ok: true, inserted: rows.length, skipped: 0 };
       }
@@ -1618,8 +1618,8 @@ var require_ingest2 = __commonJS({
           return { ok: false, error: res2.error || `HTTP ${res2.status}`, inserted: 0, skipped: 0 };
         }
       }
-      if (serviceClient?.database?.from) {
-        const { error } = await serviceClient.database.from("vibeusage_tracker_subscriptions").upsert(rows, { onConflict: "user_id,tool,provider,product" });
+      if (serviceClient?.from) {
+        const { error } = await serviceClient.from("vibeusage_tracker_subscriptions").upsert(rows, { onConflict: "user_id,tool,provider,product" });
         if (error) return { ok: false, error: error.message, inserted: 0, skipped: 0 };
         return { ok: true, inserted: rows.length, skipped: 0 };
       }
@@ -1676,8 +1676,8 @@ var require_ingest2 = __commonJS({
         skipped: toNonNegativeInt(skipped)
       };
       try {
-        if (serviceClient?.database?.from) {
-          const { error } = await serviceClient.database.from("vibeusage_tracker_ingest_batches").insert(row);
+        if (serviceClient?.from) {
+          const { error } = await serviceClient.from("vibeusage_tracker_ingest_batches").insert(row);
           if (error) throw new Error(error.message);
           return;
         }
@@ -1718,6 +1718,7 @@ var require_vibeusage_ingest = __commonJS({
     var { createConcurrencyGuard } = require_concurrency();
     var { getBearerToken } = require_auth();
     var { getAnonKey, getBaseUrl, getServiceRoleKey } = require_env();
+    var { createClient } = __require("https://esm.sh/@supabase/supabase-js@2");
     var { sha256Hex } = require_crypto();
     var {
       BILLABLE_RULE_VERSION,
