@@ -8,55 +8,62 @@ const {
 } = require('../supabase-src/shared/public-visibility');
 
 function makeEdgeClient({ userId, state, upsertSupported = true }) {
-  return {
-    database: {
-      from: (table) => {
-        assert.equal(table, 'vibeusage_public_views');
+  const fromFn = (table) => {
+    assert.equal(table, 'vibeusage_public_views');
 
-        const api = {
-          select: () => ({
-            eq: (column, value) => {
-              assert.equal(column, 'user_id');
-              assert.equal(value, userId);
-              return {
-                maybeSingle: async () => ({ data: state.row || null, error: null }),
-              };
-            },
-          }),
-          insert: async (rows) => {
-            state.insertCalls += 1;
-            state.row = rows?.[0] || null;
-            return { error: null };
-          },
-          update: (values) => ({
-            eq: async (column, value) => {
-              assert.equal(column, 'user_id');
-              assert.equal(value, userId);
-              state.updateCalls += 1;
-              state.row = { ...(state.row || { user_id: userId }), ...values, user_id: userId };
-              return { error: null };
-            },
-          }),
-        };
-
-        if (upsertSupported) {
-          api.upsert = async (rows, options) => {
-            state.upsertCalls += 1;
-            assert.equal(options?.onConflict, 'user_id');
-            state.row = rows?.[0] || null;
-            return { error: null };
+    const api = {
+      select: () => ({
+        eq: (column, value) => {
+          assert.equal(column, 'user_id');
+          assert.equal(value, userId);
+          return {
+            is: (col, val) => ({
+              maybeSingle: async () => ({ data: state.row || null, error: null }),
+            }),
+            maybeSingle: async () => ({ data: state.row || null, error: null }),
           };
-        }
-
-        return api;
+        },
+      }),
+      insert: async (rows) => {
+        state.insertCalls += 1;
+        state.row = rows?.[0] || null;
+        return { error: null };
       },
-    },
+      update: (values) => ({
+        eq: async (column, value) => {
+          assert.equal(column, 'user_id');
+          assert.equal(value, userId);
+          state.updateCalls += 1;
+          state.row = { ...(state.row || { user_id: userId }), ...values, user_id: userId };
+          return { error: null };
+        },
+      }),
+    };
+
+    if (upsertSupported) {
+      api.upsert = async (rows, options) => {
+        state.upsertCalls += 1;
+        assert.equal(options?.onConflict, 'user_id');
+        state.row = rows?.[0] || null;
+        return { error: null };
+      };
+    }
+
+    return api;
+  };
+
+  return {
+    from: fromFn,
+    database: { from: fromFn },
   };
 }
 
-test('buildPublicShareToken normalizes user id', () => {
+test('buildPublicShareToken generates random pv2 token', () => {
   const token = buildPublicShareToken(' 11111111-2222-3333-4444-555555555555 ');
-  assert.equal(token, 'pv1-11111111-2222-3333-4444-555555555555');
+  assert.match(token, /^pv2-[0-9a-f]{48}$/);
+  // Tokens should be unique (random)
+  const token2 = buildPublicShareToken(' 11111111-2222-3333-4444-555555555555 ');
+  assert.notEqual(token, token2);
 });
 
 test('getPublicVisibilityState returns disabled when no row exists', async () => {
@@ -91,10 +98,11 @@ test('setPublicVisibilityState enables active row via upsert', async () => {
 
   assert.equal(data.enabled, true);
   assert.equal(data.updated_at, nowIso);
-  assert.equal(data.share_token, `pv1-${userId}`);
+  assert.match(data.share_token, /^pv2-[0-9a-f]{48}$/);
   assert.equal(state.row?.revoked_at, null);
   assert.equal(typeof state.row?.token_hash, 'string');
   assert.equal(state.row?.token_hash.length, 64);
+  assert.equal(typeof state.row?.share_token, 'string');
 });
 
 test('setPublicVisibilityState falls back to insert when upsert is unavailable', async () => {
@@ -113,7 +121,7 @@ test('setPublicVisibilityState falls back to insert when upsert is unavailable',
   assert.equal(state.insertCalls, 1);
   assert.equal(state.updateCalls, 0);
   assert.equal(data.enabled, true);
-  assert.equal(data.share_token, `pv1-${userId}`);
+  assert.match(data.share_token, /^pv2-[0-9a-f]{48}$/);
 });
 
 test('setPublicVisibilityState disables visibility and revokes link', async () => {

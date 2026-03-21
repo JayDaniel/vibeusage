@@ -16,6 +16,7 @@ const {
   parseOpenclawIncremental,
 } = require("../lib/rollout");
 const { drainQueueToCloud } = require("../lib/uploader");
+const { normalizeString, safeStatSize } = require("../lib/utils");
 const { collectLocalSubscriptions } = require("../lib/subscriptions");
 const { createProgress, renderBar, formatNumber, formatBytes } = require("../lib/progress");
 const { syncHeartbeat } = require("../lib/vibeusage-api");
@@ -444,12 +445,6 @@ function parseArgs(argv) {
 
 module.exports = { cmdSync };
 
-function normalizeString(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 function resolveOpenclawSignal({ home, env } = {}) {
   if (!env) return null;
 
@@ -591,15 +586,6 @@ function normalizeIsoOrEpoch(value) {
   const dt = new Date(ms);
   if (Number.isNaN(dt.getTime())) return null;
   return dt.toISOString();
-}
-
-async function safeStatSize(p) {
-  try {
-    const st = await fs.stat(p);
-    return st && st.isFile() ? st.size : 0;
-  } catch (_e) {
-    return 0;
-  }
 }
 
 async function maybeSendHeartbeat({

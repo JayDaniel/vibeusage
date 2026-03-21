@@ -284,7 +284,10 @@ module.exports = withRequestLogging("vibeusage-usage-daily", async function (req
     rollup_hit: rollupHit,
   });
 
-  if (hourlyError) return respond({ error: hourlyError.message }, 500, queryDurationMs);
+  if (hourlyError) {
+    logger?.log?.({ stage: "error", status: 500, detail: hourlyError?.message || "unknown" });
+    return respond({ error: "Internal error" }, 500, queryDurationMs);
+  }
 
   const identityMap = await resolveModelIdentity({
     edgeClient: auth.edgeClient,

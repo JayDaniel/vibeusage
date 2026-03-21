@@ -78,7 +78,7 @@ module.exports = withRequestLogging("vibeusage-entitlements", async function (re
 
   if (entitlementId) {
     const existing = await loadEntitlementById({ dbClient, id: entitlementId });
-    if (existing.error) return json({ error: existing.error }, 500);
+    if (existing.error) return json({ error: "Internal error" }, 500);
     if (existing.row) {
       if (!matchesEntitlementPayload(existing.row, payload)) {
         return json({ error: "Entitlement already exists with different payload" }, 409);
@@ -108,7 +108,7 @@ module.exports = withRequestLogging("vibeusage-entitlements", async function (re
 
   if (entitlementId) {
     const existing = await loadEntitlementById({ dbClient, id: entitlementId });
-    if (existing.error) return json({ error: existing.error }, 500);
+    if (existing.error) return json({ error: "Internal error" }, 500);
     if (existing.row) {
       if (!matchesEntitlementPayload(existing.row, payload)) {
         return json({ error: "Entitlement already exists with different payload" }, 409);
@@ -117,7 +117,7 @@ module.exports = withRequestLogging("vibeusage-entitlements", async function (re
     }
   }
 
-  return json({ error: insertError.message || "Insert failed" }, 500);
+  return json({ error: "Internal error" }, 500);
 });
 
 function isValidIso(value) {

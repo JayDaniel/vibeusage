@@ -15,6 +15,7 @@ const { resolveOpencodeConfigDir, isOpencodePluginInstalled } = require("../lib/
 const { collectLocalSubscriptions } = require("../lib/subscriptions");
 const { normalizeState: normalizeUploadState } = require("../lib/upload-throttle");
 const { collectTrackerDiagnostics } = require("../lib/diagnostics");
+const { safeStatSize, safeReadText, parseEpochMsToIso } = require("../lib/utils");
 const { probeOpenclawHookState } = require("../lib/openclaw-hook");
 const { probeOpenclawSessionPluginState } = require("../lib/openclaw-session-plugin");
 const { resolveTrackerPaths } = require("../lib/tracker-paths");
@@ -185,31 +186,6 @@ function parseArgs(argv) {
   }
 
   return out;
-}
-
-async function safeStatSize(p) {
-  try {
-    const st = await fs.stat(p);
-    return st.size || 0;
-  } catch (_e) {
-    return 0;
-  }
-}
-
-async function safeReadText(p) {
-  try {
-    return await fs.readFile(p, "utf8");
-  } catch (_e) {
-    return null;
-  }
-}
-
-function parseEpochMsToIso(v) {
-  const ms = Number(v);
-  if (!Number.isFinite(ms) || ms <= 0) return null;
-  const d = new Date(ms);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
 }
 
 module.exports = { cmdStatus };

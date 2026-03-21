@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 const { ensureDir, readJson, writeJson } = require("./fs");
+const { arraysEqual } = require("./utils");
 
 async function upsertNotify({ configPath, notifyCmd, notifyOriginalPath, configLabel }) {
   const originalText = await fs.readFile(configPath, "utf8").catch(() => null);
@@ -325,13 +326,6 @@ function findTomlArrayBlockEnd(lines, startIndex, rhs) {
     if (scanChunk(lines[j])) return j;
   }
   return startIndex;
-}
-
-function arraysEqual(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
 }
 
 module.exports = {

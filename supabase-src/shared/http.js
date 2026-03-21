@@ -1,9 +1,18 @@
 "use strict";
 
+const corsAllowedOrigin = (() => {
+  try {
+    const raw = Deno.env.get("VIBEUSAGE_CORS_ORIGIN");
+    if (raw && raw !== "*") return raw.trim();
+  } catch (_e) {}
+  return "*";
+})();
+
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": corsAllowedOrigin,
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+  ...(corsAllowedOrigin !== "*" ? { Vary: "Origin" } : {}),
 };
 
 function handleOptions(request) {

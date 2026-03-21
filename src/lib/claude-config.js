@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 const { ensureDir, readJson, writeJson } = require("./fs");
+const { quoteArg } = require("./utils");
 
 const DEFAULT_EVENT = "SessionEnd";
 
@@ -157,13 +158,6 @@ function commandsEqual(a, b) {
   const left = normalizeCommand(a);
   const right = normalizeCommand(b);
   return Boolean(left && right && left === right);
-}
-
-function quoteArg(value) {
-  const v = typeof value === "string" ? value : "";
-  if (!v) return '""';
-  if (/^[A-Za-z0-9_\-./:@]+$/.test(v)) return v;
-  return `"${v.replace(/"/g, '\\"')}"`;
 }
 
 async function writeClaudeSettings({ settingsPath, settings }) {

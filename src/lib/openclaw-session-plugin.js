@@ -4,6 +4,8 @@ const fs = require("node:fs/promises");
 const fssync = require("node:fs");
 const cp = require("node:child_process");
 
+const { normalizeString } = require("./utils");
+
 const OPENCLAW_SESSION_PLUGIN_ID = "openclaw-session-sync";
 const OPENCLAW_SESSION_PLUGIN_DIRNAME = "openclaw-plugin";
 
@@ -501,12 +503,6 @@ function buildSessionPluginIndex({ trackerDir, packageName = "vibeusage", opencl
     `  return Number.isNaN(d.getTime()) ? null : d.toISOString();\n` +
     `}\n`
   );
-}
-
-function normalizeString(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
 }
 
 module.exports = {

@@ -2,8 +2,10 @@
 
 const { createClient } = require("@supabase/supabase-js");
 const { getAnonKey, getServiceRoleKey } = require("./env");
+const { sha256Hex } = require("./crypto");
 
 const PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+const PUBLIC_RANDOM_TOKEN_RE = /^pv2-([0-9a-f]{48})$/;
 
 async function resolvePublicView({ baseUrl, shareToken }) {
   const token = normalizeShareToken(shareToken);
@@ -45,6 +47,19 @@ async function resolvePublicView({ baseUrl, shareToken }) {
 async function resolvePublicUserId({ dbClient, token }) {
   if (!dbClient || !token) return null;
 
+  if (token.kind === "random") {
+    const tokenHash = await sha256Hex(token.raw);
+    const { data, error } = await dbClient
+      .from("vibeusage_public_views")
+      .select("user_id")
+      .eq("token_hash", tokenHash)
+      .is("revoked_at", null)
+      .maybeSingle();
+
+    if (error || !data?.user_id) return null;
+    return data.user_id;
+  }
+
   const { data, error } = await dbClient
     .from("vibeusage_public_views")
     .select("user_id")
@@ -69,6 +84,11 @@ function normalizeShareToken(value) {
   if (!token) return null;
   const normalized = token.toLowerCase();
   if (token !== normalized) return null;
+
+  const randomMatch = normalized.match(PUBLIC_RANDOM_TOKEN_RE);
+  if (randomMatch) {
+    return { kind: "random", raw: normalized };
+  }
 
   const publicUserMatch = normalized.match(PUBLIC_USER_TOKEN_RE);
   if (publicUserMatch?.[1]) {

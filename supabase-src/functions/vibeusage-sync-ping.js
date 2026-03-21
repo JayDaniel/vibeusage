@@ -48,7 +48,10 @@ module.exports = withRequestLogging("vibeusage-sync-ping", async function (reque
       .eq("token_hash", tokenHash)
       .maybeSingle();
 
-    if (tokenErr) return json({ error: tokenErr.message }, 500);
+    if (tokenErr) {
+      logger?.log?.({ stage: "error", status: 500, detail: tokenErr?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
     if (!tokenRow || tokenRow.revoked_at) return json({ error: "Unauthorized" }, 401);
 
     const lastSyncAt = normalizeIso(tokenRow.last_sync_at);
@@ -69,7 +72,10 @@ module.exports = withRequestLogging("vibeusage-sync-ping", async function (reque
       .update({ last_sync_at: nowIso, last_used_at: nowIso })
       .eq("id", tokenRow.id);
 
-    if (updateErr) return json({ error: updateErr.message }, 500);
+    if (updateErr) {
+      logger?.log?.({ stage: "error", status: 500, detail: updateErr?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
 
     return json(
       {
@@ -96,7 +102,8 @@ module.exports = withRequestLogging("vibeusage-sync-ping", async function (reque
       200,
     );
   } catch (e) {
-    return json({ error: e?.message || "Internal error" }, 500);
+    logger?.log?.({ stage: "error", status: 500, detail: e?.message || "unknown" });
+    return json({ error: "Internal error" }, 500);
   }
 });
 

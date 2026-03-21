@@ -49,6 +49,7 @@ const {
 } = require("../lib/supabase");
 const { resolveTrackerPaths } = require("../lib/tracker-paths");
 const { resolveRuntimeConfig } = require("../lib/runtime-config");
+const { sleep, arraysEqual, isDir } = require("../lib/utils");
 const {
   BOLD,
   DIM,
@@ -314,9 +315,10 @@ async function runSetup({
   } else if (!deviceToken && !opts.noAuth) {
     const deviceName = opts.deviceName || os.hostname();
 
-    if (opts.email || opts.password) {
+    const envPassword = process.env.VIBEUSAGE_PASSWORD || null;
+    if (opts.email || opts.password || envPassword) {
       const email = opts.email || (await prompt("Email: "));
-      const password = opts.password || (await promptHidden("Password: "));
+      const password = opts.password || envPassword || (await promptHidden("Password: "));
       const issued = await issueDeviceTokenWithPassword({ baseUrl, email, password, deviceName });
       deviceToken = issued.token;
       deviceId = issued.deviceId;
@@ -651,13 +653,6 @@ function renderSkipDetail(probe) {
   return "Unavailable";
 }
 
-function arraysEqual(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
-
 function parseArgs(argv) {
   const out = {
     baseUrl: null,
@@ -677,7 +672,10 @@ function parseArgs(argv) {
     if (a === "--base-url") out.baseUrl = argv[++i] || null;
     else if (a === "--dashboard-url") out.dashboardUrl = argv[++i] || null;
     else if (a === "--email") out.email = argv[++i] || null;
-    else if (a === "--password") out.password = argv[++i] || null;
+    else if (a === "--password") {
+      process.stderr.write("Warning: --password is deprecated, use VIBEUSAGE_PASSWORD env var instead\n");
+      out.password = argv[++i] || null;
+    }
     else if (a === "--device-name") out.deviceName = argv[++i] || null;
     else if (a === "--link-code") out.linkCode = argv[++i] || null;
     else if (a === "--no-auth") out.noAuth = true;
@@ -687,11 +685,6 @@ function parseArgs(argv) {
     else throw new Error(`Unknown option: ${a}`);
   }
   return out;
-}
-
-function sleep(ms) {
-  if (!ms || ms <= 0) return Promise.resolve();
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function normalizePlatform(value) {
@@ -863,15 +856,6 @@ async function probeFile(p) {
     if (e?.code === "EACCES" || e?.code === "EPERM")
       return { exists: false, reason: "permission-denied" };
     return { exists: false, reason: "error", code: e?.code || "unknown" };
-  }
-}
-
-async function isDir(p) {
-  try {
-    const st = await fs.stat(p);
-    return st.isDirectory();
-  } catch (_e) {
-    return false;
   }
 }
 

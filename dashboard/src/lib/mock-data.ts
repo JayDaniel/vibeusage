@@ -53,7 +53,7 @@ export function isMockEnabled() {
     const flag = String(import.meta.env.VITE_VIBEUSAGE_MOCK || "").toLowerCase();
     if (flag === "1" || flag === "true") return true;
   }
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && !(import.meta.env?.PROD)) {
     const params = new URLSearchParams(window.location.search);
     const flag = String(params.get("mock") || "").toLowerCase();
     if (flag === "1" || flag === "true") return true;

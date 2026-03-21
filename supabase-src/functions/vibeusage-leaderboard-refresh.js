@@ -7,9 +7,15 @@
 const { handleOptions, json, requireMethod } = require("../shared/http");
 const { getBearerToken } = require("../shared/auth");
 const { getAnonKey, getBaseUrl, getServiceRoleKey } = require("../shared/env");
-const { toUtcDay, addUtcDays, formatDateUTC } = require("../shared/date");
 const { forEachPage } = require("../shared/pagination");
 const { toBigInt, toPositiveInt } = require("../shared/numbers");
+const {
+  normalizePeriod,
+  computeWindow: computeWindowShared,
+  resolveOtherTokens,
+  normalizeDisplayName,
+  normalizeAvatarUrl,
+} = require("../shared/leaderboard-utils");
 
 const PERIODS = ["week", "month"];
 const SOURCE_PAGE_SIZE = 1000;
@@ -46,7 +52,7 @@ module.exports = async function (request) {
   try {
     for (const period of targetPeriods) {
       const window = await computeWindow({ period });
-      if (!window.ok) return json({ error: window.error }, 500);
+      if (!window.ok) return json({ error: "Internal error" }, 500);
 
       const { from, to } = window;
       const { inserted } = await refreshPeriod({
@@ -60,43 +66,19 @@ module.exports = async function (request) {
       results.push({ period, from, to, inserted });
     }
   } catch (err) {
-    return json({ error: String(err && err.message ? err.message : err) }, 500);
+    return json({ error: "Internal error" }, 500);
   }
 
   return json({ success: true, generated_at: generatedAt, results }, 200);
 };
 
-function normalizePeriod(raw) {
-  if (typeof raw !== "string") return null;
-  const v = raw.trim().toLowerCase();
-  if (v === "week") return v;
-  if (v === "month") return v;
-  if (v === "total") return v;
-  return null;
-}
-
 async function computeWindow({ period }) {
-  const now = new Date();
-  const today = toUtcDay(now);
-
-  if (period === "week") {
-    const dow = today.getUTCDay();
-    const from = addUtcDays(today, -dow);
-    const to = addUtcDays(from, 6);
-    return { ok: true, from: formatDateUTC(from), to: formatDateUTC(to) };
+  try {
+    const { from, to } = computeWindowShared({ period });
+    return { ok: true, from, to };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
   }
-
-  if (period === "month") {
-    const from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-    const to = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
-    return { ok: true, from: formatDateUTC(from), to: formatDateUTC(to) };
-  }
-
-  if (period === "total") {
-    return { ok: true, from: "1970-01-01", to: "9999-12-31" };
-  }
-
-  return { ok: false, error: `Invalid period: ${String(period)}` };
 }
 
 async function refreshPeriod({ serviceClient, period, from, to, generatedAt }) {
@@ -270,14 +252,6 @@ function normalizeSnapshotRow({ row, period, from, to, generatedAt, publicProfil
   };
 }
 
-function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
-  const explicit = row?.other_tokens;
-  if (explicit != null) return toBigInt(explicit);
-
-  const derived = totalTokens - gptTokens - claudeTokens;
-  return derived > 0n ? derived : 0n;
-}
-
 function resolveDisplayName(row) {
   const profile = isObject(row?.profile) ? row.profile : null;
   const metadata = isObject(row?.metadata) ? row.metadata : null;
@@ -326,18 +300,6 @@ function sanitizeAvatarUrl(value) {
   } catch (_e) {
     return null;
   }
-}
-
-function normalizeDisplayName(value) {
-  if (typeof value !== "string") return "Anonymous";
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : "Anonymous";
-}
-
-function normalizeAvatarUrl(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
 }
 
 function isObject(value) {

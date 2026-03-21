@@ -3,6 +3,7 @@ const path = require("node:path");
 const fs = require("node:fs/promises");
 
 const { ensureDir, readJson, writeJson } = require("./fs");
+const { quoteArg } = require("./utils");
 
 const DEFAULT_EVENT = "SessionEnd";
 const DEFAULT_HOOK_NAME = "vibeusage-tracker";
@@ -250,13 +251,6 @@ function stripHookFromEntry(entry, { hookCommand, hookName }) {
   if (nextHooks.length === 0) return { entry: null, removed: true };
 
   return { entry: { ...entry, hooks: nextHooks }, removed: true };
-}
-
-function quoteArg(value) {
-  const v = typeof value === "string" ? value : "";
-  if (!v) return '""';
-  if (/^[A-Za-z0-9_\-./:@]+$/.test(v)) return v;
-  return `"${v.replace(/"/g, '\\"')}"`;
 }
 
 async function writeGeminiSettings({ settingsPath, settings }) {

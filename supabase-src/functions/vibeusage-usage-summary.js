@@ -520,7 +520,8 @@ module.exports = withRequestLogging("vibeusage-usage-summary", async function (r
     const hourlyRes = await sumHourlyRange(startIso, endIso);
     if (!hourlyRes.ok) {
       const queryDurationMs = Date.now() - queryStartMs;
-      return respond({ error: hourlyRes.error.message }, 500, queryDurationMs);
+      logger?.log?.({ stage: "error", status: 500, detail: hourlyRes.error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
     }
   } else {
     let hourlyError = null;
@@ -567,7 +568,8 @@ module.exports = withRequestLogging("vibeusage-usage-summary", async function (r
       const fallbackRes = await sumHourlyRange(startIso, endIso);
       if (!fallbackRes.ok) {
         const queryDurationMs = Date.now() - queryStartMs;
-        return respond({ error: fallbackRes.error.message }, 500, queryDurationMs);
+        logger?.log?.({ stage: "error", status: 500, detail: fallbackRes.error?.message || "unknown" });
+        return respond({ error: "Internal error" }, 500, queryDurationMs);
       }
     }
   }
@@ -587,12 +589,14 @@ module.exports = withRequestLogging("vibeusage-usage-summary", async function (r
     const last7Res = await buildRollingWindow({ fromDay: last7From, toDay: rollingToDay });
     if (!last7Res.ok) {
       const queryDurationMs = Date.now() - queryStartMs;
-      return respond({ error: last7Res.error.message }, 500, queryDurationMs);
+      logger?.log?.({ stage: "error", status: 500, detail: last7Res.error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
     }
     const last30Res = await buildRollingWindow({ fromDay: last30From, toDay: rollingToDay });
     if (!last30Res.ok) {
       const queryDurationMs = Date.now() - queryStartMs;
-      return respond({ error: last30Res.error.message }, 500, queryDurationMs);
+      logger?.log?.({ stage: "error", status: 500, detail: last30Res.error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
     }
     rollingPayload = {
       last_7d: last7Res.payload,

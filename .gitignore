@@ -34,3 +34,6 @@ tsconfig.scip.json
 # Obsidian canvas files (local-only)
 *.canvas
 interaction_sequence.config.json
+
+# Generated backend functions (rebuild with npm run build:supabase)
+supabase-functions/

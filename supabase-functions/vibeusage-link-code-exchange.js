@@ -9,10 +9,19 @@ var __commonJS = (cb, mod) => function __require() {
 var require_http = __commonJS({
   "supabase-src/shared/http.js"(exports, module) {
     "use strict";
+    var corsAllowedOrigin = (() => {
+      try {
+        const raw = Deno.env.get("VIBEUSAGE_CORS_ORIGIN");
+        if (raw && raw !== "*") return raw.trim();
+      } catch (_e) {
+      }
+      return "*";
+    })();
     var corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": corsAllowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey"
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+      ...corsAllowedOrigin !== "*" ? { Vary: "Origin" } : {}
     };
     function handleOptions(request) {
       if (request.method === "OPTIONS") {
@@ -69,7 +78,7 @@ var require_env = __commonJS({
       return Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
     }
     function getJwtSecret() {
-      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("SUPABASE_JWT_SECRET") || null;
+      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("JWT_SECRET") || null;
     }
     module.exports = {
       getBaseUrl,

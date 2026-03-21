@@ -153,7 +153,10 @@ module.exports = withRequestLogging("vibeusage-pricing-sync", async function (re
     const { error } = await serviceClient.database
       .from("vibeusage_pricing_profiles")
       .upsert(batch, { onConflict: "model,source,effective_from" });
-    if (error) return json({ error: error.message }, 500);
+    if (error) {
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
     upserted += batch.length;
   }
 
@@ -176,7 +179,10 @@ module.exports = withRequestLogging("vibeusage-pricing-sync", async function (re
     const { error } = await serviceClient.database
       .from("vibeusage_pricing_model_aliases")
       .upsert(batch, { onConflict: "usage_model,pricing_source,effective_from" });
-    if (error) return json({ error: error.message }, 500);
+    if (error) {
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
     aliasesUpserted += batch.length;
   }
 
@@ -190,14 +196,20 @@ module.exports = withRequestLogging("vibeusage-pricing-sync", async function (re
       .update({ active: false })
       .eq("source", pricingSource)
       .lt("effective_from", cutoffDate);
-    if (error) return json({ error: error.message }, 500);
+    if (error) {
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
 
     const { error: aliasError } = await serviceClient.database
       .from("vibeusage_pricing_model_aliases")
       .update({ active: false })
       .eq("pricing_source", pricingSource)
       .lt("effective_from", cutoffDate);
-    if (aliasError) return json({ error: aliasError.message }, 500);
+    if (aliasError) {
+      logger?.log?.({ stage: "error", status: 500, detail: aliasError?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
 
     retention = { retention_days: retentionDays, cutoff_date: cutoffDate };
   }

@@ -14,6 +14,7 @@ const { resolveOpencodeConfigDir, removeOpencodePlugin } = require("../lib/openc
 const { removeOpenclawHookConfig } = require("../lib/openclaw-hook");
 const { removeOpenclawSessionPluginConfig } = require("../lib/openclaw-session-plugin");
 const { resolveTrackerPaths } = require("../lib/tracker-paths");
+const { isDir } = require("../lib/utils");
 
 async function cmdUninstall(argv) {
   const opts = parseArgs(argv);
@@ -157,11 +158,3 @@ async function isFile(p) {
   }
 }
 
-async function isDir(p) {
-  try {
-    const st = await fs.stat(p);
-    return st.isDirectory();
-  } catch (_e) {
-    return false;
-  }
-}

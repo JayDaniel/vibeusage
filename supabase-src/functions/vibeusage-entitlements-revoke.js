@@ -54,7 +54,7 @@ module.exports = withRequestLogging("vibeusage-entitlements-revoke", async funct
     .from("vibeusage_user_entitlements")
     .update(update)
     .eq("id", id);
-  if (error) return json({ error: error.message }, 500);
+  if (error) return json({ error: "Internal error" }, 500);
 
   return json({ id, revoked_at: update.revoked_at }, 200);
 });

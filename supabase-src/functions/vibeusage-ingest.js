@@ -75,7 +75,8 @@ module.exports = withRequestLogging("vibeusage-ingest", async function (request,
     try {
       tokenRow = await fetchDeviceTokenRow({ serviceClient, baseUrl, anonKey, tokenHash, fetcher });
     } catch (e) {
-      return json({ error: e?.message || "Internal error" }, 500);
+      logger?.log?.({ stage: "error", status: 500, detail: e?.message || "unknown" });
+      return json({ error: "Internal error" }, 500);
     }
     if (!tokenRow) return json({ error: "Unauthorized" }, 401);
 
@@ -147,7 +148,10 @@ module.exports = withRequestLogging("vibeusage-ingest", async function (request,
         rows: registryRows,
         fetcher,
       });
-      if (!registryUpsert.ok) return json({ error: registryUpsert.error }, 500);
+      if (!registryUpsert.ok) {
+        logger?.log?.({ stage: "error", status: 500, detail: registryUpsert.error || "unknown" });
+        return json({ error: "Internal error" }, 500);
+      }
 
       const projectUpsert = await upsertProjectUsage({
         serviceClient,
@@ -160,7 +164,10 @@ module.exports = withRequestLogging("vibeusage-ingest", async function (request,
         nowIso,
         fetcher,
       });
-      if (!projectUpsert.ok) return json({ error: projectUpsert.error }, 500);
+      if (!projectUpsert.ok) {
+        logger?.log?.({ stage: "error", status: 500, detail: projectUpsert.error || "unknown" });
+        return json({ error: "Internal error" }, 500);
+      }
       projectInserted = projectUpsert.inserted;
       projectSkipped = projectUpsert.skipped;
     }
@@ -222,7 +229,10 @@ module.exports = withRequestLogging("vibeusage-ingest", async function (request,
       fetcher,
     });
 
-    if (!upsert.ok) return json({ error: upsert.error }, 500);
+    if (!upsert.ok) {
+      logger?.log?.({ stage: "error", status: 500, detail: upsert.error || "unknown" });
+      return json({ error: "Internal error" }, 500);
+    }
 
     await recordIngestBatchMetrics({
       serviceClient,

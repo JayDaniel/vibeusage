@@ -15,10 +15,19 @@ var __commonJS = (cb, mod) => function __require2() {
 var require_http = __commonJS({
   "supabase-src/shared/http.js"(exports, module) {
     "use strict";
+    var corsAllowedOrigin = (() => {
+      try {
+        const raw = Deno.env.get("VIBEUSAGE_CORS_ORIGIN");
+        if (raw && raw !== "*") return raw.trim();
+      } catch (_e) {
+      }
+      return "*";
+    })();
     var corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": corsAllowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey"
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+      ...corsAllowedOrigin !== "*" ? { Vary: "Origin" } : {}
     };
     function handleOptions(request) {
       if (request.method === "OPTIONS") {
@@ -75,7 +84,7 @@ var require_env = __commonJS({
       return Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
     }
     function getJwtSecret() {
-      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("SUPABASE_JWT_SECRET") || null;
+      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("JWT_SECRET") || null;
     }
     module.exports = {
       getBaseUrl,
@@ -86,13 +95,30 @@ var require_env = __commonJS({
   }
 });
 
+// supabase-src/shared/crypto.js
+var require_crypto = __commonJS({
+  "supabase-src/shared/crypto.js"(exports, module) {
+    "use strict";
+    async function sha256Hex(input) {
+      const data = new TextEncoder().encode(input);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    module.exports = {
+      sha256Hex
+    };
+  }
+});
+
 // supabase-src/shared/public-view.js
 var require_public_view = __commonJS({
   "supabase-src/shared/public-view.js"(exports, module) {
     "use strict";
     var { createClient: createClient2 } = __require("https://esm.sh/@supabase/supabase-js@2");
     var { getAnonKey, getServiceRoleKey } = require_env();
+    var { sha256Hex } = require_crypto();
     var PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+    var PUBLIC_RANDOM_TOKEN_RE = /^pv2-([0-9a-f]{48})$/;
     async function resolvePublicView({ baseUrl, shareToken }) {
       const token = normalizeShareToken(shareToken);
       if (!token) {
@@ -120,6 +146,12 @@ var require_public_view = __commonJS({
     }
     async function resolvePublicUserId({ dbClient, token }) {
       if (!dbClient || !token) return null;
+      if (token.kind === "random") {
+        const tokenHash = await sha256Hex(token.raw);
+        const { data: data2, error: error2 } = await dbClient.from("vibeusage_public_views").select("user_id").eq("token_hash", tokenHash).is("revoked_at", null).maybeSingle();
+        if (error2 || !data2?.user_id) return null;
+        return data2.user_id;
+      }
       const { data, error } = await dbClient.from("vibeusage_public_views").select("user_id").eq("user_id", token.userId).is("revoked_at", null).maybeSingle();
       if (error || !data?.user_id) return null;
       return data.user_id;
@@ -136,6 +168,10 @@ var require_public_view = __commonJS({
       if (!token) return null;
       const normalized = token.toLowerCase();
       if (token !== normalized) return null;
+      const randomMatch = normalized.match(PUBLIC_RANDOM_TOKEN_RE);
+      if (randomMatch) {
+        return { kind: "random", raw: normalized };
+      }
       const publicUserMatch = normalized.match(PUBLIC_USER_TOKEN_RE);
       if (publicUserMatch?.[1]) {
         return { kind: "user", userId: publicUserMatch[1] };
@@ -227,7 +263,7 @@ var require_auth = __commonJS({
     }
     function isJwtExpired(payload) {
       const exp = Number(payload?.exp);
-      if (!Number.isFinite(exp)) return false;
+      if (!Number.isFinite(exp)) return true;
       return exp * 1e3 <= Date.now();
     }
     function base64UrlEncode(value) {
@@ -323,6 +359,12 @@ var require_auth = __commonJS({
       edgeClient.database = edgeClient;
       const local = await verifyUserJwtHs256({ token: bearer });
       const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
+      if (allowRemoteOnly) {
+        console.warn(JSON.stringify({
+          stage: "auth_degraded_mode",
+          warning: "SUPABASE_JWT_SECRET not configured \u2014 skipping local signature verification, falling back to remote auth only"
+        }));
+      }
       if (!local.ok && !allowRemoteOnly) {
         return {
           ok: false,
@@ -717,14 +759,14 @@ var require_vibeusage_user_status = __commonJS({
           global: { headers: { Authorization: `Bearer ${serviceRoleKey}` } }
         });
         const { data: userRow, error: userRowErr } = await serviceClient.database.from("users").select("created_at").eq("id", auth.userId).maybeSingle();
-        if (userRowErr) return json({ error: userRowErr.message }, 500);
+        if (userRowErr) return json({ error: "Internal error" }, 500);
         if (typeof userRow?.created_at !== "string" || userRow.created_at.length === 0) {
           return json({ error: "Missing user created_at" }, 500);
         }
         createdAt = userRow.created_at;
       }
       const { data: entitlements, error: entErr } = await auth.edgeClient.database.from("vibeusage_user_entitlements").select("source,effective_from,effective_to,revoked_at").eq("user_id", auth.userId).order("effective_to", { ascending: false });
-      if (entErr) return json({ error: entErr.message }, 500);
+      if (entErr) return json({ error: "Internal error" }, 500);
       let subscriptions = [];
       let subscriptionsPartial = false;
       const { data: subscriptionRows, error: subscriptionErr } = await auth.edgeClient.database.from("vibeusage_tracker_subscriptions").select(
@@ -734,7 +776,7 @@ var require_vibeusage_user_status = __commonJS({
         if (isMissingRelationError(subscriptionErr, "vibeusage_tracker_subscriptions")) {
           subscriptionsPartial = true;
         } else {
-          return json({ error: subscriptionErr.message }, 500);
+          return json({ error: "Internal error" }, 500);
         }
       } else {
         subscriptions = normalizeSubscriptions(subscriptionRows);
@@ -754,7 +796,7 @@ var require_vibeusage_user_status = __commonJS({
         if (isMissingRelationError(tokenStats.error, "vibeusage_tracker_device_tokens")) {
           installPartial = true;
         } else {
-          return json({ error: tokenStats.error.message }, 500);
+          return json({ error: "Internal error" }, 500);
         }
       } else {
         activeDeviceTokens = tokenStats.count;
@@ -770,7 +812,7 @@ var require_vibeusage_user_status = __commonJS({
         if (isMissingRelationError(deviceStats.error, "vibeusage_tracker_devices")) {
           installPartial = true;
         } else {
-          return json({ error: deviceStats.error.message }, 500);
+          return json({ error: "Internal error" }, 500);
         }
       } else {
         activeDevices = deviceStats.count;

@@ -119,8 +119,7 @@ export default function App() {
 
           // Debug logging for mobile troubleshooting
           if (
-            process.env.NODE_ENV === "development" ||
-            window.location.search.includes("debug=1")
+            process.env.NODE_ENV === "development"
           ) {
             // eslint-disable-next-line no-console
             console.log("[Auth] Session refreshed:", {
@@ -134,8 +133,7 @@ export default function App() {
           if (!active) return;
           setSupabaseSession(null);
           if (
-            process.env.NODE_ENV === "development" ||
-            window.location.search.includes("debug=1")
+            process.env.NODE_ENV === "development"
           ) {
             // eslint-disable-next-line no-console
             console.warn("[Auth] Session refresh failed:", err);
@@ -264,7 +262,7 @@ export default function App() {
         email: user?.email ?? null,
         name: displayName,
       });
-      window.location.assign(redirectUrl);
+      window.location.replace(redirectUrl);
       return;
     }
 

@@ -15,10 +15,19 @@ var __commonJS = (cb, mod) => function __require2() {
 var require_http = __commonJS({
   "supabase-src/shared/http.js"(exports, module) {
     "use strict";
+    var corsAllowedOrigin = (() => {
+      try {
+        const raw = Deno.env.get("VIBEUSAGE_CORS_ORIGIN");
+        if (raw && raw !== "*") return raw.trim();
+      } catch (_e) {
+      }
+      return "*";
+    })();
     var corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": corsAllowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey"
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+      ...corsAllowedOrigin !== "*" ? { Vary: "Origin" } : {}
     };
     function handleOptions(request) {
       if (request.method === "OPTIONS") {
@@ -75,7 +84,7 @@ var require_env = __commonJS({
       return Deno.env.get("ANON_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || null;
     }
     function getJwtSecret() {
-      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("SUPABASE_JWT_SECRET") || null;
+      return Deno.env.get("SUPABASE_JWT_SECRET") || Deno.env.get("JWT_SECRET") || null;
     }
     module.exports = {
       getBaseUrl,
@@ -86,13 +95,30 @@ var require_env = __commonJS({
   }
 });
 
+// supabase-src/shared/crypto.js
+var require_crypto = __commonJS({
+  "supabase-src/shared/crypto.js"(exports, module) {
+    "use strict";
+    async function sha256Hex(input) {
+      const data = new TextEncoder().encode(input);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    module.exports = {
+      sha256Hex
+    };
+  }
+});
+
 // supabase-src/shared/public-view.js
 var require_public_view = __commonJS({
   "supabase-src/shared/public-view.js"(exports, module) {
     "use strict";
     var { createClient } = __require("https://esm.sh/@supabase/supabase-js@2");
     var { getAnonKey, getServiceRoleKey } = require_env();
+    var { sha256Hex } = require_crypto();
     var PUBLIC_USER_TOKEN_RE = /^pv1-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+    var PUBLIC_RANDOM_TOKEN_RE = /^pv2-([0-9a-f]{48})$/;
     async function resolvePublicView({ baseUrl, shareToken }) {
       const token = normalizeShareToken(shareToken);
       if (!token) {
@@ -120,6 +146,12 @@ var require_public_view = __commonJS({
     }
     async function resolvePublicUserId({ dbClient, token }) {
       if (!dbClient || !token) return null;
+      if (token.kind === "random") {
+        const tokenHash = await sha256Hex(token.raw);
+        const { data: data2, error: error2 } = await dbClient.from("vibeusage_public_views").select("user_id").eq("token_hash", tokenHash).is("revoked_at", null).maybeSingle();
+        if (error2 || !data2?.user_id) return null;
+        return data2.user_id;
+      }
       const { data, error } = await dbClient.from("vibeusage_public_views").select("user_id").eq("user_id", token.userId).is("revoked_at", null).maybeSingle();
       if (error || !data?.user_id) return null;
       return data.user_id;
@@ -136,6 +168,10 @@ var require_public_view = __commonJS({
       if (!token) return null;
       const normalized = token.toLowerCase();
       if (token !== normalized) return null;
+      const randomMatch = normalized.match(PUBLIC_RANDOM_TOKEN_RE);
+      if (randomMatch) {
+        return { kind: "random", raw: normalized };
+      }
       const publicUserMatch = normalized.match(PUBLIC_USER_TOKEN_RE);
       if (publicUserMatch?.[1]) {
         return { kind: "user", userId: publicUserMatch[1] };
@@ -227,7 +263,7 @@ var require_auth = __commonJS({
     }
     function isJwtExpired(payload) {
       const exp = Number(payload?.exp);
-      if (!Number.isFinite(exp)) return false;
+      if (!Number.isFinite(exp)) return true;
       return exp * 1e3 <= Date.now();
     }
     function base64UrlEncode(value) {
@@ -323,6 +359,12 @@ var require_auth = __commonJS({
       edgeClient.database = edgeClient;
       const local = await verifyUserJwtHs256({ token: bearer });
       const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
+      if (allowRemoteOnly) {
+        console.warn(JSON.stringify({
+          stage: "auth_degraded_mode",
+          warning: "SUPABASE_JWT_SECRET not configured \u2014 skipping local signature verification, falling back to remote auth only"
+        }));
+      }
       if (!local.ok && !allowRemoteOnly) {
         return {
           ok: false,
@@ -485,6 +527,54 @@ var require_auth = __commonJS({
       if (s.includes("deno")) return true;
       return false;
     }
+  }
+});
+
+// supabase-src/shared/numbers.js
+var require_numbers = __commonJS({
+  "supabase-src/shared/numbers.js"(exports, module) {
+    "use strict";
+    function toBigInt(v) {
+      if (typeof v === "bigint") return v >= 0n ? v : 0n;
+      if (typeof v === "number") {
+        if (!Number.isFinite(v) || v <= 0) return 0n;
+        return BigInt(Math.floor(v));
+      }
+      if (typeof v === "string") {
+        const s = v.trim();
+        if (!/^[0-9]+$/.test(s)) return 0n;
+        try {
+          return BigInt(s);
+        } catch (_e) {
+          return 0n;
+        }
+      }
+      return 0n;
+    }
+    function toPositiveIntOrNull(v) {
+      if (typeof v === "number" && Number.isInteger(v) && v > 0) return v;
+      if (typeof v === "string") {
+        const s = v.trim();
+        if (!/^[0-9]+$/.test(s)) return null;
+        const n = Number.parseInt(s, 10);
+        return Number.isFinite(n) && n > 0 ? n : null;
+      }
+      if (typeof v === "bigint") {
+        if (v <= 0n) return null;
+        const n = Number(v);
+        return Number.isFinite(n) && n > 0 ? n : null;
+      }
+      return null;
+    }
+    function toPositiveInt(v) {
+      const n = toPositiveIntOrNull(v);
+      return n == null ? 0 : n;
+    }
+    module.exports = {
+      toBigInt,
+      toPositiveInt,
+      toPositiveIntOrNull
+    };
   }
 });
 
@@ -792,50 +882,61 @@ var require_date = __commonJS({
   }
 });
 
-// supabase-src/shared/numbers.js
-var require_numbers = __commonJS({
-  "supabase-src/shared/numbers.js"(exports, module) {
+// supabase-src/shared/leaderboard-utils.js
+var require_leaderboard_utils = __commonJS({
+  "supabase-src/shared/leaderboard-utils.js"(exports, module) {
     "use strict";
-    function toBigInt(v) {
-      if (typeof v === "bigint") return v >= 0n ? v : 0n;
-      if (typeof v === "number") {
-        if (!Number.isFinite(v) || v <= 0) return 0n;
-        return BigInt(Math.floor(v));
-      }
-      if (typeof v === "string") {
-        const s = v.trim();
-        if (!/^[0-9]+$/.test(s)) return 0n;
-        try {
-          return BigInt(s);
-        } catch (_e) {
-          return 0n;
-        }
-      }
-      return 0n;
-    }
-    function toPositiveIntOrNull(v) {
-      if (typeof v === "number" && Number.isInteger(v) && v > 0) return v;
-      if (typeof v === "string") {
-        const s = v.trim();
-        if (!/^[0-9]+$/.test(s)) return null;
-        const n = Number.parseInt(s, 10);
-        return Number.isFinite(n) && n > 0 ? n : null;
-      }
-      if (typeof v === "bigint") {
-        if (v <= 0n) return null;
-        const n = Number(v);
-        return Number.isFinite(n) && n > 0 ? n : null;
-      }
+    var { toUtcDay, addUtcDays, formatDateUTC } = require_date();
+    var { toBigInt } = require_numbers();
+    function normalizePeriod(raw) {
+      if (typeof raw !== "string") return null;
+      const v = raw.trim().toLowerCase();
+      if (v === "week") return v;
+      if (v === "month") return v;
+      if (v === "total") return v;
       return null;
     }
-    function toPositiveInt(v) {
-      const n = toPositiveIntOrNull(v);
-      return n == null ? 0 : n;
+    function computeWindow({ period }) {
+      const now = /* @__PURE__ */ new Date();
+      const today = toUtcDay(now);
+      if (period === "week") {
+        const dow = today.getUTCDay();
+        const from = addUtcDays(today, -dow);
+        const to = addUtcDays(from, 6);
+        return { from: formatDateUTC(from), to: formatDateUTC(to) };
+      }
+      if (period === "month") {
+        const from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
+        const to = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
+        return { from: formatDateUTC(from), to: formatDateUTC(to) };
+      }
+      if (period === "total") {
+        return { from: "1970-01-01", to: "9999-12-31" };
+      }
+      throw new Error(`Unsupported period: ${String(period)}`);
+    }
+    function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
+      const explicit = row?.other_tokens;
+      if (explicit != null) return toBigInt(explicit);
+      const derived = totalTokens - gptTokens - claudeTokens;
+      return derived > 0n ? derived : 0n;
+    }
+    function normalizeDisplayName(value) {
+      if (typeof value !== "string") return "Anonymous";
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : "Anonymous";
+    }
+    function normalizeAvatarUrl(value) {
+      if (typeof value !== "string") return null;
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
     }
     module.exports = {
-      toBigInt,
-      toPositiveInt,
-      toPositiveIntOrNull
+      normalizePeriod,
+      computeWindow,
+      resolveOtherTokens,
+      normalizeDisplayName,
+      normalizeAvatarUrl
     };
   }
 });
@@ -846,9 +947,15 @@ var require_vibeusage_leaderboard = __commonJS({
     var { handleOptions, json, requireMethod } = require_http();
     var { getBearerToken, getEdgeClientAndUserId } = require_auth();
     var { getAnonKey, getBaseUrl, getServiceRoleKey } = require_env();
-    var { toUtcDay, addUtcDays, formatDateUTC } = require_date();
     var { toBigInt, toPositiveInt, toPositiveIntOrNull } = require_numbers();
     var { createClient } = __require("https://esm.sh/@supabase/supabase-js@2");
+    var {
+      normalizePeriod,
+      computeWindow,
+      resolveOtherTokens,
+      normalizeDisplayName,
+      normalizeAvatarUrl
+    } = require_leaderboard_utils();
     var DEFAULT_LIMIT = 20;
     var MAX_LIMIT = 100;
     var DEFAULT_OFFSET = 0;
@@ -879,7 +986,7 @@ var require_vibeusage_leaderboard = __commonJS({
       try {
         ({ from, to } = await computeWindow({ period }));
       } catch (err) {
-        return json({ error: String(err && err.message ? err.message : err) }, 500);
+        return json({ error: "Internal error" }, 500);
       }
       const serviceRoleKey = getServiceRoleKey();
       const anonKey = getAnonKey();
@@ -928,11 +1035,11 @@ var require_vibeusage_leaderboard = __commonJS({
       const { data: rawEntries, error: entriesErr } = await readClient.database.from(entriesView).select(
         "user_id,rank,is_me,display_name,avatar_url,gpt_tokens,claude_tokens,other_tokens,total_tokens,is_public"
       ).order("rank", { ascending: true }).range(offset, offset + limit - 1);
-      if (entriesErr) return json({ error: entriesErr.message }, 500);
+      if (entriesErr) return json({ error: "Internal error" }, 500);
       let rawMe = null;
       if (viewerUserId) {
         const meRes = await auth.edgeClient.database.from(meView).select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens").maybeSingle();
-        if (meRes.error) return json({ error: meRes.error.message }, 500);
+        if (meRes.error) return json({ error: "Internal error" }, 500);
         rawMe = meRes.data;
       }
       const publicUserSet = await loadActivePublicUserIds({ serviceClient, rows: rawEntries });
@@ -960,14 +1067,6 @@ var require_vibeusage_leaderboard = __commonJS({
       const n = Number(value);
       if (!Number.isFinite(n) || n < 0) return 0;
       return Math.floor(n);
-    }
-    function normalizePeriod(raw) {
-      if (typeof raw !== "string") return null;
-      const v = raw.trim().toLowerCase();
-      if (v === "week") return v;
-      if (v === "month") return v;
-      if (v === "total") return v;
-      return null;
     }
     function normalizeMetric(raw) {
       if (typeof raw !== "string") return "all";
@@ -1094,25 +1193,6 @@ var require_vibeusage_leaderboard = __commonJS({
         total_tokens: totalTokens.toString()
       };
     }
-    async function computeWindow({ period }) {
-      const now = /* @__PURE__ */ new Date();
-      const today = toUtcDay(now);
-      if (period === "week") {
-        const dow = today.getUTCDay();
-        const from = addUtcDays(today, -dow);
-        const to = addUtcDays(from, 6);
-        return { from: formatDateUTC(from), to: formatDateUTC(to) };
-      }
-      if (period === "month") {
-        const from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-        const to = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
-        return { from: formatDateUTC(from), to: formatDateUTC(to) };
-      }
-      if (period === "total") {
-        return { from: "1970-01-01", to: "9999-12-31" };
-      }
-      throw new Error(`Unsupported period: ${String(period)}`);
-    }
     function normalizeEntry(row, options = {}) {
       const userId = typeof options?.userId === "string" ? options.userId : null;
       const publicUserSet = options?.publicUserSet;
@@ -1160,12 +1240,6 @@ var require_vibeusage_leaderboard = __commonJS({
         total_tokens: totalTokens.toString()
       };
     }
-    function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
-      const explicit = row?.other_tokens;
-      if (explicit != null) return toBigInt(explicit);
-      const derived = totalTokens - gptTokens - claudeTokens;
-      return derived > 0n ? derived : 0n;
-    }
     function resolveIsPublic({ rawUserId, publicUserSet }) {
       if (!(publicUserSet instanceof Set)) return false;
       if (!rawUserId) return false;
@@ -1190,16 +1264,6 @@ var require_vibeusage_leaderboard = __commonJS({
         if (!Number.isNaN(dt.getTime())) return dt.toISOString();
       }
       return (/* @__PURE__ */ new Date()).toISOString();
-    }
-    function normalizeDisplayName(value) {
-      if (typeof value !== "string") return "Anonymous";
-      const trimmed = value.trim();
-      return trimmed.length > 0 ? trimmed : "Anonymous";
-    }
-    function normalizeAvatarUrl(value) {
-      if (typeof value !== "string") return null;
-      const trimmed = value.trim();
-      return trimmed.length > 0 ? trimmed : null;
     }
   }
 });

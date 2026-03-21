@@ -41,7 +41,7 @@ module.exports = withRequestLogging("vibeusage-user-status", async function (req
       .eq("id", auth.userId)
       .maybeSingle();
 
-    if (userRowErr) return json({ error: userRowErr.message }, 500);
+    if (userRowErr) return json({ error: "Internal error" }, 500);
     if (typeof userRow?.created_at !== "string" || userRow.created_at.length === 0) {
       return json({ error: "Missing user created_at" }, 500);
     }
@@ -54,7 +54,7 @@ module.exports = withRequestLogging("vibeusage-user-status", async function (req
     .eq("user_id", auth.userId)
     .order("effective_to", { ascending: false });
 
-  if (entErr) return json({ error: entErr.message }, 500);
+  if (entErr) return json({ error: "Internal error" }, 500);
 
   let subscriptions = [];
   let subscriptionsPartial = false;
@@ -70,7 +70,7 @@ module.exports = withRequestLogging("vibeusage-user-status", async function (req
     if (isMissingRelationError(subscriptionErr, "vibeusage_tracker_subscriptions")) {
       subscriptionsPartial = true;
     } else {
-      return json({ error: subscriptionErr.message }, 500);
+      return json({ error: "Internal error" }, 500);
     }
   } else {
     subscriptions = normalizeSubscriptions(subscriptionRows);
@@ -93,7 +93,7 @@ module.exports = withRequestLogging("vibeusage-user-status", async function (req
     if (isMissingRelationError(tokenStats.error, "vibeusage_tracker_device_tokens")) {
       installPartial = true;
     } else {
-      return json({ error: tokenStats.error.message }, 500);
+      return json({ error: "Internal error" }, 500);
     }
   } else {
     activeDeviceTokens = tokenStats.count;
@@ -111,7 +111,7 @@ module.exports = withRequestLogging("vibeusage-user-status", async function (req
     if (isMissingRelationError(deviceStats.error, "vibeusage_tracker_devices")) {
       installPartial = true;
     } else {
-      return json({ error: deviceStats.error.message }, 500);
+      return json({ error: "Internal error" }, 500);
     }
   } else {
     activeDevices = deviceStats.count;

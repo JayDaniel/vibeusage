@@ -4,6 +4,8 @@ const fs = require("node:fs/promises");
 const fssync = require("node:fs");
 const cp = require("node:child_process");
 
+const { normalizeString } = require("./utils");
+
 const OPENCLAW_HOOK_NAME = "vibeusage-openclaw-sync";
 const OPENCLAW_HOOK_DIRNAME = "openclaw-hook";
 
@@ -401,12 +403,6 @@ function buildHookHandler({ trackerDir, packageName = "vibeusage", openclawHome 
     `  );\n` +
     `}\n`
   );
-}
-
-function normalizeString(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
 }
 
 module.exports = {

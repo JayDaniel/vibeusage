@@ -2,11 +2,13 @@
 
 const { sha256Hex } = require('./crypto');
 
-function buildPublicShareToken(userId) {
-  if (typeof userId !== 'string') return '';
-  const normalized = userId.trim().toLowerCase();
-  if (!normalized) return '';
-  return `pv1-${normalized}`;
+function buildPublicShareToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `pv2-${hex}`;
 }
 
 function disabledState() {
@@ -29,7 +31,7 @@ async function getPublicVisibilityState({ edgeClient, userId }) {
   try {
     const { data, error } = await edgeClient
       .from('vibeusage_public_views')
-      .select('user_id,revoked_at,updated_at')
+      .select('user_id,revoked_at,updated_at,share_token')
       .eq('user_id', userId)
       .maybeSingle();
 
@@ -39,7 +41,7 @@ async function getPublicVisibilityState({ edgeClient, userId }) {
     return {
       enabled,
       updated_at: normalizeUpdatedAt(data?.updated_at),
-      share_token: enabled ? buildPublicShareToken(userId) : null,
+      share_token: enabled ? data.share_token : null,
     };
   } catch (_err) {
     return disabledState();
@@ -66,13 +68,14 @@ async function setPublicVisibilityState({ edgeClient, userId, enabled, nowIso })
 
 async function enablePublicVisibility({ edgeClient, userId, nowIso }) {
   const table = edgeClient.from('vibeusage_public_views');
-  const shareToken = buildPublicShareToken(userId);
+  const shareToken = buildPublicShareToken();
   const tokenHash = await sha256Hex(shareToken);
   const updatedAt = typeof nowIso === 'string' && nowIso ? nowIso : new Date().toISOString();
 
   const nextRow = {
     user_id: userId,
     token_hash: tokenHash,
+    share_token: shareToken,
     revoked_at: null,
     updated_at: updatedAt,
   };
@@ -95,7 +98,7 @@ async function enablePublicVisibility({ edgeClient, userId, nowIso }) {
 
   if (existing?.user_id) {
     const { error: updateErr } = await table
-      .update({ token_hash: tokenHash, revoked_at: null, updated_at: updatedAt })
+      .update({ token_hash: tokenHash, share_token: shareToken, revoked_at: null, updated_at: updatedAt })
       .eq('user_id', userId);
     if (updateErr) throw new Error(updateErr.message || 'Failed to update public visibility row');
     return;

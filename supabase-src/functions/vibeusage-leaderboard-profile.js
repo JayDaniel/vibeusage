@@ -6,8 +6,14 @@
 const { handleOptions, json, requireMethod } = require("../shared/http");
 const { getBearerToken, getEdgeClientAndUserId } = require("../shared/auth");
 const { getAnonKey, getBaseUrl, getServiceRoleKey } = require("../shared/env");
-const { toUtcDay, addUtcDays, formatDateUTC } = require("../shared/date");
 const { toBigInt, toPositiveIntOrNull } = require("../shared/numbers");
+const {
+  normalizePeriod,
+  computeWindow,
+  resolveOtherTokens,
+  normalizeDisplayName,
+  normalizeAvatarUrl,
+} = require("../shared/leaderboard-utils");
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -72,7 +78,7 @@ module.exports = async function (request) {
     .maybeSingle();
 
   if (snapshotErr)
-    return json({ error: snapshotErr.message || "Failed to fetch leaderboard snapshot" }, 500);
+    return json({ error: "Internal error" }, 500);
   if (!snapshot) return json({ error: "Not found" }, 404);
 
   return json(
@@ -87,15 +93,6 @@ module.exports = async function (request) {
   );
 };
 
-function normalizePeriod(raw) {
-  if (typeof raw !== "string") return null;
-  const v = raw.trim().toLowerCase();
-  if (v === "week") return v;
-  if (v === "month") return v;
-  if (v === "total") return v;
-  return null;
-}
-
 function normalizeUserId(value) {
   if (typeof value !== "string") return null;
   const trimmed = value.trim().toLowerCase();
@@ -103,30 +100,6 @@ function normalizeUserId(value) {
   if (trimmed.length > 64) return null;
   if (!UUID_RE.test(trimmed)) return null;
   return trimmed;
-}
-
-function computeWindow({ period }) {
-  const now = new Date();
-  const today = toUtcDay(now);
-
-  if (period === "week") {
-    const dow = today.getUTCDay(); // 0=Sunday
-    const from = addUtcDays(today, -dow);
-    const to = addUtcDays(from, 6);
-    return { from: formatDateUTC(from), to: formatDateUTC(to) };
-  }
-
-  if (period === "month") {
-    const from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-    const to = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
-    return { from: formatDateUTC(from), to: formatDateUTC(to) };
-  }
-
-  if (period === "total") {
-    return { from: "1970-01-01", to: "9999-12-31" };
-  }
-
-  return computeWindow({ period: "week" });
 }
 
 function normalizeGeneratedAt(value) {
@@ -161,22 +134,3 @@ function normalizeSnapshotEntry(row) {
   };
 }
 
-function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
-  const explicit = row?.other_tokens;
-  if (explicit != null) return toBigInt(explicit);
-
-  const derived = totalTokens - gptTokens - claudeTokens;
-  return derived > 0n ? derived : 0n;
-}
-
-function normalizeDisplayName(value) {
-  if (typeof value !== "string") return "Anonymous";
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : "Anonymous";
-}
-
-function normalizeAvatarUrl(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}

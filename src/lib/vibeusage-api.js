@@ -1,6 +1,7 @@
 "use strict";
 
 const { createSupabaseClient } = require("./supabase-client");
+const { clampInt, sleep } = require("./utils");
 
 async function signInWithPassword({ baseUrl, email, password }) {
   const client = createSupabaseClient({ baseUrl });
@@ -231,13 +232,3 @@ function computeRetryDelayMs({ retryOptions, attempt, err }) {
   return Math.max(backoff, retryAfter || 0);
 }
 
-function clampInt(value, min, max) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return min;
-  return Math.min(max, Math.max(min, Math.floor(n)));
-}
-
-function sleep(ms) {
-  if (!ms || ms <= 0) return Promise.resolve();
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}

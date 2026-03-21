@@ -10,9 +10,15 @@
 const { handleOptions, json, requireMethod } = require("../shared/http");
 const { getBearerToken, getEdgeClientAndUserId } = require("../shared/auth");
 const { getAnonKey, getBaseUrl, getServiceRoleKey } = require("../shared/env");
-const { toUtcDay, addUtcDays, formatDateUTC } = require("../shared/date");
 const { toBigInt, toPositiveInt, toPositiveIntOrNull } = require("../shared/numbers");
 const { createClient } = require("@supabase/supabase-js");
+const {
+  normalizePeriod,
+  computeWindow,
+  resolveOtherTokens,
+  normalizeDisplayName,
+  normalizeAvatarUrl,
+} = require("../shared/leaderboard-utils");
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -53,7 +59,7 @@ module.exports = async function (request) {
   try {
     ({ from, to } = await computeWindow({ period }));
   } catch (err) {
-    return json({ error: String(err && err.message ? err.message : err) }, 500);
+    return json({ error: "Internal error" }, 500);
   }
 
   const serviceRoleKey = getServiceRoleKey();
@@ -124,7 +130,7 @@ module.exports = async function (request) {
     .order("rank", { ascending: true })
     .range(offset, offset + limit - 1);
 
-  if (entriesErr) return json({ error: entriesErr.message }, 500);
+  if (entriesErr) return json({ error: "Internal error" }, 500);
 
   let rawMe = null;
   if (viewerUserId) {
@@ -133,7 +139,7 @@ module.exports = async function (request) {
       .select("rank,gpt_tokens,claude_tokens,other_tokens,total_tokens")
       .maybeSingle();
 
-    if (meRes.error) return json({ error: meRes.error.message }, 500);
+    if (meRes.error) return json({ error: "Internal error" }, 500);
     rawMe = meRes.data;
   }
 
@@ -198,15 +204,6 @@ async function tryLoadSingleQuery({ edgeClient, entriesView, limit, offset }) {
   } catch (_e) {
     return null;
   }
-}
-
-function normalizePeriod(raw) {
-  if (typeof raw !== "string") return null;
-  const v = raw.trim().toLowerCase();
-  if (v === "week") return v;
-  if (v === "month") return v;
-  if (v === "total") return v;
-  return null;
 }
 
 function normalizeMetric(raw) {
@@ -378,31 +375,6 @@ function normalizeMetricMe(row, metric) {
   };
 }
 
-async function computeWindow({ period }) {
-  const now = new Date();
-  const today = toUtcDay(now);
-
-  if (period === "week") {
-    const dow = today.getUTCDay(); // 0=Sunday
-    const from = addUtcDays(today, -dow);
-    const to = addUtcDays(from, 6);
-    return { from: formatDateUTC(from), to: formatDateUTC(to) };
-  }
-
-  if (period === "month") {
-    const from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-    const to = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
-    return { from: formatDateUTC(from), to: formatDateUTC(to) };
-  }
-
-  if (period === "total") {
-    // Represent all-time as an open-ended UTC date range.
-    return { from: "1970-01-01", to: "9999-12-31" };
-  }
-
-  throw new Error(`Unsupported period: ${String(period)}`);
-}
-
 function normalizeEntry(row, options = {}) {
   const userId = typeof options?.userId === "string" ? options.userId : null;
   const publicUserSet = options?.publicUserSet;
@@ -459,14 +431,6 @@ function normalizeMe(row) {
   };
 }
 
-function resolveOtherTokens({ row, totalTokens, gptTokens, claudeTokens }) {
-  const explicit = row?.other_tokens;
-  if (explicit != null) return toBigInt(explicit);
-
-  const derived = totalTokens - gptTokens - claudeTokens;
-  return derived > 0n ? derived : 0n;
-}
-
 function resolveIsPublic({ rawUserId, publicUserSet }) {
   // Fail closed: canonical lookup is the only truth source.
   if (!(publicUserSet instanceof Set)) return false;
@@ -504,14 +468,3 @@ function normalizeGeneratedAt(entryRows, meRow) {
   return new Date().toISOString();
 }
 
-function normalizeDisplayName(value) {
-  if (typeof value !== "string") return "Anonymous";
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : "Anonymous";
-}
-
-function normalizeAvatarUrl(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}

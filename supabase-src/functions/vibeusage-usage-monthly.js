@@ -140,7 +140,8 @@ module.exports = withRequestLogging("vibeusage-usage-monthly", async function (r
     });
   } catch (err) {
     const queryDurationMs = Date.now() - queryStartMs;
-    return respond({ error: err?.message || "Internal error" }, 500, queryDurationMs);
+    logger?.log?.({ stage: "error", status: 500, detail: err?.message || "unknown" });
+    return respond({ error: "Internal error" }, 500, queryDurationMs);
   }
   const queryDurationMs = Date.now() - queryStartMs;
   logSlowQuery(logger, {
@@ -154,7 +155,10 @@ module.exports = withRequestLogging("vibeusage-usage-monthly", async function (r
     tz_offset_minutes: Number.isFinite(tzContext?.offsetMinutes) ? tzContext.offsetMinutes : null,
   });
 
-  if (pageResult?.error) return respond({ error: pageResult.error.message }, 500, queryDurationMs);
+  if (pageResult?.error) {
+    logger?.log?.({ stage: "error", status: 500, detail: pageResult.error?.message || "unknown" });
+    return respond({ error: "Internal error" }, 500, queryDurationMs);
+  }
 
   const monthly = monthKeys.map((key) => {
     const bucket = buckets.get(key);

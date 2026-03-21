@@ -72,12 +72,14 @@ module.exports = withRequestLogging(
       });
       if (!fallback.ok) {
         const queryDurationMs = Date.now() - queryStartMs;
-        return respond({ error: fallback.error }, 500, queryDurationMs);
+        logger?.log?.({ stage: "error", status: 500, detail: fallback.error || "unknown" });
+        return respond({ error: "Internal error" }, 500, queryDurationMs);
       }
       entries = fallback.entries;
     } else if (error) {
       const queryDurationMs = Date.now() - queryStartMs;
-      return respond({ error: error.message }, 500, queryDurationMs);
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
     } else {
       entries = (Array.isArray(data) ? data : [])
         .map((row) => {

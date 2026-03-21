@@ -6,16 +6,11 @@ const cp = require("node:child_process");
 const { readJson } = require("./fs");
 const { resolveTrackerPaths } = require("./tracker-paths");
 const { probeOpenclawSessionPluginState } = require("./openclaw-session-plugin");
+const { normalizeString } = require("./utils");
 
 const OPENAI_AUTH_CLAIM = "https://api.openai.com/auth";
 const MACOS_SECURITY_BIN = "/usr/bin/security";
 const CLAUDE_CODE_KEYCHAIN_SERVICES = ["Claude Code-credentials"];
-
-function normalizeString(value) {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
 
 function normalizeScalarToString(value) {
   if (value === null || value === undefined) return null;

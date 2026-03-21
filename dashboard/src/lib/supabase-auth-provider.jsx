@@ -35,7 +35,7 @@ export function SupabaseAuthProvider({ client, children }) {
     // 监听 auth 状态变化（登录、登出、token 刷新）
     const { data: { subscription } } = client.auth.onAuthStateChange((_event, session) => {
       setIsSignedIn(Boolean(session));
-      if (!isLoaded) setIsLoaded(true);
+      setIsLoaded(true);
     });
 
     return () => {

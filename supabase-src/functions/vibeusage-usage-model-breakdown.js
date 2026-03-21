@@ -150,7 +150,10 @@ module.exports = withRequestLogging(
       tz_offset_minutes: Number.isFinite(tzContext?.offsetMinutes) ? tzContext.offsetMinutes : null,
     });
 
-    if (error) return respond({ error: error.message }, 500, queryDurationMs);
+    if (error) {
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
+    }
 
     const usageModels = Array.from(distinctModels.values());
     const aliasRows = await fetchAliasRows({

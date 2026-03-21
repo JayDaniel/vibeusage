@@ -80,7 +80,7 @@ function isProjectAdminBearer(token) {
 
 function isJwtExpired(payload) {
   const exp = Number(payload?.exp);
-  if (!Number.isFinite(exp)) return false;
+  if (!Number.isFinite(exp)) return true;
   return exp * 1000 <= Date.now();
 }
 
@@ -182,6 +182,12 @@ async function getEdgeClientAndUserIdFast({ baseUrl, bearer }) {
   edgeClient.database = edgeClient;
   const local = await verifyUserJwtHs256({ token: bearer });
   const allowRemoteOnly = !local.ok && local?.code === "missing_jwt_secret";
+  if (allowRemoteOnly) {
+    console.warn(JSON.stringify({
+      stage: "auth_degraded_mode",
+      warning: "SUPABASE_JWT_SECRET not configured — skipping local signature verification, falling back to remote auth only",
+    }));
+  }
   if (!local.ok && !allowRemoteOnly) {
     return {
       ok: false,

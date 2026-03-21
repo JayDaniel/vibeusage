@@ -1,5 +1,7 @@
 "use strict";
 
+const { clampInt } = require("./utils");
+
 /// 加载 Supabase SDK，若缺失则抛出明确的错误提示
 function loadSupabaseSdk() {
   try {
@@ -73,12 +75,6 @@ function createSupabaseClient({ baseUrl, accessToken } = {}) {
       fetch: createTimeoutFetch(globalThis.fetch),
     },
   });
-}
-
-function clampInt(value, min, max) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return min;
-  return Math.min(max, Math.max(min, Math.floor(n)));
 }
 
 function readEnvValue(env, keys) {

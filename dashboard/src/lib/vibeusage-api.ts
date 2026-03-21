@@ -43,9 +43,7 @@ type AnyRecord = Record<string, any>;
 
 let refreshInFlight: Promise<any> | null = null;
 
-async function resolveAccessToken(accessToken: any) {
-  return await resolveAuthAccessToken(accessToken);
-}
+const resolveAccessToken = resolveAuthAccessToken;
 
 export async function probeBackend({ baseUrl, accessToken, signal }: AnyRecord = {}) {
   const resolvedAccessToken = await resolveAccessToken(accessToken);
@@ -860,7 +858,7 @@ function shouldAttemptSessionRefresh({
 async function refreshSessionOnce() {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = supabaseAuthClient.auth
-    .getSession()
+    .refreshSession()
     .then(({ data }: AnyRecord) => {
       const session = data?.session ?? null;
       if (!session) return null;

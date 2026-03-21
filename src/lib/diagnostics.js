@@ -16,6 +16,7 @@ const { normalizeState: normalizeUploadState } = require("./upload-throttle");
 const { probeOpenclawHookState } = require("./openclaw-hook");
 const { probeOpenclawSessionPluginState } = require("./openclaw-session-plugin");
 const { resolveTrackerPaths } = require("./tracker-paths");
+const { safeStatSize, safeReadText, parseEpochMsToIso } = require("./utils");
 
 async function collectTrackerDiagnostics({
   home = os.homedir(),
@@ -186,31 +187,6 @@ function redactError(message, home) {
   if (typeof home !== "string" || home.length === 0) return message;
   const homeNorm = home.endsWith(path.sep) ? home.slice(0, -1) : home;
   return message.split(homeNorm).join("~");
-}
-
-async function safeStatSize(p) {
-  try {
-    const st = await fs.stat(p);
-    return st && st.isFile() ? st.size : 0;
-  } catch (_e) {
-    return 0;
-  }
-}
-
-async function safeReadText(p) {
-  try {
-    return await fs.readFile(p, "utf8");
-  } catch (_e) {
-    return null;
-  }
-}
-
-function parseEpochMsToIso(v) {
-  const ms = Number(v);
-  if (!Number.isFinite(ms) || ms <= 0) return null;
-  const d = new Date(ms);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
 }
 
 module.exports = { collectTrackerDiagnostics };

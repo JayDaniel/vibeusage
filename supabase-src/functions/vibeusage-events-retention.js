@@ -50,7 +50,7 @@ module.exports = async function (request) {
     dryRun,
     countColumn: "event_id",
   });
-  if (eventsResult.error) return json({ error: eventsResult.error }, 500);
+  if (eventsResult.error) return json({ error: "Internal error" }, 500);
 
   let ingestResult = { deleted: 0 };
   if (includeIngestBatches) {
@@ -62,7 +62,7 @@ module.exports = async function (request) {
       dryRun,
       countColumn: "batch_id",
     });
-    if (ingestResult.error) return json({ error: ingestResult.error }, 500);
+    if (ingestResult.error) return json({ error: "Internal error" }, 500);
   }
 
   return json(

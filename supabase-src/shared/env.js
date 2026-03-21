@@ -36,7 +36,7 @@ function getAnonKey() {
 function getJwtSecret() {
   return (
     Deno.env.get("SUPABASE_JWT_SECRET") ||
-    Deno.env.get("SUPABASE_JWT_SECRET") ||
+    Deno.env.get("JWT_SECRET") ||
     null
   );
 }

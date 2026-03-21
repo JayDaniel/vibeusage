@@ -33,6 +33,6 @@ jobs:
       - name: Guardrail tests
         run: node --test test/architecture-guardrails.test.js
       - name: Check InsForge build outputs
-        run: npm run build:insforge:check
+        run: npm run build:supabase:check
       - name: Build dashboard
         run: npm --prefix dashboard run build

@@ -34,12 +34,13 @@ module.exports = withRequestLogging("vibeusage-public-view-issue", async functio
     return json({ error: "Public profile is disabled" }, 403);
   }
 
-  const shareToken = buildPublicUserToken(auth.userId);
+  const shareToken = buildPublicUserToken();
   const tokenHash = await sha256Hex(shareToken);
   const nowIso = new Date().toISOString();
   const nextRow = {
     user_id: auth.userId,
     token_hash: tokenHash,
+    share_token: shareToken,
     revoked_at: null,
     updated_at: nowIso,
   };
@@ -64,7 +65,7 @@ module.exports = withRequestLogging("vibeusage-public-view-issue", async functio
 
   if (existing?.user_id) {
     const { error: updateErr } = await table
-      .update({ token_hash: tokenHash, revoked_at: null, updated_at: nowIso })
+      .update({ token_hash: tokenHash, share_token: shareToken, revoked_at: null, updated_at: nowIso })
       .eq("user_id", auth.userId);
     if (updateErr) return json({ error: "Failed to issue public view link" }, 500);
   } else {
@@ -75,7 +76,11 @@ module.exports = withRequestLogging("vibeusage-public-view-issue", async functio
   return json({ enabled: true, share_token: shareToken }, 200);
 });
 
-function buildPublicUserToken(userId) {
-  if (typeof userId !== "string") return "";
-  return `pv1-${userId.trim().toLowerCase()}`;
+function buildPublicUserToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `pv2-${hex}`;
 }

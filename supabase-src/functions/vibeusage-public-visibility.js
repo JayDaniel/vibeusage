@@ -49,6 +49,6 @@ module.exports = withRequestLogging('vibeusage-public-visibility', async functio
     });
     return json(state, 200);
   } catch (err) {
-    return json({ error: err?.message || 'Failed to update public visibility' }, 500);
+    return json({ error: "Internal error" }, 500);
   }
 });

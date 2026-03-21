@@ -256,7 +256,10 @@ module.exports = withRequestLogging("vibeusage-usage-hourly", async function (re
       tz_offset_minutes: Number.isFinite(tzContext?.offsetMinutes) ? tzContext.offsetMinutes : null,
     });
 
-    if (error) return respond({ error: error.message }, 500, queryDurationMs);
+    if (error) {
+      logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+      return respond({ error: "Internal error" }, 500, queryDurationMs);
+    }
 
     return respond(
       {
@@ -384,7 +387,10 @@ module.exports = withRequestLogging("vibeusage-usage-hourly", async function (re
     tz_offset_minutes: Number.isFinite(tzContext?.offsetMinutes) ? tzContext.offsetMinutes : null,
   });
 
-  if (error) return respond({ error: error.message }, 500, queryDurationMs);
+  if (error) {
+    logger?.log?.({ stage: "error", status: 500, detail: error?.message || "unknown" });
+    return respond({ error: "Internal error" }, 500, queryDurationMs);
+  }
 
   return respond(
     {
